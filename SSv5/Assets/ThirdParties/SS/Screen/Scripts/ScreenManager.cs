@@ -8,12 +8,12 @@ using UnityEngine.SceneManagement;
 public class ScreenManager : MonoBehaviour
 {
     #region SerializeField
-    [SerializeField] string m_UiPath = "UI/Prefabs";
-    [SerializeField] string m_UiAnimationPath = "UI/Animations";
+    [SerializeField] string m_ScreenPath = "Screens";
+    [SerializeField] string m_ScreenAnimationPath = "Screens/Animations";
     [SerializeField] Camera m_BgCamera;
     [SerializeField] Canvas m_Canvas;
     [SerializeField] Animation m_SceneShield;
-    [SerializeField] Color m_UIShieldColor = new Color(0, 0, 0, 0.8f);
+    [SerializeField] Color m_ScreenShieldColor = new Color(0, 0, 0, 0.8f);
     #endregion
 
     #region Delegate
@@ -41,14 +41,14 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
-    public static void Load<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllUi = true) where T : Component
+    public static void Load<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true) where T : Component
     {
-        instance.LoadScene(sceneName, mode, onSceneLoaded, clearAllUi);
+        instance.LoadScene(sceneName, mode, onSceneLoaded, clearAllScreen);
     }
 
-    public static T Add<T>(string uiName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide") where T : Component
+    public static T Add<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide") where T : Component
     {
-        return instance.AddScreen<T>(uiName, showAnimation, hideAnimation);
+        return instance.AddScreen<T>(screenName, showAnimation, hideAnimation);
     }
 
     public static void Close(OnScreenClosed onScreenClosed = null, string hideAnimation = null)
@@ -56,9 +56,14 @@ public class ScreenManager : MonoBehaviour
         instance.CloseScreen(onScreenClosed, hideAnimation);
     }
 
-    public static void Close(Component ui, OnScreenClosed onScreenClosed = null, string hideAnimation = null)
+    public static void Close(Component screen, OnScreenClosed onScreenClosed = null, string hideAnimation = null)
     {
-        instance.CloseScreen(ui, onScreenClosed, hideAnimation);
+        instance.CloseScreen(screen, onScreenClosed, hideAnimation);
+    }
+
+    public static void CloseAll()
+    {
+        instance.ClearAllScreen();
     }
     #endregion
 
@@ -92,20 +97,15 @@ public class ScreenManager : MonoBehaviour
 
     private void SceneManager_sceneUnloaded(Scene scene)
     {
-        Debug.Log("SceneManager_sceneUnloaded: " + scene.name);
-
         m_BgCamera.gameObject.SetActive(true);
     }
 
     private void SceneManager_activeSceneChanged(Scene scene1, Scene scene2)
     {
-        Debug.Log("SceneManager_activeSceneChanged: " + scene1.name + " " + scene2.name);
     }
 
     private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log("SceneManager_sceneLoaded: " + scene.name + " " + mode);
-
         SetupCameras();
 
         m_LastLoadedScene = scene;
@@ -113,21 +113,25 @@ public class ScreenManager : MonoBehaviour
     #endregion
 
     #region Private Functions
-    private void LoadScene<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllUi = true) where T : Component
+    private void LoadScene<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true) where T : Component
     {
-        StartCoroutine(CoLoadScene(sceneName, mode, onSceneLoaded, clearAllUi));
+        StartCoroutine(CoLoadScene(sceneName, mode, onSceneLoaded, clearAllScreen));
     }
 
-    private IEnumerator CoLoadScene<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllUi = true) where T : Component
+    private IEnumerator CoLoadScene<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true) where T : Component
     {
         m_SceneShield.transform.SetAsLastSibling();
-        m_SceneShield.Play("ShieldShow");
 
-        yield return new WaitForSeconds(m_SceneShield["ShieldShow"].length);
-
-        if (clearAllUi)
+        if (mode == LoadSceneMode.Single)
         {
-            ClearAllUi();
+            m_SceneShield.Play("ShieldShow");
+
+            yield return new WaitForSeconds(m_SceneShield["ShieldShow"].length);
+        }
+
+        if (clearAllScreen)
+        {
+            ClearAllScreen();
         }
 
         var asyncOperation = SceneManager.LoadSceneAsync(sceneName, mode);
@@ -137,61 +141,64 @@ public class ScreenManager : MonoBehaviour
             yield return null;
         }
 
-        m_SceneShield.Play("ShieldHide");
+        if (mode == LoadSceneMode.Single)
+        {
+            m_SceneShield.Play("ShieldHide");
+        }
 
         onSceneLoaded?.Invoke(GetSceneComponent<T>(instance.m_LastLoadedScene));
     }
 
-    private T AddScreen<T>(string uiName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide") where T : Component
+    private T AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide") where T : Component
     {
         var shield = CreateShield();
 
-        var ui = Instantiate(Resources.Load<T>(Path.Combine(m_UiPath, uiName)), m_Canvas.transform);
-        ui.transform.localPosition = Vector3.zero;
-        ui.transform.localScale = Vector3.one;
-        ui.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
+        var screen = Instantiate(Resources.Load<T>(Path.Combine(m_ScreenPath, screenName)), m_Canvas.transform);
+        screen.transform.localPosition = Vector3.zero;
+        screen.transform.localScale = Vector3.one;
+        screen.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
 
-        var controller = AddScreenController(ui);
+        var controller = AddScreenController(screen);
         controller.shield = shield;
         controller.showAnimation = showAnimation;
         controller.hideAnimation = hideAnimation;
 
-        AddAnimations(ui, showAnimation, hideAnimation);
-        PlayAnimation(ui, showAnimation);
+        AddAnimations(screen, showAnimation, hideAnimation);
+        PlayAnimation(screen, showAnimation);
 
-        m_ScreenList.Add(ui);
+        m_ScreenList.Add(screen);
 
-        return ui;
+        return screen;
     }
 
     private void CloseScreen(OnScreenClosed onScreenClosed = null, string hideAnimation = null)
     {
         if (m_ScreenList.Count > 0)
         {
-            var ui = m_ScreenList[m_ScreenList.Count - 1];
-            CloseScreen(ui, onScreenClosed, hideAnimation);
+            var screen = m_ScreenList[m_ScreenList.Count - 1];
+            CloseScreen(screen, onScreenClosed, hideAnimation);
         }
     }
 
-    private void CloseScreen(Component ui, OnScreenClosed onScreenClosed = null, string hideAnimation = null)
+    private void CloseScreen(Component screen, OnScreenClosed onScreenClosed = null, string hideAnimation = null)
     {
         if (m_ScreenList.Count > 0)
         {
-            m_ScreenList.Remove(ui);
+            m_ScreenList.Remove(screen);
 
-            hideAnimation = (hideAnimation != null) ? hideAnimation : ui.GetComponent<ScreenController>().hideAnimation;
-            PlayAnimation(ui, hideAnimation, true, onScreenClosed);
+            hideAnimation = (hideAnimation != null) ? hideAnimation : screen.GetComponent<ScreenController>().hideAnimation;
+            PlayAnimation(screen, hideAnimation, true, onScreenClosed);
         }
     }
 
-    private void ClearAllUi()
+    private void ClearAllScreen()
     {
         while (m_ScreenList.Count > 0)
         {
-            var ui = m_ScreenList[0];
+            var screen = m_ScreenList[0];
             m_ScreenList.RemoveAt(0);
 
-            Destroy(ui.gameObject);
+            Destroy(screen.gameObject);
         }
     }
 
@@ -213,18 +220,18 @@ public class ScreenManager : MonoBehaviour
         rt.offsetMin = new Vector2(-2, -2);
 
         var image = shield.GetComponent<Image>();
-        image.color = instance.m_UIShieldColor;
+        image.color = instance.m_ScreenShieldColor;
 
         return shield;
     }
 
-    private Animation AddAnimations(Component ui, params string[] animationNames)
+    private Animation AddAnimations(Component screen, params string[] animationNames)
     {
-        var anim = ui.GetComponent<Animation>();
+        var anim = screen.GetComponent<Animation>();
 
         if (anim == null)
         {
-            anim = ui.gameObject.AddComponent<Animation>();
+            anim = screen.gameObject.AddComponent<Animation>();
         }
 
         anim.playAutomatically = false;
@@ -233,44 +240,44 @@ public class ScreenManager : MonoBehaviour
         {
             if (anim.GetClip(animationNames[i]) == null)
             {
-                anim.AddClip(Resources.Load<AnimationClip>(Path.Combine(m_UiAnimationPath, animationNames[i])), animationNames[i]);
+                anim.AddClip(Resources.Load<AnimationClip>(Path.Combine(m_ScreenAnimationPath, animationNames[i])), animationNames[i]);
             }
         }
 
         return anim;
     }
 
-    private void PlayAnimation(Component ui, string animationName, bool destroyUIAtAnimationEnd = false, OnScreenClosed onScreenClosed = null)
+    private void PlayAnimation(Component screen, string animationName, bool destroyScreenAtAnimationEnd = false, OnScreenClosed onScreenClosed = null)
     {
-        var anim = AddAnimations(ui, animationName);
+        var anim = AddAnimations(screen, animationName);
 
         anim.Play(animationName);
 
-        if (destroyUIAtAnimationEnd)
+        if (destroyScreenAtAnimationEnd)
         {
-            StartCoroutine(DestroyUI(ui, anim[animationName].length, onScreenClosed));
+            StartCoroutine(DestroyScreen(screen, anim[animationName].length, onScreenClosed));
         }
     }
 
-    private IEnumerator DestroyUI(Component ui, float delay, OnScreenClosed onScreenClosed = null)
+    private IEnumerator DestroyScreen(Component screen, float delay, OnScreenClosed onScreenClosed = null)
     {
         yield return new WaitForSeconds(delay);
 
-        if (ui != null && ui.gameObject != null)
+        if (screen != null && screen.gameObject != null)
         {
-            Destroy(ui.gameObject);
+            Destroy(screen.gameObject);
         }
 
         onScreenClosed?.Invoke();
     }
 
-    private ScreenController AddScreenController(Component ui)
+    private ScreenController AddScreenController(Component screen)
     {
-        var controller = ui.GetComponent<ScreenController>();
+        var controller = screen.GetComponent<ScreenController>();
 
         if (controller == null)
         {
-            controller = ui.gameObject.AddComponent<ScreenController>();
+            controller = screen.gameObject.AddComponent<ScreenController>();
         }
 
         return controller;

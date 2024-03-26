@@ -194,7 +194,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Ui1
+  m_Text: Screen1
 --- !u!222 &259643258
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -904,7 +904,7 @@ GameObject:
   - component: {fileID: 1968610484}
   - component: {fileID: 1968610483}
   m_Layer: 5
-  m_Name: Ui1 Button
+  m_Name: Screen1 Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -977,7 +977,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 356729241}
         m_TargetAssemblyTypeName: Scene1, Assembly-CSharp
-        m_MethodName: OnUi1ButtonTap
+        m_MethodName: OnScreen1ButtonTap
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

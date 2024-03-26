@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class Ui1 : MonoBehaviour
+public class Screen1 : MonoBehaviour
 {
     [SerializeField] Text m_Label;
 
@@ -29,7 +29,7 @@ public class Ui1 : MonoBehaviour
     public void OnLoadScene2ButtonTap()
     {
         ScreenManager.Load<Scene2>("Scene2", LoadSceneMode.Single, (scene2) => {
-            scene2.label = "Scene2 (from Ui1)";
+            scene2.label = "Scene2 (from Screen1)";
         });
     }
 
@@ -39,7 +39,7 @@ public class Ui1 : MonoBehaviour
         {
             ScreenManager.Load<Scene2>("Scene2", LoadSceneMode.Single, (scene2) =>
             {
-                scene2.label = "Scene2 (from Ui1)";
+                scene2.label = "Scene2 (from Screen1)";
             });
         });
     }

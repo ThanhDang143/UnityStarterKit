@@ -21,30 +21,17 @@ public class Scene2 : MonoBehaviour
         }
     }
 
-    private void Awake()
-    {
-        Debug.Log("Awake Scene2");
-    }
-
-    private void OnEnable()
-    {
-        Debug.Log("OnEnable Scene2");
-    }
-
-    private void OnDisable()
-    {
-        Debug.Log("OnDisable Scene2");
-    }
-
-    private void Start()
-    {
-        Debug.Log("Start Scene2");
-    }
-
     public void OnScene1ButtonTap()
     {
         ScreenManager.Load<Scene1>("Scene1", LoadSceneMode.Single, (scene1) => {
             scene1.label = "Scene1 (from Scene2)";
+        });
+    }
+
+    public void OnScene3ButtonTap()
+    {
+        ScreenManager.Load<Scene3>("Scene3", LoadSceneMode.Additive, (scene3) => {
+            scene3.cube.localScale = new Vector3(2, 1, 1);
         });
     }
 }
