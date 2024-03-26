@@ -35,8 +35,7 @@ public class Screen1 : MonoBehaviour
 
     public void OnCloseThenLoadScene2ButtonTap()
     {
-        ScreenManager.Close(() =>
-        {
+        ScreenManager.Close(() => {
             ScreenManager.Load<Scene2>("Scene2", LoadSceneMode.Single, (scene2) =>
             {
                 scene2.label = "Scene2 (from Screen1)";
