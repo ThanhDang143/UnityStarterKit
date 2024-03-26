@@ -18,6 +18,7 @@ public class ScreenManager : MonoBehaviour
 
     #region Delegate
     public delegate void OnSceneLoad<T>(T t);
+    public delegate void OnScreenClosed();
     #endregion
 
     #region Private Member
@@ -40,9 +41,9 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
-    public static void Load<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null) where T : Component
+    public static void Load<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllUi = true) where T : Component
     {
-        instance.LoadScene(sceneName, mode, onSceneLoaded);
+        instance.LoadScene(sceneName, mode, onSceneLoaded, clearAllUi);
     }
 
     public static T Add<T>(string uiName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide") where T : Component
@@ -50,19 +51,14 @@ public class ScreenManager : MonoBehaviour
         return instance.AddScreen<T>(uiName, showAnimation, hideAnimation);
     }
 
-    public static void Close()
+    public static void Close(OnScreenClosed onScreenClosed = null, string hideAnimation = null)
     {
-        instance.CloseScreen();
+        instance.CloseScreen(onScreenClosed, hideAnimation);
     }
 
-    public static void Close(string hideAnimation = null)
+    public static void Close(Component ui, OnScreenClosed onScreenClosed = null, string hideAnimation = null)
     {
-        instance.CloseScreen(hideAnimation);
-    }
-
-    public static void Close(Component ui, string hideAnimation = null)
-    {
-        instance.CloseScreen(ui, hideAnimation);
+        instance.CloseScreen(ui, onScreenClosed, hideAnimation);
     }
     #endregion
 
@@ -117,17 +113,22 @@ public class ScreenManager : MonoBehaviour
     #endregion
 
     #region Private Functions
-    private void LoadScene<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null) where T : Component
+    private void LoadScene<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllUi = true) where T : Component
     {
-        StartCoroutine(CoLoadScene(sceneName, mode, onSceneLoaded));
+        StartCoroutine(CoLoadScene(sceneName, mode, onSceneLoaded, clearAllUi));
     }
 
-    private IEnumerator CoLoadScene<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null) where T : Component
+    private IEnumerator CoLoadScene<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllUi = true) where T : Component
     {
         m_SceneShield.transform.SetAsLastSibling();
         m_SceneShield.Play("ShieldShow");
 
         yield return new WaitForSeconds(m_SceneShield["ShieldShow"].length);
+
+        if (clearAllUi)
+        {
+            ClearAllUi();
+        }
 
         var asyncOperation = SceneManager.LoadSceneAsync(sceneName, mode);
 
@@ -163,23 +164,34 @@ public class ScreenManager : MonoBehaviour
         return ui;
     }
 
-    private void CloseScreen(string hideAnimation = null)
+    private void CloseScreen(OnScreenClosed onScreenClosed = null, string hideAnimation = null)
     {
         if (m_ScreenList.Count > 0)
         {
             var ui = m_ScreenList[m_ScreenList.Count - 1];
-            CloseScreen(ui, hideAnimation);
+            CloseScreen(ui, onScreenClosed, hideAnimation);
         }
     }
 
-    private void CloseScreen(Component ui, string hideAnimation = null)
+    private void CloseScreen(Component ui, OnScreenClosed onScreenClosed = null, string hideAnimation = null)
     {
         if (m_ScreenList.Count > 0)
         {
             m_ScreenList.Remove(ui);
 
             hideAnimation = (hideAnimation != null) ? hideAnimation : ui.GetComponent<ScreenController>().hideAnimation;
-            PlayAnimation(ui, hideAnimation, true);
+            PlayAnimation(ui, hideAnimation, true, onScreenClosed);
+        }
+    }
+
+    private void ClearAllUi()
+    {
+        while (m_ScreenList.Count > 0)
+        {
+            var ui = m_ScreenList[0];
+            m_ScreenList.RemoveAt(0);
+
+            Destroy(ui.gameObject);
         }
     }
 
@@ -228,7 +240,7 @@ public class ScreenManager : MonoBehaviour
         return anim;
     }
 
-    private void PlayAnimation(Component ui, string animationName, bool destroyUIAtAnimationEnd = false)
+    private void PlayAnimation(Component ui, string animationName, bool destroyUIAtAnimationEnd = false, OnScreenClosed onScreenClosed = null)
     {
         var anim = AddAnimations(ui, animationName);
 
@@ -236,8 +248,20 @@ public class ScreenManager : MonoBehaviour
 
         if (destroyUIAtAnimationEnd)
         {
-            Destroy(ui.gameObject, anim[animationName].length);
+            StartCoroutine(DestroyUI(ui, anim[animationName].length, onScreenClosed));
         }
+    }
+
+    private IEnumerator DestroyUI(Component ui, float delay, OnScreenClosed onScreenClosed = null)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (ui != null && ui.gameObject != null)
+        {
+            Destroy(ui.gameObject);
+        }
+
+        onScreenClosed?.Invoke();
     }
 
     private ScreenController AddScreenController(Component ui)

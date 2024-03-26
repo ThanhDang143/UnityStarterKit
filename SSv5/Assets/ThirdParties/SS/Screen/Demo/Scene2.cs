@@ -41,12 +41,6 @@ public class Scene2 : MonoBehaviour
         Debug.Log("Start Scene2");
     }
 
-    public void OnUi1ButtonTap()
-    {
-        var ui1 = ScreenManager.Add<Ui1>("Ui1");
-        ui1.label = "Ui1 (from Scene2)";
-    }
-
     public void OnScene1ButtonTap()
     {
         ScreenManager.Load<Scene1>("Scene1", LoadSceneMode.Single, (scene1) => {

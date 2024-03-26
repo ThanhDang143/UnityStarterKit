@@ -24,9 +24,23 @@ public class Ui1 : MonoBehaviour
     public void OnCloseButtonTap()
     {
         ScreenManager.Close();
+    }
 
+    public void OnLoadScene2ButtonTap()
+    {
         ScreenManager.Load<Scene2>("Scene2", LoadSceneMode.Single, (scene2) => {
             scene2.label = "Scene2 (from Ui1)";
+        });
+    }
+
+    public void OnCloseThenLoadScene2ButtonTap()
+    {
+        ScreenManager.Close(() =>
+        {
+            ScreenManager.Load<Scene2>("Scene2", LoadSceneMode.Single, (scene2) =>
+            {
+                scene2.label = "Scene2 (from Ui1)";
+            });
         });
     }
 }
