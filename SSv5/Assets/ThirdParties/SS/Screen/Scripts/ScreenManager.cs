@@ -10,7 +10,7 @@ public class ScreenManager : MonoBehaviour
     #region SerializeField
     [SerializeField] string m_ScreenPath = "Screens";
     [SerializeField] string m_ScreenAnimationPath = "Screens/Animations";
-    [SerializeField] Camera m_BgCamera;
+    [SerializeField] Camera m_BackgroundCamera;
     [SerializeField] Canvas m_Canvas;
     [SerializeField] Animation m_SceneShield;
     [SerializeField] Color m_ScreenShieldColor = new Color(0, 0, 0, 0.8f);
@@ -79,6 +79,8 @@ public class ScreenManager : MonoBehaviour
             m_Instance = this;
             DontDestroyOnLoad(gameObject);
 
+            name = "ScreenManager";
+
             SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
             SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
@@ -97,7 +99,7 @@ public class ScreenManager : MonoBehaviour
 
     private void SceneManager_sceneUnloaded(Scene scene)
     {
-        m_BgCamera.gameObject.SetActive(true);
+        m_BackgroundCamera.gameObject.SetActive(true);
     }
 
     private void SceneManager_activeSceneChanged(Scene scene1, Scene scene2)
@@ -154,6 +156,7 @@ public class ScreenManager : MonoBehaviour
         var shield = CreateShield();
 
         var screen = Instantiate(Resources.Load<T>(Path.Combine(m_ScreenPath, screenName)), m_Canvas.transform);
+        screen.name = screenName;
         screen.transform.localPosition = Vector3.zero;
         screen.transform.localScale = Vector3.one;
         screen.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
@@ -204,7 +207,7 @@ public class ScreenManager : MonoBehaviour
 
     private GameObject CreateShield()
     {
-        var shield = new GameObject("Shield", typeof(Image));
+        var shield = new GameObject("Screen Shield", typeof(Image));
 
         Transform t = shield.transform;
         t.SetParent(m_Canvas.transform);
@@ -289,11 +292,11 @@ public class ScreenManager : MonoBehaviour
 
         for (int i = 0; i < cameras.Length; i++)
         {
-            if (cameras[i] != m_BgCamera)
+            if (cameras[i] != m_BackgroundCamera)
             {
                 if (cameras[i].clearFlags == CameraClearFlags.Skybox || cameras[i].clearFlags == CameraClearFlags.SolidColor)
                 {
-                    m_BgCamera.gameObject.SetActive(false);
+                    m_BackgroundCamera.gameObject.SetActive(false);
                     break;
                 }
             }
