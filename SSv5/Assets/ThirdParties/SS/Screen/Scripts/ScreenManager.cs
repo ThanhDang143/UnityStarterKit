@@ -14,6 +14,7 @@ public class ScreenManager : MonoBehaviour
     [SerializeField] Canvas m_Canvas;
     [SerializeField] Animation m_SceneShield;
     [SerializeField] Color m_ScreenShieldColor = new Color(0, 0, 0, 0.8f);
+    [SerializeField] string m_SceneLoadingName;
     #endregion
 
     #region Delegate
@@ -24,6 +25,7 @@ public class ScreenManager : MonoBehaviour
     #region Private Member
     private Scene m_LastLoadedScene;
     private List<Component> m_ScreenList = new List<Component>();
+    private GameObject m_SceneLoading;
     #endregion
 
     #region Static
@@ -39,6 +41,12 @@ public class ScreenManager : MonoBehaviour
 
             return m_Instance;
         }
+    }
+
+    public static AsyncOperation asyncOperation
+    {
+        get;
+        protected set;
     }
 
     public static void Load<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true) where T : Component
@@ -136,7 +144,19 @@ public class ScreenManager : MonoBehaviour
             ClearAllScreen();
         }
 
-        var asyncOperation = SceneManager.LoadSceneAsync(sceneName, mode);
+        if (mode == LoadSceneMode.Single && !string.IsNullOrEmpty(m_SceneLoadingName))
+        {
+            if (m_SceneLoading == null)
+            {
+                m_SceneLoading = Instantiate(Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_SceneLoadingName)));
+                AddToCanvas(m_SceneLoading);
+            }
+
+            m_SceneLoading.transform.SetAsLastSibling();
+            m_SceneLoading.SetActive(true);
+        }
+
+        asyncOperation = SceneManager.LoadSceneAsync(sceneName, mode);
 
         while (!asyncOperation.isDone)
         {
@@ -149,6 +169,20 @@ public class ScreenManager : MonoBehaviour
         }
 
         onSceneLoaded?.Invoke(GetSceneComponent<T>(instance.m_LastLoadedScene));
+
+        if (m_SceneLoading != null)
+        {
+            yield return 0;
+
+            m_SceneLoading.SetActive(false);
+        }
+    }
+
+    private void AddToCanvas(GameObject screen)
+    {
+        screen.transform.SetParent(m_Canvas.transform);
+        screen.transform.localPosition = Vector3.zero;
+        screen.transform.localScale = Vector3.one;
     }
 
     private T AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide") where T : Component

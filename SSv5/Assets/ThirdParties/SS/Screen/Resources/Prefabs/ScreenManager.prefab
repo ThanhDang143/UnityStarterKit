@@ -237,6 +237,7 @@ MonoBehaviour:
   m_Canvas: {fileID: 4265156180626030905}
   m_SceneShield: {fileID: 2434614196219106566}
   m_ScreenShieldColor: {r: 0, g: 0, b: 0, a: 0.8}
+  m_SceneLoadingName: SceneLoading
 --- !u!1001 &4711389726697864649
 PrefabInstance:
   m_ObjectHideFlags: 0
