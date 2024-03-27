@@ -34,7 +34,7 @@ public class ScreenManager : MonoBehaviour
         {
             if (m_Instance == null)
             {
-                Instantiate(Resources.Load<ScreenManager>("ScreenManager"));
+                Instantiate(Resources.Load<ScreenManager>("Prefabs/ScreenManager"));
             }
 
             return m_Instance;
@@ -220,7 +220,7 @@ public class ScreenManager : MonoBehaviour
 
     private GameObject CreateShield()
     {
-        var shield = Instantiate(Resources.Load<GameObject>("Shield"), m_Canvas.transform);
+        var shield = Instantiate(Resources.Load<GameObject>("Prefabs/Shield"), m_Canvas.transform);
         shield.name = "Screen Shield";
 
         shield.GetComponent<Animation>().Play("ShieldShow");

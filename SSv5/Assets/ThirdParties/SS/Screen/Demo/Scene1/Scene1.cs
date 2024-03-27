@@ -23,7 +23,7 @@ public class Scene1 : MonoBehaviour
 
     public void OnScreen1ButtonTap()
     {
-        var screen1 = ScreenManager.Add<Screen1>("Screen1", "FadeShow", "FadeHide");
+        var screen1 = ScreenManager.Add<Screen1>("Screen1");
         screen1.label = "Screen1 (from Scene1)";
     }
 
