@@ -10,11 +10,12 @@ public class ScreenManager : MonoBehaviour
     #region SerializeField
     [SerializeField] string m_ScreenPath = "Screens";
     [SerializeField] string m_ScreenAnimationPath = "Screens/Animations";
+    [SerializeField] string m_SceneLoadingName;
+    [SerializeField] string m_LoadingName;
+    [SerializeField] Color m_ScreenShieldColor = new Color(0, 0, 0, 0.8f);
     [SerializeField] Camera m_BackgroundCamera;
     [SerializeField] Canvas m_Canvas;
     [SerializeField] Animation m_SceneShield;
-    [SerializeField] Color m_ScreenShieldColor = new Color(0, 0, 0, 0.8f);
-    [SerializeField] string m_SceneLoadingName;
     #endregion
 
     #region Delegate
@@ -26,6 +27,7 @@ public class ScreenManager : MonoBehaviour
     private Scene m_LastLoadedScene;
     private List<Component> m_ScreenList = new List<Component>();
     private GameObject m_SceneLoading;
+    private GameObject m_Loading;
     #endregion
 
     #region Static
@@ -47,6 +49,11 @@ public class ScreenManager : MonoBehaviour
     {
         get;
         protected set;
+    }
+
+    public static void Set(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "")
+    {
+        instance.Setup(screenShieldColor, screenPath, screenAnimationPath, sceneLoadingName, loadingName);
     }
 
     public static void Load<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true) where T : Component
@@ -72,6 +79,11 @@ public class ScreenManager : MonoBehaviour
     public static void CloseAll()
     {
         instance.ClearAllScreen();
+    }
+
+    public static void Loading(bool isShow)
+    {
+        instance.ShowLoading(isShow);
     }
     #endregion
 
@@ -123,6 +135,15 @@ public class ScreenManager : MonoBehaviour
     #endregion
 
     #region Private Functions
+    private void Setup(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "")
+    {
+        m_ScreenShieldColor = screenShieldColor;
+        m_ScreenPath = screenPath;
+        m_ScreenAnimationPath = screenAnimationPath;
+        m_SceneLoadingName = sceneLoadingName;
+        m_LoadingName = loadingName;
+    }
+
     private void LoadScene<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true) where T : Component
     {
         StartCoroutine(CoLoadScene(sceneName, mode, onSceneLoaded, clearAllScreen));
@@ -149,6 +170,7 @@ public class ScreenManager : MonoBehaviour
             if (m_SceneLoading == null)
             {
                 m_SceneLoading = Instantiate(Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_SceneLoadingName)));
+                m_SceneLoading.name = m_SceneLoadingName;
                 AddToCanvas(m_SceneLoading);
             }
 
@@ -176,13 +198,6 @@ public class ScreenManager : MonoBehaviour
 
             m_SceneLoading.SetActive(false);
         }
-    }
-
-    private void AddToCanvas(GameObject screen)
-    {
-        screen.transform.SetParent(m_Canvas.transform);
-        screen.transform.localPosition = Vector3.zero;
-        screen.transform.localScale = Vector3.one;
     }
 
     private T AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide") where T : Component
@@ -245,6 +260,40 @@ public class ScreenManager : MonoBehaviour
             hideAnimation = (hideAnimation != null) ? hideAnimation : screen.GetComponent<ScreenController>().hideAnimation;
             PlayAnimation(screen, hideAnimation, true, onScreenClosed);
         }
+    }
+
+    private void ShowLoading(bool isShow)
+    {
+        if (isShow)
+        {
+            if (!string.IsNullOrEmpty(m_LoadingName))
+            {
+                if (m_Loading == null)
+                {
+                    m_Loading = Instantiate(Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_LoadingName)));
+                    m_Loading.name = m_LoadingName;
+                    AddToCanvas(m_Loading);
+                }
+
+                m_Loading.transform.SetAsLastSibling();
+                m_Loading.SetActive(true);
+            }
+        }
+        else
+        {
+            if (m_Loading != null)
+            {
+                m_Loading.SetActive(false);
+            }
+        }
+    }
+
+    private void AddToCanvas(GameObject screen)
+    {
+        screen.transform.SetParent(m_Canvas.transform);
+        screen.transform.localPosition = Vector3.zero;
+        screen.transform.localScale = Vector3.one;
+        screen.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
     }
 
     private void ClearAllScreen()

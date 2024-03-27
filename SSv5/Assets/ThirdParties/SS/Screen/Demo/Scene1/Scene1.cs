@@ -33,4 +33,18 @@ public class Scene1 : MonoBehaviour
             scene2.label = "Scene2 (from Scene1)";
         });
     }
+
+    public void OnLoadingButtonTap()
+    {
+        StartCoroutine(CoLoading());
+    }
+
+    private IEnumerator CoLoading()
+    {
+        ScreenManager.Loading(true);
+
+        yield return new WaitForSeconds(2);
+
+        ScreenManager.Loading(false);
+    }
 }
