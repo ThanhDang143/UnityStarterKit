@@ -32,6 +32,7 @@ public class ScreenManager : MonoBehaviour
 
     #region Static
     private static ScreenManager m_Instance;
+
     public static ScreenManager instance
     {
         get
@@ -66,6 +67,11 @@ public class ScreenManager : MonoBehaviour
         return instance.AddScreen<T>(screenName, showAnimation, hideAnimation);
     }
 
+    public static void AddToCanvas(GameObject screen)
+    {
+        instance.AddScreenToCanvas(screen);
+    }
+
     public static void Close(OnScreenClosed onScreenClosed = null, string hideAnimation = null)
     {
         instance.CloseScreen(onScreenClosed, hideAnimation);
@@ -84,6 +90,11 @@ public class ScreenManager : MonoBehaviour
     public static void Loading(bool isShow)
     {
         instance.ShowLoading(isShow);
+    }
+
+    public static void RemoveScreen(Component screen)
+    {
+        instance.RemoveScreenFromList(screen);
     }
     #endregion
 
@@ -135,6 +146,14 @@ public class ScreenManager : MonoBehaviour
     #endregion
 
     #region Private Functions
+    private List<Component> screenList
+    {
+        get
+        {
+            return m_ScreenList;
+        }
+    }
+
     private void Setup(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "")
     {
         m_ScreenShieldColor = screenShieldColor;
@@ -171,7 +190,7 @@ public class ScreenManager : MonoBehaviour
             {
                 m_SceneLoading = Instantiate(Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_SceneLoadingName)));
                 m_SceneLoading.name = m_SceneLoadingName;
-                AddToCanvas(m_SceneLoading);
+                AddScreenToCanvas(m_SceneLoading);
             }
 
             m_SceneLoading.transform.SetAsLastSibling();
@@ -211,6 +230,7 @@ public class ScreenManager : MonoBehaviour
         screen.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
 
         var controller = AddScreenController(screen);
+        controller.screen = screen;
         controller.shield = shield;
         controller.showAnimation = showAnimation;
         controller.hideAnimation = hideAnimation;
@@ -262,6 +282,17 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
+    private void ClearAllScreen()
+    {
+        while (m_ScreenList.Count > 0)
+        {
+            var screen = m_ScreenList[0];
+            m_ScreenList.RemoveAt(0);
+
+            Destroy(screen.gameObject);
+        }
+    }
+
     private void ShowLoading(bool isShow)
     {
         if (isShow)
@@ -272,7 +303,7 @@ public class ScreenManager : MonoBehaviour
                 {
                     m_Loading = Instantiate(Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_LoadingName)));
                     m_Loading.name = m_LoadingName;
-                    AddToCanvas(m_Loading);
+                    AddScreenToCanvas(m_Loading);
                 }
 
                 m_Loading.transform.SetAsLastSibling();
@@ -288,7 +319,7 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
-    private void AddToCanvas(GameObject screen)
+    private void AddScreenToCanvas(GameObject screen)
     {
         screen.transform.SetParent(m_Canvas.transform);
         screen.transform.localPosition = Vector3.zero;
@@ -296,14 +327,11 @@ public class ScreenManager : MonoBehaviour
         screen.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
     }
 
-    private void ClearAllScreen()
+    private void RemoveScreenFromList(Component screen)
     {
-        while (m_ScreenList.Count > 0)
+        if (m_ScreenList.Contains(screen))
         {
-            var screen = m_ScreenList[0];
-            m_ScreenList.RemoveAt(0);
-
-            Destroy(screen.gameObject);
+            m_ScreenList.Remove(screen);
         }
     }
 

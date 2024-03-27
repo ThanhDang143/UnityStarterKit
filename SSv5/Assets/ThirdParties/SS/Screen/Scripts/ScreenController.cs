@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class ScreenController : MonoBehaviour
 {
+    public Component screen
+    {
+        get;
+        set;
+    }
+
     public GameObject shield
     {
         get;
@@ -24,6 +30,11 @@ public class ScreenController : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (screen != null)
+        {
+            ScreenManager.RemoveScreen(screen);
+        }
+
         if (shield != null)
         {
             var anim = shield.GetComponent<Animation>();
