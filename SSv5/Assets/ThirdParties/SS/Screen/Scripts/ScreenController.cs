@@ -26,7 +26,9 @@ public class ScreenController : MonoBehaviour
     {
         if (shield != null)
         {
-            Destroy(shield);
+            var anim = shield.GetComponent<Animation>();
+            anim.Play("ShieldHide");
+            Destroy(shield, anim["ShieldHide"].length);
         }    
     }
 }

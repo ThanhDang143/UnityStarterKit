@@ -166,6 +166,19 @@ public class ScreenManager : MonoBehaviour
         controller.showAnimation = showAnimation;
         controller.hideAnimation = hideAnimation;
 
+        switch (showAnimation)
+        {
+            case "FadeShow":
+                screen.gameObject.AddComponent<CanvasGroup>();
+                break;
+            case "RightShow":
+            case "LeftShow":
+            case "TopShow":
+            case "BottomShow":
+                screen.gameObject.AddComponent<AnimationPosition>();
+                break;
+        }
+
         AddAnimations(screen, showAnimation, hideAnimation);
         PlayAnimation(screen, showAnimation);
 
@@ -207,20 +220,10 @@ public class ScreenManager : MonoBehaviour
 
     private GameObject CreateShield()
     {
-        var shield = new GameObject("Screen Shield", typeof(Image));
+        var shield = Instantiate(Resources.Load<GameObject>("Shield"), m_Canvas.transform);
+        shield.name = "Screen Shield";
 
-        Transform t = shield.transform;
-        t.SetParent(m_Canvas.transform);
-        t.SetSiblingIndex(0);
-        t.localScale = Vector3.one;
-        t.localPosition = new Vector3(t.localPosition.x, t.localPosition.y, 0);
-
-        RectTransform rt = t.GetComponent<RectTransform>();
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.pivot = new Vector2(0.5f, 0.5f);
-        rt.offsetMax = new Vector2(2, 2);
-        rt.offsetMin = new Vector2(-2, -2);
+        shield.GetComponent<Animation>().Play("ShieldShow");
 
         var image = shield.GetComponent<Image>();
         image.color = instance.m_ScreenShieldColor;
