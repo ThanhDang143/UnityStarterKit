@@ -169,13 +169,19 @@ public class ScreenManager : MonoBehaviour
         switch (showAnimation)
         {
             case "FadeShow":
-                screen.gameObject.AddComponent<CanvasGroup>();
+                if (screen.GetComponent<CanvasGroup>() == null)
+                {
+                    screen.gameObject.AddComponent<CanvasGroup>();
+                }
                 break;
             case "RightShow":
             case "LeftShow":
             case "TopShow":
             case "BottomShow":
-                screen.gameObject.AddComponent<AnimationPosition>();
+                if (screen.GetComponent<AnimationPosition>() == null)
+                {
+                    screen.gameObject.AddComponent<AnimationPosition>();
+                }
                 break;
         }
 
