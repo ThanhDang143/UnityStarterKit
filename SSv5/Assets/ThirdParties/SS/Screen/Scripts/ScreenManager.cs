@@ -109,7 +109,7 @@ public class ScreenManager : MonoBehaviour
     /// Close the screen which is at the top of all screens.
     /// </summary>
     /// <param name="onScreenClosed">The callback when the screen is closed. [IMPORTANT] It is called right after the screen is destroyed.</param>
-    /// <param name="hideAnimation">The name of animation clip (which is put in 'screenAnimationPath') is used to animate the screen to hide it</param>
+    /// <param name="hideAnimation">The name of animation clip (which is put in 'screenAnimationPath') is used to animate the screen to hide it. If null, the 'hideAnimation' which is declared in the Add function will be used.</param>
     public static void Close(OnScreenClosed onScreenClosed = null, string hideAnimation = null)
     {
         instance.CloseScreen(onScreenClosed, hideAnimation);
@@ -120,7 +120,7 @@ public class ScreenManager : MonoBehaviour
     /// </summary>
     /// <param name="screen">The component in screen which is returned by the Add function.</param>
     /// <param name="onScreenClosed">The callback when the screen is closed. [IMPORTANT] It is called right after the screen is destroyed.</param>
-    /// <param name="hideAnimation">The name of animation clip (which is put in 'screenAnimationPath') is used to animate the screen to hide it</param>
+    /// <param name="hideAnimation">The name of animation clip (which is put in 'screenAnimationPath') is used to animate the screen to hide it. If null, the 'hideAnimation' which is declared in the Add function will be used.</param>
     public static void Close(Component screen, OnScreenClosed onScreenClosed = null, string hideAnimation = null)
     {
         instance.CloseScreen(screen, onScreenClosed, hideAnimation);
