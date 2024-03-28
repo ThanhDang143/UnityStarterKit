@@ -106,6 +106,23 @@ public class ScreenManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Destroy immediately the screen which is at the top of all screens, without playing animation.
+    /// </summary>
+    public static void Destroy()
+    {
+        instance.DestroyScreen();
+    }
+
+    /// <summary>
+    /// Destroy immediately the specific screen, without playing animation.
+    /// </summary>
+    /// <param name="screen">The component in screen which is returned by the Add function.</param>
+    public static void Destroy(Component screen)
+    {
+        instance.DestroyScreen(screen);
+    }
+
+    /// <summary>
     /// Close the screen which is at the top of all screens.
     /// </summary>
     /// <param name="onScreenClosed">The callback when the screen is closed. [IMPORTANT] It is called right after the screen is destroyed.</param>
@@ -280,9 +297,7 @@ public class ScreenManager : MonoBehaviour
 
         var screen = Instantiate(Resources.Load<T>(Path.Combine(m_ScreenPath, screenName)), m_Canvas.transform);
         screen.name = screenName;
-        screen.transform.localPosition = Vector3.zero;
-        screen.transform.localScale = Vector3.one;
-        screen.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
+        AddScreenToCanvas(screen.gameObject);
 
         var controller = AddScreenController(screen);
         controller.screen = screen;
@@ -344,6 +359,24 @@ public class ScreenManager : MonoBehaviour
             var screen = m_ScreenList[0];
             m_ScreenList.RemoveAt(0);
 
+            DestroyScreen(screen);
+        }
+    }
+
+    private void DestroyScreen()
+    {
+        if (m_ScreenList.Count > 0)
+        {
+            var screen = m_ScreenList[m_ScreenList.Count - 1];
+
+            DestroyScreen(screen);
+        }
+    }
+
+    private void DestroyScreen(Component screen)
+    {
+        if (screen != null && screen.gameObject != null)
+        {
             Destroy(screen.gameObject);
         }
     }
@@ -441,10 +474,7 @@ public class ScreenManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        if (screen != null && screen.gameObject != null)
-        {
-            Destroy(screen.gameObject);
-        }
+        DestroyScreen(screen);
 
         onScreenClosed?.Invoke();
     }
