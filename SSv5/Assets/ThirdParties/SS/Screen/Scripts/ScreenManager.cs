@@ -123,6 +123,14 @@ public class ScreenManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Destroy immediately all screens, without playing animation.
+    /// </summary>
+    public static void DestroyAll()
+    {
+        instance.ClearAllScreen();
+    }
+
+    /// <summary>
     /// Close the screen which is at the top of all screens.
     /// </summary>
     /// <param name="onScreenClosed">The callback when the screen is closed. [IMPORTANT] It is called right after the screen is destroyed.</param>
@@ -141,14 +149,6 @@ public class ScreenManager : MonoBehaviour
     public static void Close(Component screen, OnScreenClosed onScreenClosed = null, string hideAnimation = null)
     {
         instance.CloseScreen(screen, onScreenClosed, hideAnimation);
-    }
-
-    /// <summary>
-    /// Close all screens.
-    /// </summary>
-    public static void CloseAll()
-    {
-        instance.ClearAllScreen();
     }
 
     /// <summary>
