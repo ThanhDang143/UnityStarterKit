@@ -1,6 +1,7 @@
-Document:
-https://docs.google.com/document/d/1_bt7qqpn6c78FC8LpMXRQ-wOFRFMJmaO-dNKhb8t96A/edit
+Documents:
+- English: https://docs.google.com/document/d/1m_SgddmLKD2n8UEV4cM14QhvHSuCpwS7FIgu62M4IJg/edit?usp=sharing
+- Vietnamese: https://docs.google.com/document/d/1_bt7qqpn6c78FC8LpMXRQ-wOFRFMJmaO-dNKhb8t96A/edit?usp=sharing
 
 Contact:
-anhpt.csit@gmail.com
-https://zenga.com.vn
+- Email: anhpt.csit@gmail.com
+- Website: https://zenga.com.vn
