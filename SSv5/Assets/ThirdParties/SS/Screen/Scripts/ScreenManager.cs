@@ -21,7 +21,7 @@ public class ScreenManager : MonoBehaviour
     [SerializeField] Color m_ScreenShieldColor = new Color(0, 0, 0, 0.8f);
     [SerializeField] Camera m_BackgroundCamera;
     [SerializeField] Canvas m_Canvas;
-    [SerializeField] Animation m_SceneShield;
+    [SerializeField] UnscaledAnimation m_SceneShield;
     #endregion
 
     #region Delegate
@@ -254,7 +254,7 @@ public class ScreenManager : MonoBehaviour
         {
             m_SceneShield.Play("ShieldShow");
 
-            yield return new WaitForSeconds(m_SceneShield["ShieldShow"].length);
+            yield return new WaitForSecondsRealtime(m_SceneShield.GetLength("ShieldShow"));
         }
 
         if (clearAllScreen)
@@ -311,27 +311,8 @@ public class ScreenManager : MonoBehaviour
         controller.showAnimation = showAnimation;
         controller.hideAnimation = hideAnimation;
 
-        switch (showAnimation)
-        {
-            case "FadeShow":
-                if (screen.GetComponent<CanvasGroup>() == null)
-                {
-                    screen.gameObject.AddComponent<CanvasGroup>();
-                }
-                break;
-            case "RightShow":
-            case "LeftShow":
-            case "TopShow":
-            case "BottomShow":
-                if (screen.GetComponent<AnimationPosition>() == null)
-                {
-                    screen.gameObject.AddComponent<AnimationPosition>();
-                }
-                break;
-        }
-
         AddAnimations(screen, showAnimation, hideAnimation);
-        PlayAnimation(screen, showAnimation);
+        PlayAnimation(screen, showAnimation, 4);
 
         m_ScreenList.Add(screen);
 
@@ -354,7 +335,7 @@ public class ScreenManager : MonoBehaviour
             m_ScreenList.Remove(screen);
 
             hideAnimation = (hideAnimation != null) ? hideAnimation : screen.GetComponent<ScreenController>().hideAnimation;
-            PlayAnimation(screen, hideAnimation, true, onScreenClosed);
+            PlayAnimation(screen, hideAnimation, 0, true, onScreenClosed);
         }
     }
 
@@ -434,7 +415,7 @@ public class ScreenManager : MonoBehaviour
         var shield = Instantiate(Resources.Load<GameObject>("Prefabs/Shield"), m_Canvas.transform);
         shield.name = "Screen Shield";
 
-        shield.GetComponent<Animation>().Play("ShieldShow");
+        shield.GetComponent<UnscaledAnimation>().Play("ShieldShow");
 
         var image = shield.GetComponent<Image>();
         image.color = instance.m_ScreenShieldColor;
@@ -445,10 +426,15 @@ public class ScreenManager : MonoBehaviour
     private Animation AddAnimations(Component screen, params string[] animationNames)
     {
         var anim = screen.GetComponent<Animation>();
-
         if (anim == null)
         {
             anim = screen.gameObject.AddComponent<Animation>();
+        }
+
+        var unscaledAnim = screen.GetComponent<UnscaledAnimation>();
+        if (unscaledAnim == null)
+        {
+            unscaledAnim = screen.gameObject.AddComponent<UnscaledAnimation>();
         }
 
         anim.playAutomatically = false;
@@ -457,6 +443,25 @@ public class ScreenManager : MonoBehaviour
         {
             if (anim.GetClip(animationNames[i]) == null)
             {
+                switch (animationNames[i])
+                {
+                    case "FadeShow":
+                        if (screen.GetComponent<CanvasGroup>() == null)
+                        {
+                            screen.gameObject.AddComponent<CanvasGroup>();
+                        }
+                        break;
+                    case "RightShow":
+                    case "LeftShow":
+                    case "TopShow":
+                    case "BottomShow":
+                        if (screen.GetComponent<AnimationPosition>() == null)
+                        {
+                            screen.gameObject.AddComponent<AnimationPosition>();
+                        }
+                        break;
+                }
+
                 var path = Path.Combine(m_ScreenAnimationPath, animationNames[i]);
                 var clip = Resources.Load<AnimationClip>(path);
 
@@ -480,14 +485,14 @@ public class ScreenManager : MonoBehaviour
         return anim;
     }
 
-    private void PlayAnimation(Component screen, string animationName, bool destroyScreenAtAnimationEnd = false, OnScreenClosed onScreenClosed = null)
+    private void PlayAnimation(Component screen, string animationName, int delayFrames = 0, bool destroyScreenAtAnimationEnd = false, OnScreenClosed onScreenClosed = null)
     {
         var anim = AddAnimations(screen, animationName);
         var animLength = 0f;
 
         if (anim.GetClip(animationName) != null)
         {
-            anim.Play(animationName);
+            StartCoroutine(CoPlayAnimation(anim, animationName, delayFrames));
             animLength = anim[animationName].length;
         }
 
@@ -497,9 +502,22 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
+    private IEnumerator CoPlayAnimation(Animation anim, string animationName, int delayFrames)
+    {
+        var unscaledAnim = anim.GetComponent<UnscaledAnimation>();
+        unscaledAnim.PauseAtBeginning(animationName);
+
+        for (int i = 0; i < delayFrames; i++)
+        {
+            yield return 0;
+        }
+
+        unscaledAnim.Play(animationName);
+    }
+
     private IEnumerator DestroyScreen(Component screen, float delay, OnScreenClosed onScreenClosed = null)
     {
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSecondsRealtime(delay);
 
         DestroyScreen(screen);
 
