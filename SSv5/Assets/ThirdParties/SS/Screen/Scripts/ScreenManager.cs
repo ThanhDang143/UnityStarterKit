@@ -15,7 +15,7 @@ public class ScreenManager : MonoBehaviour
 {
     #region SerializeField
     [SerializeField] string m_ScreenPath = "Screens";
-    [SerializeField] string m_ScreenAnimationPath = "Screens/Animations";
+    [SerializeField] string m_ScreenAnimationPath = "Animations";
     [SerializeField] string m_SceneLoadingName;
     [SerializeField] string m_LoadingName;
     [SerializeField] Color m_ScreenShieldColor = new Color(0, 0, 0, 0.8f);
@@ -457,7 +457,23 @@ public class ScreenManager : MonoBehaviour
         {
             if (anim.GetClip(animationNames[i]) == null)
             {
-                anim.AddClip(Resources.Load<AnimationClip>(Path.Combine(m_ScreenAnimationPath, animationNames[i])), animationNames[i]);
+                var path = Path.Combine(m_ScreenAnimationPath, animationNames[i]);
+                var clip = Resources.Load<AnimationClip>(path);
+
+                if (clip == null)
+                {
+                    var defaultPath = Path.Combine("Animations", animationNames[i]);
+                    clip = Resources.Load<AnimationClip>(defaultPath);
+                }
+
+                if (clip != null)
+                {
+                    anim.AddClip(clip, animationNames[i]);
+                }
+                else
+                {
+                    Debug.LogWarning("Animation Clip not found: " + path);
+                }
             }
         }
 
@@ -467,12 +483,17 @@ public class ScreenManager : MonoBehaviour
     private void PlayAnimation(Component screen, string animationName, bool destroyScreenAtAnimationEnd = false, OnScreenClosed onScreenClosed = null)
     {
         var anim = AddAnimations(screen, animationName);
+        var animLength = 0f;
 
-        anim.Play(animationName);
+        if (anim.GetClip(animationName) != null)
+        {
+            anim.Play(animationName);
+            animLength = anim[animationName].length;
+        }
 
         if (destroyScreenAtAnimationEnd)
         {
-            StartCoroutine(DestroyScreen(screen, anim[animationName].length, onScreenClosed));
+            StartCoroutine(DestroyScreen(screen, animLength, onScreenClosed));
         }
     }
 
