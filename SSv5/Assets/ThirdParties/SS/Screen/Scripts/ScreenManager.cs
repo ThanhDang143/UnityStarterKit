@@ -276,6 +276,10 @@ public class ScreenManager : MonoBehaviour
         }
 
         asyncOperation = SceneManager.LoadSceneAsync(sceneName, mode);
+        asyncOperation.completed += (asyncOp) =>
+        {
+            onSceneLoaded?.Invoke(GetSceneComponent<T>(instance.m_LastLoadedScene));
+        };
 
         while (!asyncOperation.isDone)
         {
@@ -286,8 +290,6 @@ public class ScreenManager : MonoBehaviour
         {
             m_SceneShield.Play("ShieldHide");
         }
-
-        onSceneLoaded?.Invoke(GetSceneComponent<T>(instance.m_LastLoadedScene));
 
         if (m_SceneLoading != null)
         {
