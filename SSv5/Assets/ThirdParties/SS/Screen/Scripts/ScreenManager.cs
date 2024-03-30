@@ -82,7 +82,7 @@ public class ScreenManager : MonoBehaviour
     /// <typeparam name="T">The type of a (any) component in the scene</typeparam>
     /// <param name="sceneName">The name of scene</param>
     /// <param name="mode">The load scene mode. Single or Additive</param>
-    /// <param name="onSceneLoaded">The callback when the scene is loaded. [IMPORTANT] It is called after the first Update, before the first LateUpdate</param>
+    /// <param name="onSceneLoaded">The callback when the scene is loaded. [IMPORTANT] It is called after the Awake & OnEnable, before the Start.</param>
     /// <param name="clearAllScreens">Clear all screens when the scene is loaded?</param>
     public static void Load<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreens = true) where T : Component
     {
@@ -255,11 +255,11 @@ public class ScreenManager : MonoBehaviour
             m_SceneShield.Play("ShieldShow");
 
             yield return new WaitForSecondsRealtime(m_SceneShield.GetLength("ShieldShow"));
-        }
 
-        if (clearAllScreen)
-        {
-            ClearAllScreen();
+            if (clearAllScreen)
+            {
+                ClearAllScreen();
+            }
         }
 
         if (mode == LoadSceneMode.Single && !string.IsNullOrEmpty(m_SceneLoadingName))
