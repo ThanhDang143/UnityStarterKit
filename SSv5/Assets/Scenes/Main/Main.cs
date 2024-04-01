@@ -13,7 +13,5 @@ public class Main : MonoBehaviour
         {
             scene1.data = "Scene1";
         });
-
-        //SceneManager.LoadSceneAsync("Scene1", LoadSceneMode.Single);
     }
 }
