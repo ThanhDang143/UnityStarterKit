@@ -7,14 +7,16 @@ public class Screen1 : MonoBehaviour
 {
     public Text label;
 
-    private void Start()
+    private IEnumerator Start()
     {
+        yield return new WaitForSecondsRealtime(0.283f);
+
         var screen2 = ScreenManager.Add<Screen2>("Screen2", "ScaleFadeShow", "ScaleFadeHide");
         screen2.label.text = "Screen2";
     }
 
     public void OnCloseButtonTap()
     {
-        ScreenManager.Close(null, "ScaleHide");
+        ScreenManager.Close();
     }
 }

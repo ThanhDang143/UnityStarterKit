@@ -13,7 +13,7 @@ public class Screen2 : MonoBehaviour
         ScreenManager.Load<Scene1>("Scene1", LoadSceneMode.Single, (scene1) =>
         {
             scene1.data = "Scene1...";
-        }, false);
+        });
     }
 
     public void OnCloseButtonTap()
