@@ -14,11 +14,11 @@ public class AnimationPosition : MonoBehaviour
     float m_Width;
     float m_Height;
     RectTransform m_Rect;
-    Animation m_Animation;
+    UnscaledAnimation m_Animation;
 
-    private void Start()
+    private void Awake()
     {
-        m_Animation = GetComponent<Animation>();
+        m_Animation = GetComponent<UnscaledAnimation>();
         m_Rect = GetComponent<RectTransform>();
         m_Height = m_BaseHeight;
         m_Width = m_Height * Screen.width / Screen.height;
@@ -28,7 +28,12 @@ public class AnimationPosition : MonoBehaviour
     {
         if (m_Animation != null && m_Animation.isPlaying)
         {
-            m_Rect.anchoredPosition = new Vector2(m_Rect.anchoredPosition.x * m_Width / m_BaseWidth, m_Rect.anchoredPosition.y * m_Height / m_BaseHeight);
+            Reposition();
         }
+    }
+
+    public void Reposition()
+    {
+        m_Rect.anchoredPosition = new Vector2(m_Rect.anchoredPosition.x * m_Width / m_BaseWidth, m_Rect.anchoredPosition.y * m_Height / m_BaseHeight);
     }
 }

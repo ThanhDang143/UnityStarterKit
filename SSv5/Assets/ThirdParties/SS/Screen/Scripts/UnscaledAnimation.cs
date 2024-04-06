@@ -31,6 +31,14 @@ public class UnscaledAnimation : MonoBehaviour
         }
     }
 
+    public bool isPlaying
+    {
+        get
+        {
+            return m_IsPlayingAnim;
+        }
+    }
+
     public string currentClipName
     {
         get

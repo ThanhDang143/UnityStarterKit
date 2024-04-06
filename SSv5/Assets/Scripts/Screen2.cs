@@ -24,7 +24,11 @@ public class Screen2 : MonoBehaviour
     public void OnCloseScreen1ButtonTap()
     {
         var screen1 = FindObjectOfType<Screen1>();
-        ScreenManager.Close(screen1);
+
+        if (screen1 != null)
+        {
+            ScreenManager.Close(screen1);
+        }
     }
 
     public void OnCloseAllScreensButtonTap()

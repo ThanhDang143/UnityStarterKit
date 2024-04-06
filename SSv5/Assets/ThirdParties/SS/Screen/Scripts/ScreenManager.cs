@@ -436,7 +436,7 @@ public class ScreenManager : MonoBehaviour
         var unscaledAnim = screen.GetComponent<UnscaledAnimation>();
         if (unscaledAnim == null)
         {
-            unscaledAnim = screen.gameObject.AddComponent<UnscaledAnimation>();
+            screen.gameObject.AddComponent<UnscaledAnimation>();
         }
 
         anim.playAutomatically = false;
@@ -445,25 +445,6 @@ public class ScreenManager : MonoBehaviour
         {
             if (anim.GetClip(animationNames[i]) == null)
             {
-                switch (animationNames[i])
-                {
-                    case "FadeShow":
-                        if (screen.GetComponent<CanvasGroup>() == null)
-                        {
-                            screen.gameObject.AddComponent<CanvasGroup>();
-                        }
-                        break;
-                    case "RightShow":
-                    case "LeftShow":
-                    case "TopShow":
-                    case "BottomShow":
-                        if (screen.GetComponent<AnimationPosition>() == null)
-                        {
-                            screen.gameObject.AddComponent<AnimationPosition>();
-                        }
-                        break;
-                }
-
                 var path = Path.Combine(m_ScreenAnimationPath, animationNames[i]);
                 var clip = Resources.Load<AnimationClip>(path);
 
@@ -481,6 +462,30 @@ public class ScreenManager : MonoBehaviour
                 {
                     Debug.LogWarning("Animation Clip not found: " + path);
                 }
+            }
+
+            switch (animationNames[i])
+            {
+                case "FadeShow":
+                case "FadeHide":
+                    if (screen.GetComponent<CanvasGroup>() == null)
+                    {
+                        screen.gameObject.AddComponent<CanvasGroup>();
+                    }
+                    break;
+                case "RightShow":
+                case "LeftShow":
+                case "TopShow":
+                case "BottomShow":
+                case "RightHide":
+                case "LeftHide":
+                case "TopHide":
+                case "BottomHide":
+                    if (screen.GetComponent<AnimationPosition>() == null)
+                    {
+                        screen.gameObject.AddComponent<AnimationPosition>();
+                    }
+                    break;
             }
         }
 
@@ -508,6 +513,12 @@ public class ScreenManager : MonoBehaviour
     {
         var unscaledAnim = anim.GetComponent<UnscaledAnimation>();
         unscaledAnim.PauseAtBeginning(animationName);
+
+        var animRepos = anim.GetComponent<AnimationPosition>();
+        if (animRepos != null)
+        {
+            animRepos.Reposition();
+        }
 
         for (int i = 0; i < delayFrames; i++)
         {
