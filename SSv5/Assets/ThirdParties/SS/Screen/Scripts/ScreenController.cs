@@ -26,6 +26,12 @@ public class ScreenController : MonoBehaviour
         set;
     }
 
+    public string animationObjectName
+    {
+        get;
+        set;
+    }
+
     private void OnDestroy()
     {
         if (screen != null)

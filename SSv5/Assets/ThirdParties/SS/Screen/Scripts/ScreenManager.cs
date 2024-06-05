@@ -98,9 +98,9 @@ public class ScreenManager : MonoBehaviour
     /// <param name="showAnimation">The name of animation clip (which is put in 'screenAnimationPath') is used to animate the screen to show it</param>
     /// <param name="hideAnimation">The name of animation clip (which is put in 'screenAnimationPath') is used to animate the screen to hide it</param>
     /// <returns>The component type T in the screen.</returns>
-    public static T Add<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide") where T : Component
+    public static T Add<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "") where T : Component
     {
-        return instance.AddScreen<T>(screenName, showAnimation, hideAnimation);
+        return instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName);
     }
 
     /// <summary>
@@ -185,6 +185,36 @@ public class ScreenManager : MonoBehaviour
         {
             instance.HideScreenShieldOrShowTop();
         }
+    }
+
+    /// <summary>
+    /// Find child Breadth-First Search
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public static GameObject FindChildBFS(GameObject parent, string name)
+    {
+        Queue<Transform> queue = new Queue<Transform>();
+
+        queue.Enqueue(parent.transform);
+
+        while (queue.Count > 0)
+        {
+            Transform current = queue.Dequeue();
+
+            foreach (Transform child in current)
+            {
+                if (child.name == name)
+                {
+                    return child.gameObject;
+                }
+
+                queue.Enqueue(child);
+            }
+        }
+
+        return null;
     }
     #endregion
 
@@ -317,7 +347,7 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
-    private T AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide") where T : Component
+    private T AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "") where T : Component
     {
         if (m_ScreenShield == null)
         {
@@ -338,8 +368,9 @@ public class ScreenManager : MonoBehaviour
         controller.screen = screen;
         controller.showAnimation = showAnimation;
         controller.hideAnimation = hideAnimation;
+        controller.animationObjectName = animationObjectName;
 
-        AddAnimations(screen, showAnimation, hideAnimation);
+        AddAnimations(screen, animationObjectName, showAnimation, hideAnimation);
         PlayAnimation(screen, showAnimation, 4);
 
         m_ScreenList.Add(screen);
@@ -451,18 +482,30 @@ public class ScreenManager : MonoBehaviour
         return shield;
     }
 
-    private Animation AddAnimations(Component screen, params string[] animationNames)
+    private Animation AddAnimations(Component screen, string animationObjectName = "", params string[] animationNames)
     {
-        var anim = screen.GetComponent<Animation>();
-        if (anim == null)
+        GameObject animObject = screen.gameObject;
+
+        if (!string.IsNullOrEmpty(animationObjectName))
         {
-            anim = screen.gameObject.AddComponent<Animation>();
+            animObject = FindChildBFS(screen.gameObject, animationObjectName);
+
+            if (animObject == null)
+            {
+                animObject = screen.gameObject;
+            }
         }
 
-        var unscaledAnim = screen.GetComponent<UnscaledAnimation>();
+        var anim = animObject.GetComponent<Animation>();
+        if (anim == null)
+        {
+            anim = animObject.AddComponent<Animation>();
+        }
+
+        var unscaledAnim = animObject.GetComponent<UnscaledAnimation>();
         if (unscaledAnim == null)
         {
-            screen.gameObject.AddComponent<UnscaledAnimation>();
+            animObject.AddComponent<UnscaledAnimation>();
         }
 
         anim.playAutomatically = false;
@@ -496,9 +539,9 @@ public class ScreenManager : MonoBehaviour
                 {
                     case "FadeShow":
                     case "FadeHide":
-                        if (screen.GetComponent<CanvasGroup>() == null)
+                        if (animObject.GetComponent<CanvasGroup>() == null)
                         {
-                            screen.gameObject.AddComponent<CanvasGroup>();
+                            animObject.AddComponent<CanvasGroup>();
                         }
                         break;
                     case "RightShow":
@@ -509,9 +552,9 @@ public class ScreenManager : MonoBehaviour
                     case "LeftHide":
                     case "TopHide":
                     case "BottomHide":
-                        if (screen.GetComponent<AnimationPosition>() == null)
+                        if (animObject.GetComponent<AnimationPosition>() == null)
                         {
-                            screen.gameObject.AddComponent<AnimationPosition>();
+                            animObject.AddComponent<AnimationPosition>();
                         }
                         break;
                 }
@@ -523,7 +566,7 @@ public class ScreenManager : MonoBehaviour
 
     private void PlayAnimation(Component screen, string animationName, int delayFrames = 0, bool destroyScreenAtAnimationEnd = false, OnScreenClosed onScreenClosed = null)
     {
-        var anim = AddAnimations(screen, animationName);
+        var anim = AddAnimations(screen, screen.GetComponent<ScreenController>().animationObjectName, animationName);
         var animLength = 0f;
 
         if (anim.GetClip(animationName) != null)

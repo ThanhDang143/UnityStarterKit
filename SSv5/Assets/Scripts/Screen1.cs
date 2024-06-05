@@ -11,7 +11,7 @@ public class Screen1 : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(0.283f);
 
-        var screen2 = ScreenManager.Add<Screen2>("Screen2", "ScaleFadeShow", "ScaleFadeHide");
+        var screen2 = ScreenManager.Add<Screen2>("Screen2", "ScaleFadeShow", "ScaleFadeHide", "AnimationRoot");
         screen2.label.text = "Screen2";
     }
 
