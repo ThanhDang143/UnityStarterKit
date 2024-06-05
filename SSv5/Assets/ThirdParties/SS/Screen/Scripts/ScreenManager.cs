@@ -26,7 +26,7 @@ public class ScreenManager : MonoBehaviour
 
     #region Delegate
     public delegate void OnSceneLoad<T>(T t);
-    public delegate void OnScreenClosed();
+    public delegate void Callback();
     #endregion
 
     #region Private Member
@@ -35,6 +35,7 @@ public class ScreenManager : MonoBehaviour
     private GameObject m_SceneLoading;
     private GameObject m_Loading;
     private GameObject m_ScreenShield;
+    private GameObject m_ScreenShieldTop;
     #endregion
 
     #region Private Static
@@ -142,7 +143,7 @@ public class ScreenManager : MonoBehaviour
     /// </summary>
     /// <param name="onScreenClosed">The callback when the screen is closed. [IMPORTANT] It is called right after the screen is destroyed.</param>
     /// <param name="hideAnimation">The name of animation clip (which is put in 'screenAnimationPath') is used to animate the screen to hide it. If null, the 'hideAnimation' which is declared in the Add function will be used.</param>
-    public static void Close(OnScreenClosed onScreenClosed = null, string hideAnimation = null)
+    public static void Close(Callback onScreenClosed = null, string hideAnimation = null)
     {
         instance.CloseScreen(onScreenClosed, hideAnimation);
     }
@@ -153,7 +154,7 @@ public class ScreenManager : MonoBehaviour
     /// <param name="screen">The component in screen which is returned by the Add function.</param>
     /// <param name="onScreenClosed">The callback when the screen is closed. [IMPORTANT] It is called right after the screen is destroyed.</param>
     /// <param name="hideAnimation">The name of animation clip (which is put in 'screenAnimationPath') is used to animate the screen to hide it. If null, the 'hideAnimation' which is declared in the Add function will be used.</param>
-    public static void Close(Component screen, OnScreenClosed onScreenClosed = null, string hideAnimation = null)
+    public static void Close(Component screen, Callback onScreenClosed = null, string hideAnimation = null)
     {
         instance.CloseScreen(screen, onScreenClosed, hideAnimation);
     }
@@ -354,6 +355,12 @@ public class ScreenManager : MonoBehaviour
             m_ScreenShield = CreateShield();
         }
 
+        if (m_ScreenShieldTop == null)
+        {
+            m_ScreenShieldTop = CreateTransparentShield();
+            m_ScreenShieldTop.SetActive(false);
+        }
+
         if (m_ScreenList.Count > 0)
         {
             var topScreen = m_ScreenList[m_ScreenList.Count - 1];
@@ -378,7 +385,7 @@ public class ScreenManager : MonoBehaviour
         return screen;
     }
 
-    private void CloseScreen(OnScreenClosed onScreenClosed = null, string hideAnimation = null)
+    private void CloseScreen(Callback onScreenClosed = null, string hideAnimation = null)
     {
         if (m_ScreenList.Count > 0)
         {
@@ -387,7 +394,7 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
-    private void CloseScreen(Component screen, OnScreenClosed onScreenClosed = null, string hideAnimation = null)
+    private void CloseScreen(Component screen, Callback onScreenClosed = null, string hideAnimation = null)
     {
         if (m_ScreenList.Count > 0)
         {
@@ -482,6 +489,17 @@ public class ScreenManager : MonoBehaviour
         return shield;
     }
 
+    private GameObject CreateTransparentShield()
+    {
+        var shield = Instantiate(Resources.Load<GameObject>("Prefabs/TransparentShield"), m_Canvas.transform);
+        shield.name = "Transparent Shield";
+
+        var image = shield.GetComponent<Image>();
+        image.color = new Color(0, 0, 0, 0);
+
+        return shield;
+    }
+
     private Animation AddAnimations(Component screen, string animationObjectName = "", params string[] animationNames)
     {
         GameObject animObject = screen.gameObject;
@@ -564,49 +582,54 @@ public class ScreenManager : MonoBehaviour
         return anim;
     }
 
-    private void PlayAnimation(Component screen, string animationName, int delayFrames = 0, bool destroyScreenAtAnimationEnd = false, OnScreenClosed onScreenClosed = null)
+    private void PlayAnimation(Component screen, string animationName, int delayFrames = 0, bool destroyScreenAtAnimationEnd = false, Callback onAnimationEnd = null)
     {
         var anim = AddAnimations(screen, screen.GetComponent<ScreenController>().animationObjectName, animationName);
-        var animLength = 0f;
 
+        StartCoroutine(CoPlayAnimation(anim, animationName, delayFrames, onAnimationEnd, destroyScreenAtAnimationEnd ? screen : null));
+    }
+
+    private IEnumerator CoPlayAnimation(Animation anim, string animationName, int delayFrames, Callback onAnimationEnd = null, Component screenToBeDestroyed = null)
+    {
         if (anim.GetClip(animationName) != null)
         {
-            StartCoroutine(CoPlayAnimation(anim, animationName, delayFrames));
-            animLength = anim[animationName].length;
+            // Show screen shield before playing animation
+            m_ScreenShieldTop.SetActive(true);
+            m_ScreenShieldTop.transform.SetAsLastSibling();
+
+            // Unscaled anim
+            var unscaledAnim = anim.GetComponent<UnscaledAnimation>();
+            unscaledAnim.PauseAtBeginning(animationName);
+
+            // Reposition by screen width / height
+            var animRepos = anim.GetComponent<AnimationPosition>();
+            if (animRepos != null)
+            {
+                animRepos.Reposition();
+            }
+
+            // Wating some frames for smooth
+            for (int i = 0; i < delayFrames; i++)
+            {
+                yield return 0;
+            }
+
+            // Play animation
+            unscaledAnim.Play(animationName);
+
+            // Wait animation
+            yield return new WaitForSecondsRealtime(anim[animationName].length);
+
+            // Turn off screen shield after animation end
+            m_ScreenShieldTop.SetActive(false);
         }
 
-        if (destroyScreenAtAnimationEnd)
+        if (screenToBeDestroyed != null)
         {
-            StartCoroutine(DestroyScreen(screen, animLength, onScreenClosed));
-        }
-    }
-
-    private IEnumerator CoPlayAnimation(Animation anim, string animationName, int delayFrames)
-    {
-        var unscaledAnim = anim.GetComponent<UnscaledAnimation>();
-        unscaledAnim.PauseAtBeginning(animationName);
-
-        var animRepos = anim.GetComponent<AnimationPosition>();
-        if (animRepos != null)
-        {
-            animRepos.Reposition();
+            DestroyScreen(screenToBeDestroyed);
         }
 
-        for (int i = 0; i < delayFrames; i++)
-        {
-            yield return 0;
-        }
-
-        unscaledAnim.Play(animationName);
-    }
-
-    private IEnumerator DestroyScreen(Component screen, float delay, OnScreenClosed onScreenClosed = null)
-    {
-        yield return new WaitForSecondsRealtime(delay);
-
-        DestroyScreen(screen);
-
-        onScreenClosed?.Invoke();
+        onAnimationEnd?.Invoke();
     }
 
     private ScreenController AddScreenController(Component screen)
