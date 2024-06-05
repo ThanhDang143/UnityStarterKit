@@ -443,49 +443,52 @@ public class ScreenManager : MonoBehaviour
 
         for (int i = 0; i < animationNames.Length; i++)
         {
-            if (anim.GetClip(animationNames[i]) == null)
+            if (!string.IsNullOrEmpty(animationNames[i]))
             {
-                var path = Path.Combine(m_ScreenAnimationPath, animationNames[i]);
-                var clip = Resources.Load<AnimationClip>(path);
-
-                if (clip == null)
+                if (anim.GetClip(animationNames[i]) == null)
                 {
-                    var defaultPath = Path.Combine("Animations", animationNames[i]);
-                    clip = Resources.Load<AnimationClip>(defaultPath);
-                }
+                    var path = Path.Combine(m_ScreenAnimationPath, animationNames[i]);
+                    var clip = Resources.Load<AnimationClip>(path);
 
-                if (clip != null)
-                {
-                    anim.AddClip(clip, animationNames[i]);
-                }
-                else
-                {
-                    Debug.LogWarning("Animation Clip not found: " + path);
-                }
-            }
-
-            switch (animationNames[i])
-            {
-                case "FadeShow":
-                case "FadeHide":
-                    if (screen.GetComponent<CanvasGroup>() == null)
+                    if (clip == null)
                     {
-                        screen.gameObject.AddComponent<CanvasGroup>();
+                        var defaultPath = Path.Combine("Animations", animationNames[i]);
+                        clip = Resources.Load<AnimationClip>(defaultPath);
                     }
-                    break;
-                case "RightShow":
-                case "LeftShow":
-                case "TopShow":
-                case "BottomShow":
-                case "RightHide":
-                case "LeftHide":
-                case "TopHide":
-                case "BottomHide":
-                    if (screen.GetComponent<AnimationPosition>() == null)
+
+                    if (clip != null)
                     {
-                        screen.gameObject.AddComponent<AnimationPosition>();
+                        anim.AddClip(clip, animationNames[i]);
                     }
-                    break;
+                    else
+                    {
+                        Debug.LogWarning("Animation Clip not found: " + path);
+                    }
+                }
+
+                switch (animationNames[i])
+                {
+                    case "FadeShow":
+                    case "FadeHide":
+                        if (screen.GetComponent<CanvasGroup>() == null)
+                        {
+                            screen.gameObject.AddComponent<CanvasGroup>();
+                        }
+                        break;
+                    case "RightShow":
+                    case "LeftShow":
+                    case "TopShow":
+                    case "BottomShow":
+                    case "RightHide":
+                    case "LeftHide":
+                    case "TopHide":
+                    case "BottomHide":
+                        if (screen.GetComponent<AnimationPosition>() == null)
+                        {
+                            screen.gameObject.AddComponent<AnimationPosition>();
+                        }
+                        break;
+                }
             }
         }
 
