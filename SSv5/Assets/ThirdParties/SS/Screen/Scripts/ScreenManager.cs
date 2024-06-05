@@ -34,6 +34,7 @@ public class ScreenManager : MonoBehaviour
     private List<Component> m_ScreenList = new List<Component>();
     private GameObject m_SceneLoading;
     private GameObject m_Loading;
+    private GameObject m_ScreenShield;
     #endregion
 
     #region Private Static
@@ -174,6 +175,17 @@ public class ScreenManager : MonoBehaviour
     {
         instance.RemoveScreenFromList(screen);
     }
+
+    /// <summary>
+    /// Hide Shield Or Show Top Screen
+    /// </summary>
+    public static void HideShieldOrShowTop()
+    {
+        if (instance != null && instance.isActiveAndEnabled)
+        {
+            instance.HideScreenShieldOrShowTop();
+        }
+    }
     #endregion
 
     #region Unity Functions
@@ -258,6 +270,12 @@ public class ScreenManager : MonoBehaviour
 
             if (clearAllScreen)
             {
+                if (m_ScreenShield != null)
+                {
+                    Destroy(m_ScreenShield);
+                    m_ScreenShield = null;
+                }
+
                 ClearAllScreen();
             }
         }
@@ -301,7 +319,16 @@ public class ScreenManager : MonoBehaviour
 
     private T AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide") where T : Component
     {
-        var shield = CreateShield();
+        if (m_ScreenShield == null)
+        {
+            m_ScreenShield = CreateShield();
+        }
+
+        if (m_ScreenList.Count > 0)
+        {
+            var topScreen = m_ScreenList[m_ScreenList.Count - 1];
+            topScreen.gameObject.SetActive(false);
+        }
 
         var screen = Instantiate(Resources.Load<T>(Path.Combine(m_ScreenPath, screenName)), m_Canvas.transform);
         screen.name = screenName;
@@ -309,7 +336,6 @@ public class ScreenManager : MonoBehaviour
 
         var controller = AddScreenController(screen);
         controller.screen = screen;
-        controller.shield = shield;
         controller.showAnimation = showAnimation;
         controller.hideAnimation = hideAnimation;
 
@@ -584,6 +610,32 @@ public class ScreenManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    private void HideScreenShieldOrShowTop()
+    {
+        if (m_ScreenList.Count == 0)
+        {
+            if (m_ScreenShield != null)
+            {
+                var anim = m_ScreenShield.GetComponent<UnscaledAnimation>();
+                anim.Play("ShieldHide", anim => {
+                    Destroy(m_ScreenShield);
+                    m_ScreenShield = null;
+                });
+            }
+        }
+        else
+        {
+            var topScreen = m_ScreenList[m_ScreenList.Count - 1];
+
+            if (!topScreen.gameObject.activeInHierarchy)
+            {
+                topScreen.gameObject.SetActive(true);
+
+                PlayAnimation(topScreen, topScreen.GetComponent<ScreenController>().showAnimation);
+            }
+        }
     }
     #endregion
 }

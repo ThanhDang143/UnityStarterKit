@@ -14,12 +14,6 @@ public class ScreenController : MonoBehaviour
         set;
     }
 
-    public GameObject shield
-    {
-        get;
-        set;
-    }
-
     public string showAnimation
     {
         get;
@@ -37,12 +31,7 @@ public class ScreenController : MonoBehaviour
         if (screen != null)
         {
             ScreenManager.RemoveScreen(screen);
-        }
-
-        if (shield != null)
-        {
-            var anim = shield.GetComponent<UnscaledAnimation>();
-            anim.Play("ShieldHide", anim => { Destroy(shield); });
-        }    
+            ScreenManager.HideShieldOrShowTop();
+        }   
     }
 }
