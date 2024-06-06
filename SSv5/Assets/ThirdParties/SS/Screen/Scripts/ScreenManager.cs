@@ -98,10 +98,12 @@ public class ScreenManager : MonoBehaviour
     /// <param name="screenName">The name of screen</param>
     /// <param name="showAnimation">The name of animation clip (which is put in 'screenAnimationPath') is used to animate the screen to show it</param>
     /// <param name="hideAnimation">The name of animation clip (which is put in 'screenAnimationPath') is used to animate the screen to hide it</param>
+    /// <param name="animationObjectName">The name of gameobject contains screen's animation. If it is null or empty, the animation gameobject will be the root gameobject</param>
+    /// <param name="useExistingScreen">If this is true, check if the screen is existing, bring it to the top. If not found, instantiate a new one</param>
     /// <returns>The component type T in the screen.</returns>
-    public static T Add<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "") where T : Component
+    public static T Add<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false) where T : Component
     {
-        return instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName);
+        return instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName, useExistingScreen);
     }
 
     /// <summary>
@@ -348,7 +350,7 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
-    private T AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "") where T : Component
+    private T AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false) where T : Component
     {
         if (m_ScreenShield == null)
         {
@@ -367,20 +369,51 @@ public class ScreenManager : MonoBehaviour
             topScreen.gameObject.SetActive(false);
         }
 
-        var screen = Instantiate(Resources.Load<T>(Path.Combine(m_ScreenPath, screenName)), m_Canvas.transform);
-        screen.name = screenName;
-        AddScreenToCanvas(screen.gameObject);
+        T screen = null;
 
-        var controller = AddScreenController(screen);
-        controller.screen = screen;
-        controller.showAnimation = showAnimation;
-        controller.hideAnimation = hideAnimation;
-        controller.animationObjectName = animationObjectName;
+        var hasExistingScreen = false;
 
-        AddAnimations(screen, animationObjectName, showAnimation, hideAnimation);
-        PlayAnimation(screen, showAnimation, 4);
+        if (useExistingScreen)
+        {
+            for (int i = 0; i < m_ScreenList.Count; i++)
+            {
+                var existingScreen = m_ScreenList[i].GetComponentInChildren<T>();
 
-        m_ScreenList.Add(screen);
+                if (existingScreen != null)
+                {
+                    hasExistingScreen = true;
+
+                    screen = existingScreen;
+                    screen.transform.SetAsLastSibling();
+                    screen.gameObject.SetActive(true);
+                    PlayAnimation(screen, screen.GetComponent<ScreenController>().showAnimation, 4);
+
+                    var temp = m_ScreenList[i];
+                    m_ScreenList[i] = m_ScreenList[m_ScreenList.Count - 1];
+                    m_ScreenList[m_ScreenList.Count - 1] = temp;
+
+                    break;
+                }
+            }
+        }
+
+        if (!hasExistingScreen)
+        {
+            screen = Instantiate(Resources.Load<T>(Path.Combine(m_ScreenPath, screenName)), m_Canvas.transform);
+            screen.name = screenName;
+            AddScreenToCanvas(screen.gameObject);
+
+            var controller = AddScreenController(screen);
+            controller.screen = screen;
+            controller.showAnimation = showAnimation;
+            controller.hideAnimation = hideAnimation;
+            controller.animationObjectName = animationObjectName;
+
+            AddAnimations(screen, animationObjectName, showAnimation, hideAnimation);
+            PlayAnimation(screen, showAnimation, 4);
+
+            m_ScreenList.Add(screen);
+        }
 
         return screen;
     }
