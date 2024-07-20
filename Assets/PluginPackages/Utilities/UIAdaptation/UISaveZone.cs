@@ -4,8 +4,8 @@ using UnityEngine;
 public class UISaveZone : MonoBehaviour
 {
     [Space(10)]
-    [SerializeField, InfoBox("Only use with RectTransform has anchor min(0,0), max(1,1)")] private bool ignoreSaveZone = false;
-    [SerializeField][ShowIf("ignoreSaveZone", true)] private RectTransform[] ignoreObjs;
+    [SerializeField] private bool ignoreSaveZone = false;
+    [SerializeField] private RectTransform[] ignoreObjs;
 
     public void Setup()
     {
