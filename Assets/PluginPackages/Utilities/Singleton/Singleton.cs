@@ -51,3 +51,31 @@ public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 }
+
+public class SSSingleton<T> : SSController where T : SSController
+{
+    private static T _instance;
+    private static readonly object _lock = new object();
+
+    public static T Instance
+    {
+        get
+        {
+            lock (_lock)
+            {
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType(typeof(T)) as T;
+
+                    if (_instance == null)
+                    {
+                        _instance = new GameObject().AddComponent<T>();
+                        _instance.gameObject.name = _instance.GetType().Name;
+                    }
+                    DontDestroyOnLoad(_instance);
+                }
+                return _instance;
+            }
+        }
+    }
+}
