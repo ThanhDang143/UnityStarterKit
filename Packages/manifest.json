@@ -1,10 +1,5 @@
 {
   "dependencies": {
-    "com.cathei.bakingsheet": "https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet",
-    "com.cathei.betterstreamingassets": "https://github.com/cathei/BetterStreamingAssets-Package.git",
-    "com.cathei.linqgen": "https://github.com/cathei/LinqGen.git?path=LinqGen.Unity/Packages/com.cathei.linqgen",
-    "com.coffee.ui-particle": "https://github.com/mob-sakai/ParticleEffectForUGUI.git",
-    "com.unity.addressables": "1.19.19",
     "com.unity.collab-proxy": "2.0.7",
     "com.unity.feature.development": "1.0.1",
     "com.unity.ide.visualstudio": "2.0.22",
@@ -14,7 +9,6 @@
     "com.unity.timeline": "1.6.5",
     "com.unity.ugui": "1.0.0",
     "com.unity.visualscripting": "1.8.0",
-    "com.zbase.collections.pooled": "https://github.com/Zitga-Tech/ZBase.Collections.Pooled.git?path=Packages/ZBase.Collections.Pooled",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",

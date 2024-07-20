@@ -64,6 +64,7 @@ public class SSController : MonoBehaviour
 	/// </summary>
 	public virtual void OnEnableFS()
 	{
+#if AUTO_UIADAPTATION
 		CanvasScaler canvasScaler = GetComponentInChildren<CanvasScaler>();
 		if (canvasScaler != null)
 		{
@@ -75,6 +76,7 @@ public class SSController : MonoBehaviour
 		{
 			saveZone.Setup();
 		}
+#endif
 	}
 
 	/// <summary>

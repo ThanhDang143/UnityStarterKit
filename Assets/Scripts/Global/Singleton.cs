@@ -1,69 +1,80 @@
 using UnityEngine;
 
-public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+public class Singleton<T> where T : class, new()
 {
-    private static T instance;
+    private static T _instance;
+    private static readonly object _lock = new object();
+
+    private Singleton() { } // Constructor riêng tư để ngăn chặn việc tạo đối tượng từ bên ngoài
 
     public static T Instance
     {
         get
         {
-            if (instance == null)
+            lock (_lock) // Khóa để đảm bảo thread-safe
             {
-                instance = FindObjectOfType(typeof(T)) as T;
-
-                if (instance == null)
+                if (_instance == null)
                 {
-                    instance = new GameObject().AddComponent<T>();
-                    instance.gameObject.name = instance.GetType().Name;
+                    _instance = new T();
                 }
-                DontDestroyOnLoad(instance);
+                return _instance;
             }
-            return instance;
         }
     }
+}
 
-    public void Reset()
-    {
-        instance = null;
-    }
+public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
+{
+    private static T _instance;
+    private static readonly object _lock = new object();
 
-    public static bool IsExists()
+    public static T Instance
     {
-        return (instance != null);
+        get
+        {
+            lock (_lock)
+            {
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType(typeof(T)) as T;
+
+                    if (_instance == null)
+                    {
+                        _instance = new GameObject().AddComponent<T>();
+                        _instance.gameObject.name = _instance.GetType().Name;
+                    }
+                    DontDestroyOnLoad(_instance);
+                }
+                return _instance;
+            }
+        }
     }
 }
 
 public class SSSingleton<T> : SSController where T : SSController
 {
-    private static T instance;
+    private static T _instance;
+    private static readonly object _lock = new object();
 
     public static T Instance
     {
         get
         {
-            if (instance == null)
+            lock (_lock)
             {
-                instance = FindObjectOfType(typeof(T)) as T;
-
-                if (instance == null)
+                if (_instance == null)
                 {
-                    instance = new GameObject().AddComponent<T>();
-                    instance.gameObject.name = instance.GetType().Name;
+                    _instance = FindObjectOfType(typeof(T)) as T;
+
+                    if (_instance == null)
+                    {
+                        _instance = new GameObject().AddComponent<T>();
+                        _instance.gameObject.name = _instance.GetType().Name;
+                    }
+                    DontDestroyOnLoad(_instance);
                 }
-                DontDestroyOnLoad(instance);
+                return _instance;
             }
-            return instance;
         }
-    }
-
-    public void Reset()
-    {
-        instance = null;
-    }
-
-    public static bool IsExists()
-    {
-        return (instance != null);
     }
 }
