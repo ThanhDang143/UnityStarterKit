@@ -64,7 +64,7 @@ public class SSController : MonoBehaviour
 	/// </summary>
 	public virtual void OnEnableFS()
 	{
-#if AUTO_UIADAPTATION
+#if AUTO_UIADAPTATION_HORIZONTAL || AUTO_UIADAPTATION_VERTICAL
 		CanvasScaler canvasScaler = GetComponentInChildren<CanvasScaler>();
 		if (canvasScaler != null)
 		{
