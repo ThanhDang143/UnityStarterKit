@@ -4,9 +4,9 @@ This module implements SSSystem and creates the basic folder structure for a Uni
 
 ## Include
 - SSSystem 3.0
-- UIAdaptation
+- UIAdaptation 0.0.1
 - Odin Inspector and Serializer 3.3.1.4
-- Singleton
+- Singleton 0.0.1
 
 ## How to use
 - Start with scene named SceneManager.
