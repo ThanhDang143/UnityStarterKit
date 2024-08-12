@@ -4,9 +4,7 @@
  */
 
 using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
-using Unity.VisualScripting;
 
 [RequireComponent(typeof(SSAutoController))]
 public class SSController : MonoBehaviour
@@ -26,6 +24,13 @@ public class SSController : MonoBehaviour
 	public string CurrentBgm { get; set; }
 	public bool IsStarted { get; private set; }
 	#endregion
+
+#if AUTO_UIADAPTATION_HORIZONTAL || AUTO_UIADAPTATION_VERTICAL
+	#region UI Adaptation
+	[Header("UI Adaptation")]
+	public bool AutoAddUISaveZone = true;
+	#endregion
+#endif
 
 	/// <summary>
 	/// Config here
@@ -66,15 +71,31 @@ public class SSController : MonoBehaviour
 	{
 #if AUTO_UIADAPTATION_HORIZONTAL || AUTO_UIADAPTATION_VERTICAL
 		CanvasScaler canvasScaler = GetComponentInChildren<CanvasScaler>();
-		if (canvasScaler != null)
+		if (canvasScaler != null && canvasScaler.GetComponent<UIScaler>() == null)
 		{
-			canvasScaler.AddComponent<UIScaler>().Setup();
+			canvasScaler.gameObject.AddComponent<UIScaler>().Setup();
+		}
+		else
+		{
+			Debug.Log("<color=red>CanvasScaler not found!!!</color>");
 		}
 
 		UISaveZone saveZone = GetComponentInChildren<UISaveZone>();
 		if (saveZone != null)
 		{
 			saveZone.Setup();
+		}
+		else if (AutoAddUISaveZone)
+		{
+			SSMotion uiContainer = GetComponentInChildren<SSMotion>();
+			if (uiContainer != null)
+			{
+				uiContainer.gameObject.AddComponent<UISaveZone>().Setup();
+			}
+			else
+			{
+				Debug.Log("<color=red>SSMotion not found!!!</color>");
+			}
 		}
 #endif
 	}
