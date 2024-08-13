@@ -2,6 +2,9 @@
 
 This module implements SSSystem and creates the basic folder structure for a Unity project.
 
+## Changelog v0.0.3
+- Remove Demos
+
 ## Include
 - SSSystem 3.0
 - UIAdaptation 0.0.1
