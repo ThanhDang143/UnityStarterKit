@@ -4,6 +4,8 @@
 - Using to convert `Excel` to `ScripableObject`.
 - Require `OdinInspector`
 
+## Changelog v0.0.2
+- Add `DataConstant`
 ## Changelog v0.0.1
 - Support convert `Excel` to `Scriptable Object`
 

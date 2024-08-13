@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Cathei.BakingSheet;
 using Cathei.BakingSheet.Unity;
 using Cathei.LinqGen;
 using UnityEngine;
@@ -22,7 +21,7 @@ namespace BakingSheetImpl
         {
             allData = new Dictionary<string, IDataModel>();
 
-            AsyncOperationHandle<SheetContainerScriptableObject> loadContainerHandle = Addressables.LoadAssetAsync<SheetContainerScriptableObject>(Data.SHEET_CONTAINE_SO_ADDRESS);
+            AsyncOperationHandle<SheetContainerScriptableObject> loadContainerHandle = Addressables.LoadAssetAsync<SheetContainerScriptableObject>(DataConstant.SHEET_CONTAINE_SO_ADDRESS);
             await loadContainerHandle.Task;
             SheetContainerScriptableObject containerSO = loadContainerHandle.Result;
             ScriptableObjectSheetImporter importer = new(containerSO);
