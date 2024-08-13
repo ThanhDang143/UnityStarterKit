@@ -89,6 +89,7 @@ public class SSSceneManager : MonoBehaviour
 	#endregion
 
 	#region Serialize Field
+	[Space]
 	[SerializeField]
 	protected UIType m_UIType;
 
@@ -140,12 +141,15 @@ public class SSSceneManager : MonoBehaviour
 	[SerializeField]
 	protected bool m_IsAllAdditive;
 
+	[SerializeField] protected bool IsUseKeyback;
+
 	/// <summary>
 	/// Sometimes you have some scenes which you don't want to load additive to the main scene (as a scene using Navigation Mesh),
 	/// Add them to this list (no effect if 'Is All Additive' is checked').
 	/// </summary>
 	[SerializeField]
 	protected List<string> m_NotAdditiveSceneList;
+
 	#endregion
 
 	#region Singleton
@@ -974,7 +978,7 @@ public class SSSceneManager : MonoBehaviour
 #if UNITY_EDITOR || UNITY_ANDROID
 	protected virtual void Update()
 	{
-		if (Application.isPlaying && Input.GetKeyDown(KeyCode.Escape))
+		if (IsUseKeyback && Application.isPlaying && Input.GetKeyDown(KeyCode.Escape))
 		{
 			SSController ct = null;
 
@@ -1669,41 +1673,41 @@ public class SSSceneManager : MonoBehaviour
 		ShowEmptyShield();
 
 		LoadOrActive(sn, () =>
+		{
+			if (onLoaded != null)
 			{
-				if (onLoaded != null)
-				{
-					onLoaded();
-				}
+				onLoaded();
+			}
 
-				// Set camera and position
-				SetCameras(sn, ic);
-				SetCanvases(sn, ic);
-				SetPosition(sn, ip);
+			// Set camera and position
+			SetCameras(sn, ic);
+			SetCanvases(sn, ic);
+			SetPosition(sn, ip);
 
-				// On Set
-				SSController ct = GetController(sn);
-				if (ct != null)
-				{
-					ct.OnSet(data);
-				}
+			// On Set
+			SSController ct = GetController(sn);
+			if (ct != null)
+			{
+				ct.OnSet(data);
+			}
 
-				// Animation
-				AnimType animType = (imme) ? AnimType.NO_ANIM : AnimType.SHOW;
-				StartCoroutine(IEPlayAnimation(sn, animType, () =>
-					{
-						// Show & BGM change
-						ShowAndBgmChangeOpen(sn, curBgm);
+			// Animation
+			AnimType animType = (imme) ? AnimType.NO_ANIM : AnimType.SHOW;
+			StartCoroutine(IEPlayAnimation(sn, animType, () =>
+			{
+				// Show & BGM change
+				ShowAndBgmChangeOpen(sn, curBgm);
 
-						// Hide empty shield
-						HideEmptyShield();
+				// Hide empty shield
+				HideEmptyShield();
 
-						// Call back
-						if (onAnimEnded != null) onAnimEnded();
+				// Call back
+				if (onAnimEnded != null) onAnimEnded();
 
-						// No busy
-						m_IsBusy = false;
-					}));
-			}, onActive, onDeactive);
+				// No busy
+				m_IsBusy = false;
+			}));
+		}, onActive, onDeactive);
 	}
 
 	private void OpenPopUp(string sceneName, object data = null, bool imme = false, SSCallBackDelegate onActive = null, SSCallBackDelegate onDeactive = null)
@@ -1887,9 +1891,9 @@ public class SSSceneManager : MonoBehaviour
 			// Animation
 			AnimType animType = (imme) ? AnimType.NO_ANIM : AnimType.HIDE_BACK;
 			StartCoroutine(IEPlayAnimation(preSn, animType, () =>
-				{
-					DeactiveAScene(preSn);
-				}));
+			{
+				DeactiveAScene(preSn);
+			}));
 		}, onActive, onDeactive);
 	}
 
