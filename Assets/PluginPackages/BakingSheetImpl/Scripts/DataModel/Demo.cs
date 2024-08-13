@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using Cathei.BakingSheet;
-using Cathei.BakingSheet.Unity;
 
-
-namespace DataManager
+namespace BakingSheetImpl
 {
     public class Demo : BaseModel
     {

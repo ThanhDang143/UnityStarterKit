@@ -1,6 +1,6 @@
 using Cathei.BakingSheet.Unity;
 
-namespace DataManager
+namespace BakingSheetImpl
 {
     public interface IDataModel
     {

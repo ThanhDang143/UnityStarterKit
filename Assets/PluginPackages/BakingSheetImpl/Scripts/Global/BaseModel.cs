@@ -1,7 +1,7 @@
 using Cathei.BakingSheet;
 using Cathei.BakingSheet.Unity;
 
-namespace DataManager
+namespace BakingSheetImpl
 {
     public class BaseModel : SheetRow, IDataModel
     {

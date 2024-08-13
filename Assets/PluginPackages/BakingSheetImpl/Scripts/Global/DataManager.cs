@@ -1,16 +1,18 @@
+using System.Collections.Generic;
+using System.Linq;
+using Cathei.BakingSheet;
 using Cathei.BakingSheet.Unity;
-using Sirenix.Utilities;
+using Cathei.LinqGen;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using ZBase.Collections.Pooled.Generic;
 
-namespace DataManager
+namespace BakingSheetImpl
 {
-    public class DataService
+    public class DataManager
     {
-        private static DataService _instance;
-        public static DataService Instance => _instance ??= new DataService();
+        private static DataManager _instance;
+        public static DataManager Instance => _instance ??= new DataManager();
 
         private SheetContainer container;
 
@@ -28,10 +30,16 @@ namespace DataManager
             container = new SheetContainer();
             await container.Bake(importer);
 
-            container.Demo.ForEach(d => allData.Add(d.Id, d));
+            allData = new(container.CacheData());
         }
 
-        public T GetDataById<T>(string id) where T : class
+        /// <summary>
+        /// Get a data record by ID.
+        /// </summary>
+        /// <typeparam name="T">Type of Data.</typeparam>
+        /// <param name="id">ID of data.</param>
+        /// <returns>Return a record data with type T</returns>
+        public T GetData<T>(string id) where T : class
         {
             if (allData != null && allData.ContainsKey(id) && allData[id] is T)
             {
@@ -40,6 +48,16 @@ namespace DataManager
 
             Debug.LogError("Cannot Find item ID " + id);
             return null;
+        }
+
+        /// <summary>
+        /// Get all data is T.
+        /// </summary>
+        /// <typeparam name="T">Type of data want to get.</typeparam>
+        /// <returns>Return a HashSet contain all data is T.</returns>
+        public HashSet<T> GetDatas<T>() where T : class
+        {
+            return new HashSet<T>(allData.Where(d => d.Value is T).Cast<T>());
         }
     }
 }
