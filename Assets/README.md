@@ -1,4 +1,4 @@
-# SSSystem implemented
+# SSSystem Implemented
 
 This module implements SSSystem and creates the basic folder structure for a Unity project.
 
@@ -13,6 +13,7 @@ This module implements SSSystem and creates the basic folder structure for a Uni
 - Initialize game settings and data in script SceneManager.
 - Enable UIAdaptation (auto add UIScaler, auto setup UISaveZone) with symbol `AUTO_UIADAPTATION_HORIZONTAL` or `AUTO_UIADAPTATION_VERTICAL`. Fix it in function `OnEnableFS()` inside `SSController.cs`.
 - Set `AutoAddUISaveZone = true;` in `SSController.cs` to auto add UISaveZone at Container have Animation of SSSystem what extend SSMotion.
+- Turn On/Off button `Back` but variable IsUseKeyBack in `SceneManager`
 
 ### Shortcut
 - Shortcut to `SceneManager` is `alt + 1` or `option + 1` 
