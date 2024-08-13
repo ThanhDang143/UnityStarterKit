@@ -6,7 +6,10 @@ This main branch is **inactive**. Modules will be developed in parallel on their
 - BakingSheet Implemented v0.0.2
 - Addressable Implemented v0.0.1
 ### Update:
-SSSystem Implemented v0.0.3
+- SSSystem Implemented v0.0.3
+### Nothing change
+- UIAdaptation v0.0.1
+- Singleton v0.0.1
 
 
 ## Changelog v0.0.1
