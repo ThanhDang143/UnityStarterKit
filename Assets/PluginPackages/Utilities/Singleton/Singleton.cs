@@ -13,6 +13,8 @@ public class Singleton<T> where T : class, new()
             {
                 if (_instance == null)
                 {
+                    Debug.Log($"<color=yellow>{_instance.GetType().Name} instance is null!!! Auto create new instance</color>");
+
                     _instance = new T();
                 }
                 return _instance;
@@ -38,6 +40,8 @@ public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
 
                     if (_instance == null)
                     {
+                        Debug.Log($"<color=yellow>{_instance.GetType().Name} instance is null!!! Auto create new instance</color>");
+
                         _instance = new GameObject().AddComponent<T>();
                         _instance.gameObject.name = _instance.GetType().Name;
                     }
