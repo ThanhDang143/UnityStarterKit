@@ -29,7 +29,8 @@ public class Scene1 : MonoBehaviour
 
     private void AddScreen1()
     {
-        var screen1 = ScreenManager.Add<Screen1>("Screen1", "RightShow", "RightHide");
-        screen1.label.text = "Screen1";
+        ScreenManager.Add<Screen1>("Screen1", "RightShow", "RightHide", null, false, (screen) => {
+            screen.label.text = "Screen1";
+        });
     }
 }

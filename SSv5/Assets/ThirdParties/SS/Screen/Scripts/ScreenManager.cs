@@ -26,6 +26,7 @@ public class ScreenManager : MonoBehaviour
 
     #region Delegate
     public delegate void OnSceneLoad<T>(T t);
+    public delegate void OnScreenLoad<T>(T t);
     public delegate void Callback();
     #endregion
 
@@ -65,6 +66,19 @@ public class ScreenManager : MonoBehaviour
         protected set;
     }
 
+    public static GameObject ScreenShield
+    {
+        get
+        {
+            if (instance != null)
+            {
+                return instance.m_ScreenShield;
+            }
+
+            return null;
+        }
+    }
+
     /// <summary>
     /// Set some basic parameters of ScreenManager.
     /// </summary>
@@ -101,9 +115,9 @@ public class ScreenManager : MonoBehaviour
     /// <param name="animationObjectName">The name of gameobject contains screen's animation. If it is null or empty, the animation gameobject will be the root gameobject</param>
     /// <param name="useExistingScreen">If this is true, check if the screen is existing, bring it to the top. If not found, instantiate a new one</param>
     /// <returns>The component type T in the screen.</returns>
-    public static T Add<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false) where T : Component
+    public static void Add<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null) where T : Component
     {
-        return instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName, useExistingScreen);
+        instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName, useExistingScreen, onScreenLoad);
     }
 
     /// <summary>
@@ -247,7 +261,19 @@ public class ScreenManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Close();
+            if (m_ScreenList.Count > 0)
+            {
+                var screen = m_ScreenList[m_ScreenList.Count - 1];
+
+                if (screen.TryGetComponent(out IKeyBack keyback))
+                {
+                    keyback.OnKeyBack();
+                }
+                else
+                {
+                    Close();
+                }
+            }
         }
     }
 
@@ -350,7 +376,7 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
-    private T AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false) where T : Component
+    private void AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null) where T : Component
     {
         if (m_ScreenShield == null)
         {
@@ -392,6 +418,8 @@ public class ScreenManager : MonoBehaviour
                     m_ScreenList[i] = m_ScreenList[m_ScreenList.Count - 1];
                     m_ScreenList[m_ScreenList.Count - 1] = temp;
 
+                    onScreenLoad?.Invoke(screen);
+
                     break;
                 }
             }
@@ -399,23 +427,40 @@ public class ScreenManager : MonoBehaviour
 
         if (!hasExistingScreen)
         {
-            screen = Instantiate(Resources.Load<T>(Path.Combine(m_ScreenPath, screenName)), m_Canvas.transform);
-            screen.name = screenName;
-            AddScreenToCanvas(screen.gameObject);
-
-            var controller = AddScreenController(screen);
-            controller.screen = screen;
-            controller.showAnimation = showAnimation;
-            controller.hideAnimation = hideAnimation;
-            controller.animationObjectName = animationObjectName;
-
-            AddAnimations(screen, animationObjectName, showAnimation, hideAnimation);
-            PlayAnimation(screen, showAnimation, 4);
-
-            m_ScreenList.Add(screen);
+#if ADDRESSABLE
+            var async = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(screenName);
+            async.Completed += (a => {
+                if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                {
+                    CreateScreen<T>(async.Result, screenName, showAnimation, hideAnimation, animationObjectName, onScreenLoad);
+                }
+            });
+#else
+            var prefab = Resources.Load<GameObject>(Path.Combine(m_ScreenPath, screenName));
+            CreateScreen<T>(prefab, screenName, showAnimation, hideAnimation, animationObjectName, onScreenLoad);
+#endif
         }
+    }
 
-        return screen;
+    private void CreateScreen<T>(GameObject prefab, string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", OnScreenLoad<T> onScreenLoad = null) where T : Component
+    {
+        T screen = Instantiate(prefab.GetComponent<T>(), m_Canvas.transform);
+
+        screen.name = screenName;
+        AddScreenToCanvas(screen.gameObject);
+
+        var controller = AddScreenController(screen);
+        controller.screen = screen;
+        controller.showAnimation = showAnimation;
+        controller.hideAnimation = hideAnimation;
+        controller.animationObjectName = animationObjectName;
+
+        AddAnimations(screen, animationObjectName, showAnimation, hideAnimation);
+        PlayAnimation(screen, showAnimation, 4);
+
+        m_ScreenList.Add(screen);
+
+        onScreenLoad?.Invoke(screen);
     }
 
     private void CloseScreen(Callback onScreenClosed = null, string hideAnimation = null)
@@ -736,5 +781,5 @@ public class ScreenManager : MonoBehaviour
             }
         }
     }
-    #endregion
+#endregion
 }

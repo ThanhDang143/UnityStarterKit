@@ -14,7 +14,8 @@ public class Screen1 : MonoBehaviour
 
     public void OnAddScreen2ButtonTap()
     {
-        var screen2 = ScreenManager.Add<Screen2>("Screen2", "ScaleFadeShow", "ScaleFadeHide", "AnimationRoot", true);
-        screen2.label.text = "Screen2";
+        ScreenManager.Add<Screen2>("Screen2", "ScaleFadeShow", "ScaleFadeHide", "AnimationRoot", true, (screen) => {
+            screen.label.text = "Screen2";
+        });
     }
 }

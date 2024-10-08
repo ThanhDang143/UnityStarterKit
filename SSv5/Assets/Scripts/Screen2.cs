@@ -43,8 +43,9 @@ public class Screen2 : MonoBehaviour
 
     public void OnAddScreen1ButtonTap()
     {
-        var screen1 = ScreenManager.Add<Screen1>("Screen1", "RightShow", "RightHide", null, true);
-        screen1.label.text = "Screen1";
+        ScreenManager.Add<Screen1>("Screen1", "RightShow", "RightHide", null, true, (screen) => {
+            screen.label.text = "Screen1";
+        });
     }
 
     private IEnumerator ShowLoadingASecond()
