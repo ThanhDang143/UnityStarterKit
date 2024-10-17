@@ -28,6 +28,7 @@ public class ScreenManager : MonoBehaviour
     public delegate void OnSceneLoad<T>(T t);
     public delegate void OnScreenLoad<T>(T t);
     public delegate void Callback();
+    public delegate void OnScreenTransition(string toScreen, string fromScreen);
     #endregion
 
     #region Private Member
@@ -37,6 +38,7 @@ public class ScreenManager : MonoBehaviour
     private GameObject m_Loading;
     private GameObject m_ScreenShield;
     private GameObject m_ScreenShieldTop;
+    private OnScreenTransition m_OnScreenTransition;
     #endregion
 
     #region Private Static
@@ -196,11 +198,11 @@ public class ScreenManager : MonoBehaviour
     /// <summary>
     /// Hide Shield Or Show Top Screen
     /// </summary>
-    public static void HideShieldOrShowTop()
+    public static void HideShieldOrShowTop(string screenName)
     {
         if (instance != null && instance.isActiveAndEnabled)
         {
-            instance.HideScreenShieldOrShowTop();
+            instance.HideScreenShieldOrShowTop(screenName);
         }
     }
 
@@ -232,6 +234,18 @@ public class ScreenManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Add OnScreenTransition listener
+    /// </summary>
+    /// <param name="onScreenTransition"></param>
+    public static void AddListener(OnScreenTransition onScreenTransition)
+    {
+        if (instance != null)
+        {
+            instance.m_OnScreenTransition += onScreenTransition;
+        }
     }
     #endregion
 
@@ -380,9 +394,16 @@ public class ScreenManager : MonoBehaviour
 
     private void AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true) where T : Component
     {
-        if (m_ScreenShield == null && hasShield)
+        if (hasShield)
         {
-            m_ScreenShield = CreateShield();
+            if (m_ScreenShield == null)
+            {
+                m_ScreenShield = CreateShield(screenName);
+            }
+            else
+            {
+                m_ScreenShield.name = ScreenShieldName(screenName);
+            }
         }
 
         if (m_ScreenShieldTop == null)
@@ -391,10 +412,18 @@ public class ScreenManager : MonoBehaviour
             m_ScreenShieldTop.SetActive(false);
         }
 
+        var fromScreen = m_LastLoadedScene != null ? m_LastLoadedScene.name : string.Empty;
+
         if (m_ScreenList.Count > 0)
         {
             var topScreen = m_ScreenList[m_ScreenList.Count - 1];
-            topScreen.gameObject.SetActive(false);
+
+            if (topScreen != null)
+            {
+                topScreen.gameObject.SetActive(false);
+
+                fromScreen = topScreen.name;
+            }
         }
 
         T screen = null;
@@ -442,6 +471,13 @@ public class ScreenManager : MonoBehaviour
             CreateScreen<T>(prefab, screenName, showAnimation, hideAnimation, animationObjectName, onScreenLoad);
 #endif
         }
+
+        OnTraceScreenTransition(screenName, fromScreen);
+    }
+
+    private void OnTraceScreenTransition(string toScreen, string fromScreen)
+    {
+        m_OnScreenTransition?.Invoke(toScreen, fromScreen);
     }
 
     private void CreateScreen<T>(GameObject prefab, string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", OnScreenLoad<T> onScreenLoad = null) where T : Component
@@ -556,10 +592,10 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
-    private GameObject CreateShield()
+    private GameObject CreateShield(string screenName)
     {
         var shield = Instantiate(Resources.Load<GameObject>("Prefabs/Shield"), m_Canvas.transform);
-        shield.name = "Screen Shield";
+        shield.name = ScreenShieldName(screenName);
 
         shield.GetComponent<UnscaledAnimation>().Play("ShieldShow");
 
@@ -758,11 +794,11 @@ public class ScreenManager : MonoBehaviour
         return null;
     }
 
-    private void HideScreenShieldOrShowTop()
+    private void HideScreenShieldOrShowTop(string screenName)
     {
         if (m_ScreenList.Count == 0)
         {
-            if (m_ScreenShield != null)
+            if (m_ScreenShield != null && m_ScreenShield.name == ScreenShieldName(screenName))
             {
                 var anim = m_ScreenShield.GetComponent<UnscaledAnimation>();
                 anim.Play("ShieldHide", anim => {
@@ -777,11 +813,21 @@ public class ScreenManager : MonoBehaviour
 
             if (!topScreen.gameObject.activeInHierarchy)
             {
+                if (m_ScreenShield != null)
+                {
+                    m_ScreenShield.name = ScreenShieldName(topScreen.name);
+                    topScreen.transform.SetSiblingIndex(m_ScreenShield.transform.GetSiblingIndex() + 1);
+                }
                 topScreen.gameObject.SetActive(true);
 
                 PlayAnimation(topScreen, topScreen.GetComponent<ScreenController>().showAnimation);
             }
         }
+    }
+
+    private string ScreenShieldName(string screenName)
+    {
+        return "Screen Shield - " + screenName;
     }
 #endregion
 }

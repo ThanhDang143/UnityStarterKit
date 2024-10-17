@@ -37,7 +37,7 @@ public class ScreenController : MonoBehaviour
         if (screen != null)
         {
             ScreenManager.RemoveScreen(screen);
-            ScreenManager.HideShieldOrShowTop();
+            ScreenManager.HideShieldOrShowTop(name);
         }   
     }
 }
