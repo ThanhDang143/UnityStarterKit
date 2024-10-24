@@ -2,6 +2,7 @@
 - Implement BakingSheet by Cathei for my needs.
 - Origin: https://github.com/cathei/BakingSheet.
 - Using to convert `Excel` to `ScripableObject`.
+- Require `DOTween`
 - Require `OdinInspector`
 ## Install
 - GitURL: https://github.com/ThanhDang143/UnityStarterKit.git?path=/Assets/PluginPackages/BakingSheetImpl#BakingSheet

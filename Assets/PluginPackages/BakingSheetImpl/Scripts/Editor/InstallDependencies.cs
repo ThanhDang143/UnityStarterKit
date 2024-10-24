@@ -11,10 +11,14 @@ namespace BakingSheetImpl
 {
     public class InstallDependencies
     {
-
         static Dictionary<string, string> packageDependencies = new Dictionary<string, string>
         {
             { "com.cathei.bakingsheet", "https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet" }
+        };
+
+        static List<string> commentedFiles = new List<string>
+        {
+            "DataEditor", "Demo", "BaseModel", "DataManager", "IDataModel", "SheetContainer"
         };
 
         [MenuItem("Tools/BakingSheet Impl/Initialize")]
@@ -25,19 +29,30 @@ namespace BakingSheetImpl
                 _ = CheckDependenciesPackageInstalled(package.Key);
             }
 
-            UncommentDataEditor();
+            foreach (var file in commentedFiles)
+            {
+                UncommentScript(file);
+            }
+
+            AssetDatabase.Refresh();
         }
 
         private static async Task InstallDependenciesPackage(string packageName)
         {
             string gitURL = packageDependencies[packageName];
             AddRequest request = Client.Add(gitURL);
-            float timeOut = 5f;
+            float timeOut = 10f;
 
             while (!request.IsCompleted && timeOut > 0)
             {
                 timeOut -= Time.deltaTime;
-                await Task.Delay((int)Time.deltaTime * 1000);
+                if (timeOut <= 0)
+                {
+                    Debug.Log($"<color=red>Check {packageName} time out!</color>");
+                    return;
+                }
+                int delay = (int)(Time.deltaTime * 1000);
+                await Task.Delay(delay);
             }
 
             if (request.Status == StatusCode.Success)
@@ -53,12 +68,18 @@ namespace BakingSheetImpl
         public static async Task CheckDependenciesPackageInstalled(string packageName)
         {
             ListRequest request = Client.List();
-            float timeOut = 5f;
+            float timeOut = 10f;
 
             while (!request.IsCompleted && timeOut > 0)
             {
                 timeOut -= Time.deltaTime;
-                await Task.Delay((int)Time.deltaTime * 1000);
+                if (timeOut <= 0)
+                {
+                    Debug.Log($"<color=red>Check {packageName} time out!</color>");
+                    return;
+                }
+                int delay = (int)(Time.deltaTime * 1000);
+                await Task.Delay(delay);
             }
 
             if (request.Status == StatusCode.Success)
@@ -78,9 +99,9 @@ namespace BakingSheetImpl
             }
         }
 
-        private static void UncommentDataEditor()
+        private static void UncommentScript(string scriptName)
         {
-            string dataEditorPath = FindScriptPath("DataEditor");
+            string dataEditorPath = FindScriptPath(scriptName);
             if (string.IsNullOrEmpty(dataEditorPath)) return;
 
             string[] dataEditorContent = System.IO.File.ReadAllLines(dataEditorPath);
@@ -90,7 +111,6 @@ namespace BakingSheetImpl
             if (newContent[^1].Equals("*/") || string.IsNullOrEmpty(newContent[^1])) newContent.RemoveAt(newContent.Count - 1);
 
             System.IO.File.WriteAllLines(dataEditorPath, newContent.ToArray());
-            AssetDatabase.Refresh();
         }
 
         private static string FindScriptPath(string scriptName)
