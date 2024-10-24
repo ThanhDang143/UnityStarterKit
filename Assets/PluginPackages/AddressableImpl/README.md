@@ -2,7 +2,13 @@
 
 Implement Addressable to load assets. Implement AssetBundle in the future.
 
-## Changelog v0.0.1
+## Install
+- GitURL: https://github.com/ThanhDang143/UnityStarterKit.git?path=/Assets/PluginPackages/AddressableImpl#Addressable
+
+## Changelog 
+### v0.0.2
+- Add install method (GitURL)
+### v0.0.1
 - Load assets.
 
 ## How to use.
