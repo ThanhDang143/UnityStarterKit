@@ -23,6 +23,6 @@
 
 ### Update data
 - After edit raw data (Excel, GGSheet...).
-- Open Data window by `Ctrl + G` or `Tools/Data Manager`.
+- Open Data window by `Ctrl + G` or `Tools/BakingSheet Impl/Manager`.
 - Choose input and output path if needs.
 - Press UpdateData button.
