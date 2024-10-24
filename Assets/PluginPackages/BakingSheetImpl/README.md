@@ -3,10 +3,15 @@
 - Origin: https://github.com/cathei/BakingSheet.
 - Using to convert `Excel` to `ScripableObject`.
 - Require `OdinInspector`
+## Install
+- GitURL: https://github.com/ThanhDang143/UnityStarterKit.git?path=/Assets/PluginPackages/BakingSheetImpl#BakingSheet
 
-## Changelog v0.0.2
+## Changelog 
+### v0.0.3
+- Add install method (GitURL)
+### v0.0.2
 - Add `DataConstant`
-## Changelog v0.0.1
+### v0.0.1
 - Support convert `Excel` to `Scriptable Object`
 
 ## How to use.

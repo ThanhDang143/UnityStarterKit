@@ -53,10 +53,10 @@ namespace BakingSheetImpl
         /// Get all data is T.
         /// </summary>
         /// <typeparam name="T">Type of data want to get.</typeparam>
-        /// <returns>Return a HashSet contain all data is T.</returns>
-        public HashSet<T> GetDatas<T>() where T : class
+        /// <returns>Return a List contain all data is T.</returns>
+        public List<T> GetDatas<T>() where T : class
         {
-            return new HashSet<T>(allData.Where(d => d.Value is T).Cast<T>());
+            return new List<T>(allData.Where(d => d.Value is T).Cast<T>());
         }
     }
 }

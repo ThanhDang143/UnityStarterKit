@@ -1,0 +1,25 @@
+{
+    "name": "com.thanhdv.bakingsheetimpl",
+    "version": "0.0.3",
+    "displayName": "Baking Sheet Implemented",
+    "description": "Implement BakingSheet by Cathei for my needs.",
+    "unity": "2020.3",
+    "dependencies": {
+        "com.cathei.bakingsheet": "https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet",
+        "com.unity.addressables": "2.2.2"
+    },
+    "keywords": [
+        "BakingSheet",
+        "ThanhDV"
+    ],
+    "author": {
+        "name": "ThanhDV",
+        "email": "vanthanh1998@gmail.com",
+        "url": "https://docs.thanhdv.icu"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ThanhDang143/UnityStarterKit/tree/BakingSheet"
+    },
+    "license": "MIT"
+}
