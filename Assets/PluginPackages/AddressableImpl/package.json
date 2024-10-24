@@ -1,0 +1,24 @@
+{
+    "name": "com.thanhdv.addressablesimpl",
+    "version": "0.0.2",
+    "displayName": "Addressables Implemented",
+    "description": "Implement Addressable to load assets. Implement AssetBundle in the future.",
+    "unity": "2020.3",
+    "dependencies": {
+        "com.unity.addressables": "1.19.19"
+    },
+    "keywords": [
+        "Addressables",
+        "ThanhDV"
+    ],
+    "author": {
+        "name": "ThanhDV",
+        "email": "vanthanh1998@gmail.com",
+        "url": "https://docs.thanhdv.icu"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ThanhDang143/UnityStarterKit/tree/Addressable"
+    },
+    "license": "MIT"
+}
