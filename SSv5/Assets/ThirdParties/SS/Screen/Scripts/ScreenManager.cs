@@ -29,6 +29,7 @@ public class ScreenManager : MonoBehaviour
     public delegate void OnScreenLoad<T>(T t);
     public delegate void Callback();
     public delegate void OnScreenTransition(string toScreen, string fromScreen);
+    public delegate void OnScreenChanged(int screenCount);
     #endregion
 
     #region Private Member
@@ -39,6 +40,7 @@ public class ScreenManager : MonoBehaviour
     private UnscaledAnimation m_ScreenShield;
     private GameObject m_ScreenShieldTop;
     private OnScreenTransition m_OnScreenTransition;
+    private OnScreenChanged m_OnScreenChanged;
     #endregion
 
     #region Private Static
@@ -234,6 +236,42 @@ public class ScreenManager : MonoBehaviour
             instance.m_OnScreenTransition += onScreenTransition;
         }
     }
+
+    /// <summary>
+    /// Remove OnScreenTransition listener
+    /// </summary>
+    /// <param name="onScreenTransition"></param>
+    public static void RemoveListener(OnScreenTransition onScreenTransition)
+    {
+        if (m_Instance != null)
+        {
+            m_Instance.m_OnScreenTransition -= onScreenTransition;
+        }
+    }
+
+    /// <summary>
+    /// Add OnScreenChanged listener
+    /// </summary>
+    /// <param name="onScreenChanged"></param>
+    public static void AddListener(OnScreenChanged onScreenChanged)
+    {
+        if (instance != null)
+        {
+            instance.m_OnScreenChanged += onScreenChanged;
+        }
+    }
+
+    /// <summary>
+    /// Remove OnScreenChanged listener
+    /// </summary>
+    /// <param name="onScreenChanged"></param>
+    public static void RemoveListener(OnScreenChanged onScreenChanged)
+    {
+        if (m_Instance != null)
+        {
+            m_Instance.m_OnScreenChanged -= onScreenChanged;
+        }
+    }
     #endregion
 
     #region Unity Functions
@@ -299,14 +337,6 @@ public class ScreenManager : MonoBehaviour
     #endregion
 
     #region Private Functions
-    private List<Component> screenList
-    {
-        get
-        {
-            return m_ScreenList;
-        }
-    }
-
     private void Setup(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "")
     {
         m_ScreenShieldColor = screenShieldColor;
@@ -482,7 +512,7 @@ public class ScreenManager : MonoBehaviour
         AddAnimations(screen, animationObjectName, showAnimation, hideAnimation);
         PlayAnimation(screen, showAnimation, 4);
 
-        m_ScreenList.Add(screen);
+        AddScreenToList(screen);
 
         onScreenLoad?.Invoke(screen);
     }
@@ -500,7 +530,7 @@ public class ScreenManager : MonoBehaviour
     {
         if (m_ScreenList.Count > 0)
         {
-            m_ScreenList.Remove(screen);
+            RemoveScreenFromList(screen);
 
             hideAnimation = (hideAnimation != null) ? hideAnimation : screen.GetComponent<ScreenController>().hideAnimation;
             PlayAnimation(screen, hideAnimation, 0, true, onScreenClosed);
@@ -512,7 +542,7 @@ public class ScreenManager : MonoBehaviour
         while (m_ScreenList.Count > 0)
         {
             var screen = m_ScreenList[0];
-            m_ScreenList.RemoveAt(0);
+            RemoveScreenFromList(screen);
 
             DestroyScreen(screen);
         }
@@ -568,14 +598,6 @@ public class ScreenManager : MonoBehaviour
         screen.transform.localPosition = Vector3.zero;
         screen.transform.localScale = Vector3.one;
         screen.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
-    }
-
-    private void RemoveScreenFromList(Component screen)
-    {
-        if (m_ScreenList.Contains(screen))
-        {
-            m_ScreenList.Remove(screen);
-        }
     }
 
     private void CreateShield()
@@ -842,5 +864,22 @@ public class ScreenManager : MonoBehaviour
     {
         return "Screen Shield - " + screenName;
     }
-#endregion
+
+    private void AddScreenToList(Component screen)
+    {
+        m_ScreenList.Add(screen);
+
+        m_OnScreenChanged?.Invoke(m_ScreenList.Count);
+    }
+
+    private void RemoveScreenFromList(Component screen)
+    {
+        if (m_ScreenList.Contains(screen))
+        {
+            m_ScreenList.Remove(screen);
+
+            m_OnScreenChanged?.Invoke(m_ScreenList.Count);
+        }
+    }
+    #endregion
 }
