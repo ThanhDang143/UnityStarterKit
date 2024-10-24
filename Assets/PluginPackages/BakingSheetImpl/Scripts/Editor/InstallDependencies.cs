@@ -9,32 +9,17 @@ using UnityEngine;
 
 namespace BakingSheetImpl
 {
-    [InitializeOnLoad]
     public class InstallDependencies
     {
-        static bool isInitialized = false;
 
         static Dictionary<string, string> packageDependencies = new Dictionary<string, string>
         {
             { "com.cathei.bakingsheet", "https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet" }
         };
 
-        static InstallDependencies()
-        {
-            InitializeDependencies();
-        }
-
-        public static void InitializeDependencies()
-        {
-            if (isInitialized) return;
-
-            ForceInitializeDependencies();
-        }
-
         [MenuItem("Tools/BakingSheet Impl/Initialize")]
         public static void ForceInitializeDependencies()
         {
-            isInitialized = true;
             foreach (var package in packageDependencies)
             {
                 _ = CheckDependenciesPackageInstalled(package.Key);
