@@ -15,6 +15,7 @@
 - Support convert `Excel` to `Scriptable Object`
 
 ## How to use.
+- After import package Initialize by `Tools/BakingSheet Impl/Initialize`.
 ### Create and Use DataModel
 - Call `InitialData` to prepare data before use anything.
 - Whenever a new DataModel is introduced, a corresponding property declaration must be added inside region `Declare`. `Ex: public DemoSheet Demo { get; private set; }`
