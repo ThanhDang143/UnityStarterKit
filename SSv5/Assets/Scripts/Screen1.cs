@@ -7,6 +7,8 @@ public class Screen1 : MonoBehaviour
 {
     public Text label;
 
+    private bool pressedSpaceKey;
+
     public void OnCloseButtonTap()
     {
         ScreenManager.Close();
@@ -17,5 +19,26 @@ public class Screen1 : MonoBehaviour
         ScreenManager.Add<Screen2>("Screen2", "ScaleFadeShow", "ScaleFadeHide", "AnimationRoot", true, (screen) => {
             screen.label.text = "Screen2";
         });
+    }
+
+    public void OnAddScreen2UntilSpacePressedButtonTap()
+    {
+        ScreenManager.Add<Screen2>("Screen2", "ScaleFadeShow", "ScaleFadeHide", "AnimationRoot", true, (screen) => {
+            screen.label.text = "Screen2";
+            pressedSpaceKey = false;
+        }, addCondition: WaitSpaceKey);
+    }
+
+    private bool WaitSpaceKey()
+    {
+        return pressedSpaceKey;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            pressedSpaceKey = true;
+        }
     }
 }

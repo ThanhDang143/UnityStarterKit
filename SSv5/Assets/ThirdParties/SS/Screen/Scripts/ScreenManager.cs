@@ -31,6 +31,7 @@ public class ScreenManager : MonoBehaviour
     public delegate void Callback();
     public delegate void OnScreenAddedDelegate(string toScreen, string fromScreen, bool manually);
     public delegate void OnScreenChangedDelegate(int screenCount);
+    public delegate bool AddConditionDelegate();
     #endregion
 
     #region Private Member
@@ -106,10 +107,14 @@ public class ScreenManager : MonoBehaviour
     /// <param name="hideAnimation">The name of animation clip (which is put in 'screenAnimationPath') is used to animate the screen to hide it</param>
     /// <param name="animationObjectName">The name of gameobject contains screen's animation. If it is null or empty, the animation gameobject will be the root gameobject</param>
     /// <param name="useExistingScreen">If this is true, check if the screen is existing, bring it to the top. If not found, instantiate a new one</param>
+    /// <param name="onScreenLoad">On Screen Loaded callback</param>
+    /// <param name="hasShield">Has shield under this screen or not</param>
+    /// <param name="manually">This screen is shown by user click or automatically. Just using this for analytics</param>
+    /// <param name="addCondition">Only add this screen after this condition return true</param>
     /// <returns>The component type T in the screen.</returns>
-    public static void Add<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true) where T : Component
+    public static void Add<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true, AddConditionDelegate addCondition = null) where T : Component
     {
-        instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName, useExistingScreen, onScreenLoad, hasShield, manually);
+        instance.StartCoroutine(instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName, useExistingScreen, onScreenLoad, hasShield, manually, addCondition));
     }
 
     /// <summary>
@@ -429,8 +434,13 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
-    private void AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true) where T : Component
+    private IEnumerator AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true, AddConditionDelegate addCondition = null) where T : Component
     {
+        while (addCondition != null && !addCondition())
+        {
+            yield return 0;
+        }
+
         m_ScreenShield.name = ScreenShieldName(screenName);
 
         if (hasShield)
