@@ -295,6 +295,28 @@ public class ScreenManager : MonoBehaviour
             return null;
         }
     }
+
+    /// <summary>
+    /// Show the shield
+    /// </summary>
+    public static void ShowShield()
+    {
+        if (m_Instance != null && m_Instance.m_ScreenShield != null)
+        {
+            m_Instance.m_ScreenShield.Play("ShieldShow");
+        }
+    }
+
+    /// <summary>
+    /// Hide the shield
+    /// </summary>
+    public static void HideShield()
+    {
+        if (m_Instance != null && m_Instance.m_ScreenShield != null)
+        {
+            m_Instance.m_ScreenShield.Play("ShieldHide");
+        }
+    }
     #endregion
 
     #region Unity Functions
@@ -755,15 +777,13 @@ public class ScreenManager : MonoBehaviour
                     }
                 }
 
+                if (animObject.GetComponent<CanvasGroup>() == null)
+                {
+                    animObject.AddComponent<CanvasGroup>();
+                }
+
                 switch (animationNames[i])
                 {
-                    case "FadeShow":
-                    case "FadeHide":
-                        if (animObject.GetComponent<CanvasGroup>() == null)
-                        {
-                            animObject.AddComponent<CanvasGroup>();
-                        }
-                        break;
                     case "RightShow":
                     case "LeftShow":
                     case "TopShow":
