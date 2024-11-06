@@ -1,6 +1,9 @@
 # Unity Starter Kit for ThanhDV... and anyone else brave enough to give it a try!
 This main branch is **inactive**. Modules will be developed in parallel on their **respective branches**.
 
+## Changelog v0.0.6
+Remove the installation function through Git URL.
+
 ## Changelog v0.0.5
 - Merge Singleton, UIAdaptation, RectTransform Extension into Utilities and remove them.
 - Update install method GitURL for Utilities, BakingSheet.
