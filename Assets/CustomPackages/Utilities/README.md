@@ -4,9 +4,7 @@ This library contain:
 - Singleton
 - UIAdaptation
 - RectTransform Extension
-- More utilites.
-## Install
-- GitURL: https://github.com/ThanhDang143/UnityStarterKit.git?path=/Assets/PluginPackages/Utilities#Utilities
+- More utilites in the future.
 
 ## Changelog 
 ### v0.0.1
