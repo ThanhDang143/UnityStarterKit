@@ -4,8 +4,6 @@
 - Using to convert `Excel` to `ScripableObject`.
 - Require `DOTween`
 - Require `OdinInspector`
-## Install
-- GitURL: https://github.com/ThanhDang143/UnityStarterKit.git?path=/Assets/PluginPackages/BakingSheetImpl#BakingSheet
 
 ## Changelog 
 ### v0.0.3
