@@ -1,0 +1,27 @@
+{
+    "name": "com.thanhdv.utilities",
+    "version": "0.0.1",
+    "displayName": "ThanhDV Utilities",
+    "description": "This library contains some utilities for Unity development.",
+    "unity": "2020.3",
+    "dependencies": {
+
+    },
+    "keywords": [
+        "Singleton",
+        "RectTransform Extension",
+        "UIAdaptation",
+        "Utilities",
+        "ThanhDV"
+    ],
+    "author": {
+        "name": "ThanhDV",
+        "email": "vanthanh1998@gmail.com",
+        "url": "https://docs.thanhdv.icu"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ThanhDang143/UnityStarterKit/tree/Utilities"
+    },
+    "license": "MIT"
+}
