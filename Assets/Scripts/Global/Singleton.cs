@@ -1,69 +1,58 @@
 using UnityEngine;
 
-public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+public class Singleton<T> where T : class, new()
 {
-    private static T instance;
+    private static T _instance;
+    private static readonly object _lock = new object();
 
     public static T Instance
     {
         get
         {
-            if (instance == null)
+            lock (_lock)
             {
-                instance = FindObjectOfType(typeof(T)) as T;
-
-                if (instance == null)
+                if (_instance == null)
                 {
-                    instance = new GameObject().AddComponent<T>();
-                    instance.gameObject.name = instance.GetType().Name;
+                    _instance = new T();
+
+                    Debug.Log($"<color=yellow>{_instance.GetType().Name} instance is null!!! Auto create new instance</color>");
                 }
-                DontDestroyOnLoad(instance);
+                return _instance;
             }
-            return instance;
         }
     }
 
-    public void Reset()
-    {
-        instance = null;
-    }
-
-    public static bool IsExists()
-    {
-        return (instance != null);
-    }
+    public static bool IsExist => _instance != null;
 }
 
-public class SSSingleton<T> : SSController where T : SSController
+public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
 {
-    private static T instance;
+    private static T _instance;
+    private static readonly object _lock = new object();
 
     public static T Instance
     {
         get
         {
-            if (instance == null)
+            lock (_lock)
             {
-                instance = FindObjectOfType(typeof(T)) as T;
-
-                if (instance == null)
+                if (_instance == null)
                 {
-                    instance = new GameObject().AddComponent<T>();
-                    instance.gameObject.name = instance.GetType().Name;
+                    _instance = FindFirstObjectByType(typeof(T)) as T;
+
+                    if (_instance == null)
+                    {
+                        _instance = new GameObject().AddComponent<T>();
+                        _instance.gameObject.name = _instance.GetType().Name;
+
+                        Debug.Log($"<color=yellow>{_instance.GetType().Name} instance is null!!! Auto create new instance</color>");
+                    }
+                    DontDestroyOnLoad(_instance);
                 }
-                DontDestroyOnLoad(instance);
+                return _instance;
             }
-            return instance;
         }
     }
 
-    public void Reset()
-    {
-        instance = null;
-    }
-
-    public static bool IsExists()
-    {
-        return (instance != null);
-    }
+    public static bool IsExist => _instance != null;
 }

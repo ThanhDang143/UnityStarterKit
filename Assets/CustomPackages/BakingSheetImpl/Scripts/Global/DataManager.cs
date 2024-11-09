@@ -1,26 +1,23 @@
 #if ThanhDV_BakingSheetImpl
 
-using System.Collections.Generic;
+using System.Linq;
 using Cathei.BakingSheet.Unity;
-using Cathei.LinqGen;
+using Collections.Pooled;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace BakingSheetImpl
 {
-    public class DataManager
+    public class DataManager : Singleton<DataManager>
     {
-        private static DataManager _instance;
-        public static DataManager Instance => _instance ??= new DataManager();
-
         private SheetContainer container;
 
-        private Dictionary<string, IDataModel> allData;
+        private PooledDictionary<string, IDataModel> allData;
 
         public async void InitialData()
         {
-            allData = new Dictionary<string, IDataModel>();
+            allData = new PooledDictionary<string, IDataModel>();
 
             AsyncOperationHandle<SheetContainerScriptableObject> loadContainerHandle = Addressables.LoadAssetAsync<SheetContainerScriptableObject>(DataConstant.SHEET_CONTAINE_SO_ADDRESS);
             await loadContainerHandle.Task;
@@ -55,9 +52,9 @@ namespace BakingSheetImpl
         /// </summary>
         /// <typeparam name="T">Type of data want to get.</typeparam>
         /// <returns>Return a List contain all data is T.</returns>
-        public List<T> GetDatas<T>() where T : class
+        public PooledList<T> GetDatas<T>() where T : class
         {
-            List<T> results = allData.Gen().Where(d => d.Value is T).Cast<T>().ToList();
+            PooledList<T> results = allData.Where(d => d.Value is T).Cast<T>().ToPooledList();
             return results;
         }
     }

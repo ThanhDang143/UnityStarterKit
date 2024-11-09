@@ -1,9 +1,6 @@
 {
   "dependencies": {
     "com.cathei.bakingsheet": "https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet",
-    "com.cathei.betterstreamingassets": "https://github.com/cathei/BetterStreamingAssets-Package.git",
-    "com.cathei.linqgen": "https://github.com/cathei/LinqGen.git?path=LinqGen.Unity/Packages/com.cathei.linqgen",
-    "com.coffee.ui-particle": "https://github.com/mob-sakai/ParticleEffectForUGUI.git",
     "com.unity.addressables": "2.2.2",
     "com.unity.ai.navigation": "2.0.4",
     "com.unity.collab-proxy": "2.5.2",

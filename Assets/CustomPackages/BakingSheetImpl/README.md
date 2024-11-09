@@ -4,6 +4,7 @@
 - Using to convert `Excel` to `ScripableObject`.
 - Require `DOTween`
 - Require `OdinInspector`
+- Require `Utilities`
 
 ## Changelog 
 ### v0.0.3

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Cathei.LinqGen;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.PackageManager;
@@ -80,7 +80,7 @@ namespace BakingSheetImpl
 
             foreach (var symbol in symbols)
             {
-                if (!curSymbols.Gen().Any(s => s == symbol))
+                if (!curSymbols.Contains(symbol))
                 {
                     ArrayUtility.AddRange(ref symbols, new[] { symbol });
                 }
@@ -137,7 +137,7 @@ namespace BakingSheetImpl
 
             if (request.Status == StatusCode.Success)
             {
-                if (request.Result.Gen().Any(package => package.name == packageName))
+                if (request.Result.Any(package => package.name == packageName))
                 {
                     Debug.Log($"<color=green>{packageName} is installed</color>");
                 }
