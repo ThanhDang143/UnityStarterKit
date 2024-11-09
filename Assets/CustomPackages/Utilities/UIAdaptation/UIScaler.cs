@@ -4,16 +4,25 @@ using UnityEngine.UI;
 [RequireComponent(typeof(CanvasScaler))]
 public class UIScaler : MonoBehaviour
 {
-#if AUTO_UIADAPTATION_VERTICAL
+    [Space]
+    [SerializeField] private bool isSetupOnAwake = true;
+
+    [Space]
+#if ThanhDV_UIADAPTATION_VERTICAL
     [SerializeField] private float baseWidth = 1080f;
     [SerializeField] private float baseHeight = 1920f;
-#elif AUTO_UIADAPTATION_HORIZONTAL
+#elif ThanhDV_UIADAPTATION_HORIZONTAL
     [SerializeField] private float baseWidth = 1920f;
     [SerializeField] private float baseHeight = 1080f;
 #else
     [SerializeField] private float baseWidth = 1080f;
     [SerializeField] private float baseHeight = 1920f;
 #endif
+
+    private void Awake()
+    {
+        if (isSetupOnAwake) Setup();
+    }
 
     public void Setup()
     {
