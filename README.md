@@ -2,6 +2,10 @@
 This main branch is **inactive**. Modules will be developed in parallel on their **respective branches**.
 
 ## Changelog v0.0.6
+- Add Install Dependencies Tools to AddressableImpl.
+- Add UIBackground to Utilities.
+
+## Changelog v0.0.6
 Remove the installation function through Git URL.
 
 ## Changelog v0.0.5
