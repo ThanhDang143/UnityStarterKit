@@ -1,3 +1,5 @@
+#if ThanhDV_BakingSheetImpl
+
 namespace BakingSheetImpl
 {
     public class DataConstant
@@ -5,3 +7,5 @@ namespace BakingSheetImpl
         public const string SHEET_CONTAINE_SO_ADDRESS = "SheetContainer";
     }
 }
+
+#endif

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Unity.VisualScripting;
+using Cathei.LinqGen;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
@@ -11,15 +11,13 @@ namespace BakingSheetImpl
 {
     public class InstallDependencies
     {
-        static Dictionary<string, string> packageDependencies = new Dictionary<string, string>
+        private static Dictionary<string, string> packageDependencies = new Dictionary<string, string>
         {
-            { "com.cathei.bakingsheet", "https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet" }
+            { "com.cathei.bakingsheet", "https://github.com/cathei/BakingSheet.git?path=UnityProject/Packages/com.cathei.bakingsheet" },
+            { "com.cathei.linqgen", "https://github.com/cathei/LinqGen.git?path=LinqGen.Unity/Packages/com.cathei.linqgen"}
         };
 
-        static List<string> commentedFiles = new List<string>
-        {
-            "DataEditor", "Demo", "BaseModel", "DataManager", "IDataModel", "SheetContainer"
-        };
+        private const string defineSymbol = "ThanhDV_BakingSheetImpl";
 
         [MenuItem("Tools/BakingSheet Impl/Initialize")]
         public static void ForceInitializeDependencies()
@@ -29,12 +27,67 @@ namespace BakingSheetImpl
                 _ = CheckDependenciesPackageInstalled(package.Key);
             }
 
-            foreach (var file in commentedFiles)
+            AddDefineSymbol(defineSymbol);
+            AssetDatabase.Refresh();
+        }
+
+        private static NamedBuildTarget GetCurrentNamedBuildTarget()
+        {
+            BuildTarget buildTarget = EditorUserBuildSettings.activeBuildTarget;
+
+            switch (buildTarget)
             {
-                UncommentScript(file);
+                case BuildTarget.StandaloneWindows:
+                case BuildTarget.StandaloneWindows64:
+                case BuildTarget.StandaloneOSX:
+                case BuildTarget.StandaloneLinux64:
+                    return NamedBuildTarget.Standalone;
+
+                case BuildTarget.Android:
+                    return NamedBuildTarget.Android;
+
+                case BuildTarget.iOS:
+                    return NamedBuildTarget.iOS;
+
+                case BuildTarget.WebGL:
+                    return NamedBuildTarget.WebGL;
+
+                case BuildTarget.PS4:
+                    return NamedBuildTarget.PS4;
+
+                case BuildTarget.XboxOne:
+                    return NamedBuildTarget.XboxOne;
+
+                case BuildTarget.tvOS:
+                    return NamedBuildTarget.tvOS;
+
+                case BuildTarget.Switch:
+                    return NamedBuildTarget.NintendoSwitch;
+
+                case BuildTarget.PS5:
+                    return NamedBuildTarget.PS5;
+
+                default:
+                    Debug.Log("<color=red>Unsupported build target: " + buildTarget + "</color>");
+                    return NamedBuildTarget.Standalone;
+            }
+        }
+        private static void AddDefineSymbol(params string[] symbols)
+        {
+            NamedBuildTarget namedBuildTarget = GetCurrentNamedBuildTarget();
+            string defines = PlayerSettings.GetScriptingDefineSymbols(namedBuildTarget);
+            string[] curSymbols = defines.Split(';');
+
+            foreach (var symbol in symbols)
+            {
+                if (!curSymbols.Gen().Any(s => s == symbol))
+                {
+                    ArrayUtility.AddRange(ref symbols, new[] { symbol });
+                }
             }
 
-            AssetDatabase.Refresh();
+            defines = string.Join(";", symbols);
+            PlayerSettings.SetScriptingDefineSymbols(namedBuildTarget, defines);
         }
 
         private static async Task InstallDependenciesPackage(string packageName)
@@ -84,7 +137,7 @@ namespace BakingSheetImpl
 
             if (request.Status == StatusCode.Success)
             {
-                if (request.Result.Any(package => package.name == packageName))
+                if (request.Result.Gen().Any(package => package.name == packageName))
                 {
                     Debug.Log($"<color=green>{packageName} is installed</color>");
                 }
@@ -97,32 +150,6 @@ namespace BakingSheetImpl
             {
                 Debug.Log($"<color=red>Check {packageName} fail with error {request.Error.message}</color>");
             }
-        }
-
-        private static void UncommentScript(string scriptName)
-        {
-            string dataEditorPath = FindScriptPath(scriptName);
-            if (string.IsNullOrEmpty(dataEditorPath)) return;
-
-            string[] dataEditorContent = System.IO.File.ReadAllLines(dataEditorPath);
-            List<string> newContent = new List<string>(dataEditorContent);
-
-            if (newContent[0].Equals("/*") || string.IsNullOrEmpty(newContent[0])) newContent.RemoveAt(0);
-            if (newContent[^1].Equals("*/") || string.IsNullOrEmpty(newContent[^1])) newContent.RemoveAt(newContent.Count - 1);
-
-            System.IO.File.WriteAllLines(dataEditorPath, newContent.ToArray());
-        }
-
-        private static string FindScriptPath(string scriptName)
-        {
-            string[] guids = AssetDatabase.FindAssets(scriptName + " t:Script");
-            if (guids.Length <= 0)
-            {
-                Debug.LogError($"<color=red>Cannot find {scriptName}.cs in the project</color>");
-                return string.Empty;
-            }
-
-            return AssetDatabase.GUIDToAssetPath(guids[0]);
         }
     }
 }

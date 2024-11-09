@@ -1,4 +1,5 @@
-/*
+#if ThanhDV_BakingSheetImpl
+
 using System.Collections.Generic;
 using Cathei.BakingSheet;
 using Cathei.BakingSheet.Unity;
@@ -26,4 +27,5 @@ namespace BakingSheetImpl
         }
     }
 } 
-*/
+
+#endif

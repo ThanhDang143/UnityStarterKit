@@ -1,4 +1,5 @@
-/* 
+#if ThanhDV_BakingSheetImpl
+
 using Cathei.BakingSheet;
 using Cathei.BakingSheet.Unity;
 
@@ -11,4 +12,5 @@ namespace BakingSheetImpl
         public string Desc { get; set; }
     }
 } 
-*/
+
+#endif

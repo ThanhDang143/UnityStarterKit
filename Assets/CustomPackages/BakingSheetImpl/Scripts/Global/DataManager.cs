@@ -1,7 +1,8 @@
-/* 
+#if ThanhDV_BakingSheetImpl
+
 using System.Collections.Generic;
-using System.Linq;
 using Cathei.BakingSheet.Unity;
+using Cathei.LinqGen;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -56,8 +57,10 @@ namespace BakingSheetImpl
         /// <returns>Return a List contain all data is T.</returns>
         public List<T> GetDatas<T>() where T : class
         {
-            return new List<T>(allData.Where(d => d.Value is T).Cast<T>());
+            List<T> results = allData.Gen().Where(d => d.Value is T).Cast<T>().ToList();
+            return results;
         }
     }
 }
-*/
+
+#endif
