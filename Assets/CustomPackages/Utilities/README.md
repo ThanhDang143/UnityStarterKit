@@ -3,7 +3,8 @@ This library contains some utilities for Unity development.
 This library contain:
 - Singleton
 - UIAdaptation
-- RectTransform Extension
+- RectTransform Extension.
+- Collections.Pooled
 - More utilites in the future.
 
 ## Changelog 
