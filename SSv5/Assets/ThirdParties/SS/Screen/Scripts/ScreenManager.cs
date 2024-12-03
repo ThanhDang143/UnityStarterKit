@@ -44,6 +44,7 @@ public class ScreenManager : MonoBehaviour
     private OnScreenAddedDelegate m_OnScreenAdded;
     private OnScreenChangedDelegate m_OnScreenChanged;
     private int m_PendingScreens = 0;
+    private int m_AnimationPlayingScreens = 0;
     #endregion
 
     #region Private Static
@@ -464,7 +465,12 @@ public class ScreenManager : MonoBehaviour
             yield return 0;
         }
 
-        while (waitUntilNoScreen && (m_ScreenList.Count > 0 || m_PendingScreens > 0))
+        while (m_PendingScreens > 0 || m_AnimationPlayingScreens > 0)
+        {
+            yield return 0;
+        }
+
+        while (waitUntilNoScreen && (m_PendingScreens > 0 || m_ScreenList.Count > 0))
         {
             yield return 0;
         }
@@ -609,6 +615,7 @@ public class ScreenManager : MonoBehaviour
         }
 
         m_PendingScreens = 0;
+        m_AnimationPlayingScreens = 0;
     }
 
     private void DestroyScreen()
@@ -816,6 +823,8 @@ public class ScreenManager : MonoBehaviour
 
     private void PlayAnimation(Component screen, string animationName, int delayFrames = 0, bool destroyScreenAtAnimationEnd = false, Callback onAnimationEnd = null)
     {
+        m_AnimationPlayingScreens++;
+
         var anim = AddAnimations(screen, screen.GetComponent<ScreenController>().animationObjectName, animationName);
 
         StartCoroutine(CoPlayAnimation(anim, animationName, delayFrames, onAnimationEnd, destroyScreenAtAnimationEnd ? screen : null));
@@ -862,6 +871,8 @@ public class ScreenManager : MonoBehaviour
         }
 
         onAnimationEnd?.Invoke();
+
+        m_AnimationPlayingScreens--;
     }
 
     private ScreenController AddScreenController(Component screen)
@@ -923,7 +934,7 @@ public class ScreenManager : MonoBehaviour
         {
             var topScreen = m_ScreenList[m_ScreenList.Count - 1];
 
-            if (!topScreen.gameObject.activeInHierarchy)
+            if (topScreen != null && topScreen.gameObject != null && !topScreen.gameObject.activeInHierarchy)
             {
                 m_ScreenShield.name = ScreenShieldName(topScreen.name);
 
