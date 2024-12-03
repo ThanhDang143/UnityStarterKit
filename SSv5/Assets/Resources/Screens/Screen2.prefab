@@ -1068,7 +1068,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3633101104106832232}
         m_TargetAssemblyTypeName: Screen2, Assembly-CSharp
-        m_MethodName: OnCloseButtonTap
+        m_MethodName: OnKeyBack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

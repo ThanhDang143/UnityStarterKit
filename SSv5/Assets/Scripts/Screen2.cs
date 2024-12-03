@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class Screen2 : MonoBehaviour
+public class Screen2 : MonoBehaviour, IKeyBack
 {
     public Text label;
 
@@ -16,7 +16,7 @@ public class Screen2 : MonoBehaviour
         });
     }
 
-    public void OnCloseButtonTap()
+    public void OnKeyBack()
     {
         ScreenManager.Close();
     }
