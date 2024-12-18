@@ -13,6 +13,18 @@ using UnityEngine.SceneManagement;
 
 public class ScreenManager : MonoBehaviour
 {
+    class ScreenCoroutine
+    {
+        public Coroutine coroutine;
+        public string screenName;
+
+        public ScreenCoroutine(Coroutine coroutine, string screenName)
+        {
+            this.coroutine = coroutine;
+            this.screenName = screenName;
+        }
+    }
+
     #region SerializeField
     [SerializeField] string m_ScreenPath = "Screens";
     [SerializeField] string m_ScreenAnimationPath = "Animations";
@@ -45,6 +57,7 @@ public class ScreenManager : MonoBehaviour
     private OnScreenChangedDelegate m_OnScreenChanged;
     private int m_PendingScreens = 0;
     private int m_AnimationPlayingScreens = 0;
+    private List<ScreenCoroutine> m_ScreenCoroutines = new List<ScreenCoroutine>();
     #endregion
 
     #region Private Static
@@ -97,6 +110,7 @@ public class ScreenManager : MonoBehaviour
     /// <param name="clearAllScreens">Clear all screens when the scene is loaded?</param>
     public static void Load<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreens = true) where T : Component
     {
+        StopAllAddScreenCoroutines();
         instance.LoadScene(sceneName, mode, onSceneLoaded, clearAllScreens);
     }
 
@@ -116,7 +130,8 @@ public class ScreenManager : MonoBehaviour
     /// <returns>The component type T in the screen.</returns>
     public static void Add<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true, AddConditionDelegate addCondition = null, bool waitUntilNoScreen = false) where T : Component
     {
-        instance.StartCoroutine(instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName, useExistingScreen, onScreenLoad, hasShield, manually, addCondition, waitUntilNoScreen));
+        var c = instance.StartCoroutine(instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName, useExistingScreen, onScreenLoad, hasShield, manually, addCondition, waitUntilNoScreen));
+        instance.m_ScreenCoroutines.Add(new ScreenCoroutine(c, screenName));
     }
 
     /// <summary>
@@ -317,6 +332,27 @@ public class ScreenManager : MonoBehaviour
         if (m_Instance != null && m_Instance.m_ScreenShield != null)
         {
             m_Instance.m_ScreenShield.Play("ShieldHide");
+        }
+    }
+
+    /// <summary>
+    /// Stop All AddScreen Coroutines
+    /// </summary>
+    public static void StopAllAddScreenCoroutines()
+    {
+        if (m_Instance != null)
+        {
+            for (int i = 0; i < instance.m_ScreenCoroutines.Count; i++)
+            {
+                var sc = instance.m_ScreenCoroutines[i];
+                if (sc != null && sc.coroutine != null)
+                {
+                    instance.StopCoroutine(sc.coroutine);
+                    sc.coroutine = null;
+                    Debug.Log("CM: StopCoroutine " + sc.screenName.ToString());
+                }
+            }
+            instance.m_ScreenCoroutines.Clear();
         }
     }
     #endregion
