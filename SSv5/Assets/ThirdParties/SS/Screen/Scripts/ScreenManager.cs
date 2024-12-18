@@ -127,10 +127,12 @@ public class ScreenManager : MonoBehaviour
     /// <param name="hasShield">Has shield under this screen or not</param>
     /// <param name="manually">This screen is shown by user click or automatically. Just using this for analytics</param>
     /// <param name="addCondition">Only add this screen after this condition return true</param>
+    /// <param name="waitUntilNoScreen">Only add this screen when no other screen is showing</param>
+    /// <param name="destroyTopScreen">If this is true, destroy the top screen before adding this screen</param>
     /// <returns>The component type T in the screen.</returns>
-    public static void Add<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true, AddConditionDelegate addCondition = null, bool waitUntilNoScreen = false) where T : Component
+    public static void Add<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true, AddConditionDelegate addCondition = null, bool waitUntilNoScreen = false, bool destroyTopScreen = false) where T : Component
     {
-        var c = instance.StartCoroutine(instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName, useExistingScreen, onScreenLoad, hasShield, manually, addCondition, waitUntilNoScreen));
+        var c = instance.StartCoroutine(instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName, useExistingScreen, onScreenLoad, hasShield, manually, addCondition, waitUntilNoScreen, destroyTopScreen));
         instance.m_ScreenCoroutines.Add(new ScreenCoroutine(c, screenName));
     }
 
@@ -349,7 +351,7 @@ public class ScreenManager : MonoBehaviour
                 {
                     instance.StopCoroutine(sc.coroutine);
                     sc.coroutine = null;
-                    Debug.Log("CM: StopCoroutine " + sc.screenName.ToString());
+                    Debug.LogWarning("CM: StopCoroutine " + sc.screenName.ToString());
                 }
             }
             instance.m_ScreenCoroutines.Clear();
@@ -494,7 +496,7 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
-    private IEnumerator AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true, AddConditionDelegate addCondition = null, bool waitUntilNoScreen = false) where T : Component
+    private IEnumerator AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true, AddConditionDelegate addCondition = null, bool waitUntilNoScreen = false, bool destroyTopScreen = false) where T : Component
     {
         while (addCondition != null && !addCondition())
         {
@@ -538,7 +540,14 @@ public class ScreenManager : MonoBehaviour
 
             if (topScreen != null)
             {
-                topScreen.gameObject.SetActive(false);
+                if (destroyTopScreen)
+                {
+                    DestroyScreen(topScreen);
+                }
+                else
+                {
+                    topScreen.gameObject.SetActive(false);
+                }
 
                 fromScreen = topScreen.name;
             }

@@ -21,25 +21,26 @@ public class Screen1 : MonoBehaviour, IKeyBack
         });
     }
 
+    public void OnAddScreen2UntilNoScreenButtonTap()
+    {
+        ScreenManager.Add<Screen2>("Screen2", "ScaleFadeShow", "ScaleFadeHide", "AnimationRoot", false, (screen) => {
+            screen.label.text = "Screen2";
+        }, waitUntilNoScreen: true);
+    }
+
     public void OnAddScreen2UntilSpacePressedButtonTap()
     {
-        ScreenManager.Add<Screen2>("Screen2", "ScaleFadeShow", "ScaleFadeHide", "AnimationRoot", true, (screen) => {
+        ScreenManager.Add<Screen2>("Screen2", "ScaleFadeShow", "ScaleFadeHide", "AnimationRoot", false, (screen) => {
             screen.label.text = "Screen2";
             pressedSpaceKey = false;
         }, addCondition: WaitSpaceKey);
     }
 
-    public void OnAddScreen2And3ButtonTap()
+    public void OnAddScreen3AndDestroyMeButtonTap()
     {
-        ScreenManager.Close();
-
-        ScreenManager.Add<Screen2>("Screen2", "ScaleFadeShow", "ScaleFadeHide", "AnimationRoot", true, (screen) => {
-            screen.label.text = "Screen2";
-        }, waitUntilNoScreen:true);
-
-        ScreenManager.Add<Screen3>("Screen3", "ScaleFadeShow", "ScaleFadeHide", "AnimationRoot", true, (screen) => {
+        ScreenManager.Add<Screen3>("Screen3", "ScaleFadeShow", "ScaleFadeHide", "AnimationRoot", false, (screen) => {
             screen.label.text = "Screen3";
-        }, waitUntilNoScreen: true);
+        }, destroyTopScreen: true);
     }
 
     private bool WaitSpaceKey()
