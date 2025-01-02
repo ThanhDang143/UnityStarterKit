@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class ScreenSettings : EditorWindow
 {
-    public string screenManagerPath;
+    public string screenCanvasPath;
     public int screenWidth = 720;
     public int screenHeight = 1600;
 
@@ -39,7 +39,7 @@ public class ScreenSettings : EditorWindow
     {
         screenWidth = EditorPrefs.GetInt("SS_SCREEN_WIDTH", 720);
         screenHeight = EditorPrefs.GetInt("SS_SCREEN_HEIGHT", 1600);
-        screenManagerPath = SS.IO.Searcher.SearchFileInProject("ScreenManager.prefab", SS.IO.Searcher.PathType.Relative);
+        screenCanvasPath = SS.IO.Searcher.SearchFileInProject("ScreenCanvas.prefab", SS.IO.Searcher.PathType.Relative);
     }
 
     void SavePrefs()
@@ -51,7 +51,6 @@ public class ScreenSettings : EditorWindow
     void OnGUI()
     {
         GUILayout.Label("Scene Generator", EditorStyles.boldLabel);
-        screenManagerPath = EditorGUILayout.TextField("Screen Manager Path", screenManagerPath);
         screenWidth = EditorGUILayout.IntField("Screen Width", screenWidth);
         screenHeight = EditorGUILayout.IntField("Screen Height", screenHeight);
 
@@ -69,7 +68,7 @@ public class ScreenSettings : EditorWindow
 
     void EditScreenManager()
     {
-        string prefabPath = screenManagerPath;
+        string prefabPath = screenCanvasPath;
 
         var prefabInstance = PrefabUtility.LoadPrefabContents(prefabPath);
 
