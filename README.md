@@ -8,6 +8,11 @@
 
 <h2>Basic Usage</h2>
 
+* Screen Settings (set this to change the main canvas scaler and the game window size):
+```cs
+From Menu: SS / Screen Settings / Input Screen Width & Height / Save
+```
+https://zenga.com.vn/learn/unity/ss/screen-settings.gif
 * Create a screen:
 ```cs
 From Menu: SS / Screen Generator / Input Screen Name / Generate
