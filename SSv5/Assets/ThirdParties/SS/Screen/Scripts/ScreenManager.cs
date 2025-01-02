@@ -572,6 +572,8 @@ public class ScreenManager : MonoBehaviour
                     screen.gameObject.SetActive(true);
                     PlayAnimation(screen, screen.GetComponent<ScreenController>().showAnimation, 4);
 
+                    m_PendingScreens--;
+
                     var temp = m_ScreenList[i];
                     m_ScreenList[i] = m_ScreenList[m_ScreenList.Count - 1];
                     m_ScreenList[m_ScreenList.Count - 1] = temp;
