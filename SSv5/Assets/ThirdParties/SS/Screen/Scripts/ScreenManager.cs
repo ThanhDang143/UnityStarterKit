@@ -357,6 +357,18 @@ public class ScreenManager : MonoBehaviour
             instance.m_ScreenCoroutines.Clear();
         }
     }
+
+    /// <summary>
+    /// Check if no screen is appearing, no screen is animating, and no screen is pending to be added.
+    /// </summary>
+    /// <returns></returns>
+    public static bool IsNoMoreScreen()
+    {
+        if (m_Instance == null)
+            return true;
+
+        return (m_Instance.m_ScreenList.Count <= 0 && m_Instance.m_PendingScreens <= 0 && m_Instance.m_AnimationPlayingScreens <= 0);
+    }
     #endregion
 
     #region Unity Functions
