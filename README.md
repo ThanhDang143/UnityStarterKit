@@ -1,3 +1,4 @@
+
 <h1>Simple Screen Manager for Unity (aka SS)</h1>
 
 <h2>Who is this for?</h2>
@@ -12,7 +13,9 @@
 ```cs
 From Menu: SS / Screen Settings / Input Screen Width & Height / Save
 ```
-https://zenga.com.vn/learn/unity/ss/screen-settings.gif
+
+<img width="50%" src="https://zenga.com.vn/learn/unity/ss/screen-settings.gif" alt="Demo">
+
 * Create a screen:
 ```cs
 From Menu: SS / Screen Generator / Input Screen Name / Generate
