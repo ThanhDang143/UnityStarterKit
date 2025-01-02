@@ -108,7 +108,7 @@ public class ScreenManager : MonoBehaviour
     /// <param name="mode">The load scene mode. Single or Additive</param>
     /// <param name="onSceneLoaded">The callback when the scene is loaded. [IMPORTANT] It is called after the Awake & OnEnable, before the Start.</param>
     /// <param name="clearAllScreens">Clear all screens when the scene is loaded?</param>
-    public static void Load<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreens = true) where T : Component
+    public static void Load<T>(string sceneName, LoadSceneMode mode = LoadSceneMode.Single, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreens = true) where T : Component
     {
         StopAllAddScreenCoroutines();
         instance.LoadScene(sceneName, mode, onSceneLoaded, clearAllScreens);
@@ -436,7 +436,7 @@ public class ScreenManager : MonoBehaviour
         UpdateScreenShieldColor();
     }
 
-    private void LoadScene<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true) where T : Component
+    private void LoadScene<T>(string sceneName, LoadSceneMode mode = LoadSceneMode.Single, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true) where T : Component
     {
         StartCoroutine(CoLoadScene(sceneName, mode, onSceneLoaded, clearAllScreen));
     }
