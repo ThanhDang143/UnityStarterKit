@@ -10,6 +10,12 @@ namespace SS.IO
 {
     public class Searcher
     {
+        public enum PathType
+        {
+            Absolute,
+            Relative
+        }
+
         private static List<FileInfo> SearchFile(DirectoryInfo dir, string fileName)
         {
             List<FileInfo> foundItems = dir.GetFiles(fileName).ToList();
@@ -22,14 +28,28 @@ namespace SS.IO
             return foundItems;
         }
 
-        public static string SearchFileInProject(string fileName)
+        public static string SearchFileInProject(string fileName, PathType pathType = PathType.Absolute)
         {
             DirectoryInfo di = new DirectoryInfo(Application.dataPath);
             List<FileInfo> fis = SearchFile(di, fileName);
 
             if (fis.Count >= 1)
             {
-                return fis[0].FullName;
+                switch (pathType)
+                {
+                    case PathType.Absolute:
+                        return fis[0].FullName;
+
+                    case PathType.Relative:
+                        var fullPath = fis[0].FullName;
+                        var assetIndex = fullPath.LastIndexOf("Assets/");
+
+                        if (assetIndex >= 0)
+                        {
+                            return fullPath.Substring(assetIndex);
+                        }
+                        return fullPath;
+                }
             }
 
             return null;
