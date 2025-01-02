@@ -10,11 +10,7 @@
 
 * Create a screen:
 ```cs
-Menu / SS / Screen Generator / Input Screen Name / Generate
-```
-* Load a scene with automatic fade
-```cs
-ScreenManager.Load<Scene1>("Scene1", onSceneLoaded: (scene1) => { });
+From Menu: SS / Screen Generator / Input Screen Name / Generate
 ```
 * Add a screen on top with default animation
 ```cs
@@ -24,3 +20,9 @@ ScreenManager.Add<Screen1>("Screen1", onScreenLoad: (screen) => { });
 ```cs
 ScreenManager.Close();
 ```
+* Load a scene with automatic fade
+```cs
+ScreenManager.Load<Scene1>("Scene1", onSceneLoaded: (scene1) => { });
+```
+
+<h2>Advance Usage</h2>
