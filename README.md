@@ -14,7 +14,7 @@
 * A **Scene** is freeform and contains any object, including its own UI canvas. The Scene’s canvas will not be hidden when a Screen is displayed on top.
 
 <p align="center">
-  <img width="200px" src="https://zenga.com.vn/learn/unity/ss/demo.gif" alt="Demo">
+  <img width="200px" src="/learn/unity/ss/demo.gif?raw=true" alt="Demo">
   <p align="center">In this demo, even though they share the same prefab, the Store can be displayed as a modal window or as the content of the Store Tab.</p>
 </p>
 
