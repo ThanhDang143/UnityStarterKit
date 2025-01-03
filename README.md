@@ -14,7 +14,7 @@
 * A **Scene** is freeform and contains any object, including its own UI canvas. The Scene’s canvas will not be hidden when a Screen is displayed on top.
 
 <p align="center">
-  <img width="200px" src="https://zenga.com.vn/learn/unity/ss/demo.gif" alt="Demo">
+  <img width="200px" src="https://zenga.com.vn/learn/unity/ss/demo.gif?raw=true" alt="Demo">
   <p align="center">In this demo, even though they share the same prefab, the Store can be displayed as a modal window or as the content of the Store Tab.</p>
 </p>
 
@@ -28,7 +28,7 @@ From Menu: SS / Screen Settings / Input Screen Width & Height / Save
 ```
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/screen-settings.gif" alt="Demo">
+  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/screen-settings.gif?raw=true" alt="Demo">
 </p>
 
 <h3>2. Create a screen</h3>
@@ -38,13 +38,13 @@ From Menu: SS / Screen Generator / Input Screen Name / Generate
 ```
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/screen-generator.gif" alt="Demo">
+  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/screen-generator.gif?raw=true" alt="Demo">
 </p>
 
 <h3>3. Drag screen prefab to Resources/Screens folder</h3>In case of not using Addressables
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/drag-screen.gif" alt="Demo">
+  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/drag-screen.gif?raw=true" alt="Demo">
 </p>
 
 <h3>4. Add a screen on top with default animation</h3>
@@ -54,7 +54,7 @@ ScreenManager.Add<Screen1Controller>(screenName: "Screen1", onScreenLoad: (scree
 ```
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/add-screen.gif" alt="Demo">
+  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/add-screen.gif?raw=true" alt="Demo">
 </p>
 
 <h3>5. Close a screen</h3>
@@ -64,7 +64,7 @@ ScreenManager.Close();
 ```
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/close-screen.gif" alt="Demo">
+  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/close-screen.gif?raw=true" alt="Demo">
 </p>
 
 <h3>6. Load a scene with automatic fade</h3>
@@ -74,7 +74,7 @@ ScreenManager.Load<Scene1Controller>(sceneName: "Scene1", onSceneLoaded: (scene1
 ```
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/load-scene.gif" alt="Demo">
+  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/load-scene.gif?raw=true" alt="Demo">
 </p>
 
 <h2>Advance Usage</h2>
@@ -89,7 +89,7 @@ ADDRESSABLE
 ```
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/advance/addressable-symbol.png" alt="Demo">
+  <img width="500px" src="/learn/unity/ss/advance/addressable-symbol.png?raw=true" alt="Demo">
 </p>
 
 <h4>1.2. Simplify addressable names  </h4>
@@ -97,9 +97,9 @@ ADDRESSABLE
 Make sure the addressable name is the same as the screen name, not a path to the prefab.
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/advance/simplify-addressable-name.png" alt="Demo">
+  <img width="500px" src="/learn/unity/ss/advance/simplify-addressable-name.png?raw=true" alt="Demo">
 </p>
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/advance/addressable-groups.png" alt="Demo">
+  <img width="500px" src="learn/unity/ss/advance/addressable-groups.png?raw=true" alt="Demo">
 </p>
