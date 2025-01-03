@@ -26,7 +26,7 @@ From Menu: SS / Screen Settings / Input Screen Width & Height / Save
 ```
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/screen-settings.gif" alt="Demo">
+  <img width="500px" src="/learn/unity/ss/screen-settings.gif?raw=true" alt="Demo">
 </p>
 
 * Create a screen:
@@ -35,13 +35,13 @@ From Menu: SS / Screen Generator / Input Screen Name / Generate
 ```
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/screen-generator.gif" alt="Demo">
+  <img width="500px" src="/learn/unity/ss/screen-generator.gif?raw=true" alt="Demo">
 </p>
 
 * Drag screen prefab to Resources/Screens folder (in case of not using Addressable):
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/drag-screen.gif" alt="Demo">
+  <img width="500px" src="/learn/unity/ss/drag-screen.gif?raw=true" alt="Demo">
 </p>
 
 * Add a screen on top with default animation
@@ -50,7 +50,7 @@ ScreenManager.Add<Screen1Controller>(screenName: "Screen1", onScreenLoad: (scree
 ```
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/add-screen.gif" alt="Demo">
+  <img width="500px" src="/learn/unity/ss/add-screen.gif?raw=true" alt="Demo">
 </p>
 
 * Close a screen
@@ -59,7 +59,7 @@ ScreenManager.Close();
 ```
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/close-screen.gif" alt="Demo">
+  <img width="500px" src="/learn/unity/ss/close-screen.gif?raw=true" alt="Demo">
 </p>
 
 * Load a scene with automatic fade
@@ -68,7 +68,7 @@ ScreenManager.Load<Scene1Controller>(sceneName: "Scene1", onSceneLoaded: (scene1
 ```
 
 <p align="center">
-  <img width="500px" src="https://zenga.com.vn/learn/unity/ss/load-scene.gif" alt="Demo">
+  <img width="500px" src="/learn/unity/ss/load-scene.gif?raw=true" alt="Demo">
 </p>
 
 <h2>Advance Usage</h2>
