@@ -3,8 +3,8 @@
 <h2>Who is this for?</h2>
 
 * Developers looking for a **very simple Screen Manager/Navigator for Unity** with enough features to build any type of game, even mid-core or more complex projects.
-* Those who want to **learn the basics in 5 minutes**.
-* Those who want to **master advanced features in 15 minutes**.
+* Those who want to **learn the basics in 10 minutes**.
+* Those who want to **master advanced features in 30 minutes**.
 
 <h2>Concept</h2>
 
@@ -15,6 +15,7 @@
 
 <p align="center">
   <img width="200px" src="https://zenga.com.vn/learn/unity/ss/demo.gif" alt="Demo">
+  <p align="center">In this demo, even though they share the same prefab, the Store can be displayed as a modal window or as the content of the Store Tab.</p>
 </p>
 
 <h2>Basic Usage</h2>
