@@ -26,13 +26,16 @@ public class ScreenSettings : EditorWindow
     [MenuItem("SS/Resize Game Window")]
     public static void ResizeGameWindow()
     {
-        var prefabInstance = PrefabUtility.LoadPrefabContents(SS.IO.Searcher.SearchFileInProject("ScreenManager.prefab", SS.IO.Searcher.PathType.Relative));
+        var prefabInstance = PrefabUtility.LoadPrefabContents(SS.IO.Searcher.SearchFileInProject("ScreenCanvas.prefab", SS.IO.Searcher.PathType.Relative));
 
         var canvasScaler = prefabInstance.GetComponentInChildren<CanvasScaler>();
-        var width = canvasScaler.referenceResolution.x;
-        var height = canvasScaler.referenceResolution.y;
+        if (canvasScaler != null)
+        {
+            var width = canvasScaler.referenceResolution.x;
+            var height = canvasScaler.referenceResolution.y;
 
-        SS.Tool.GameWindow.Resize((int)width, (int)height);
+            SS.Tool.GameWindow.Resize((int)width, (int)height);
+        }
     }
 
     void LoadPrefs()
@@ -59,14 +62,14 @@ public class ScreenSettings : EditorWindow
             if (screenWidth > 0 && screenHeight > 0)
             {
                 SavePrefs();
-                EditScreenManager();
+                EditScreenCanvas();
                 SS.Tool.GameWindow.Resize(screenWidth, screenHeight);
                 Close();
             }
         }
     }
 
-    void EditScreenManager()
+    void EditScreenCanvas()
     {
         string prefabPath = screenCanvasPath;
 
