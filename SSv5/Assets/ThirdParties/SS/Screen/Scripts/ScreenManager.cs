@@ -13,20 +13,20 @@ using UnityEngine.SceneManagement;
 
 public enum ScreenAnimation
 {
-    BottomHide,
-    BottomShow,
-    FadeHide,
-    FadeShow,
-    LeftHide,
-    LeftShow,
-    RightHide,
-    RightShow,
-    RotateHide,
-    RotateShow,
-    ScaleHide,
-    ScaleShow,
-    TopHide,
-    TopShow
+    BottomHide, // The screen slides from the center to the bottom when hiding.
+    BottomShow, // The screen slides from the bottom to the center when showing.
+    FadeHide,   // The screen fades out when hiding.
+    FadeShow,   // The screen fades in when showing.
+    LeftHide,   // The screen slides from the center to the left when hiding.
+    LeftShow,   // The screen slides from the left to the center when showing.
+    RightHide,  // The screen slides from the center to the right when hiding.
+    RightShow,  // The screen slides from the right to the center when showing.
+    RotateHide, // The screen rotates clockwise when hiding.
+    RotateShow, // The screen rotates counterclockwise when showing.
+    ScaleHide,  // The screen scales down to 0 when hiding.
+    ScaleShow,  // The screen scales up to 1 when showing.
+    TopHide,    // The screen slides from the center to the top when hiding.
+    TopShow     // The screen slides from the top to the center when showing.
 }
 
 public class ScreenManager : MonoBehaviour
