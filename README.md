@@ -131,7 +131,7 @@ public enum ScreenAnimation
 }
 ```
 
-<h4>2.2. Set Animation when adding screen: </h4>
+<h4>2.2. Set Animations when adding screen: </h4>
 
 The screen slides from the left to the center when showing.
 ```cs
@@ -148,7 +148,7 @@ The screen fades out when hiding.
 ScreenManager.Close(onScreenClosed: null, hideAnimation: ScreenAnimation.FadeHide);
 ```
 
-<h4>2.3. Custom Screen Animation: </h4>
+<h4>2.3. Custom Screen Animations: </h4>
 
 Put your custom animations (Unity legacy animations) in Resources/Animations
 <p align="center">
