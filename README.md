@@ -88,10 +88,10 @@ If you want to use Addressables, you do not need to drag screen prefabs to Resou
 From Menu: Window / Package Manager / Unity Registry / Addressables / Install
 ```
 
-<h4>1.2. Add this Scripting Define Symbol: </h4>
+<h4>1.2. Add this Scripting Define Symbol: ADDRESSABLE</h4>
 
 ```cs
-ADDRESSABLE
+From Menu: Edit / Project Settings / Player / Other Settings / Scripting Define Symbols / + / ADDRESSABLE / Apply
 ```
 
 <p align="center">
