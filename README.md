@@ -51,7 +51,7 @@ From Menu: SS / Screen Generator / Input Screen Name / Generate
 <h3>4. Add a screen on top with default animation</h3>
 
 ```cs
-ScreenManager.Add<Screen1Controller>(screenName: "Screen1", onScreenLoad: (screen) => { });
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1");
 ```
 
 <p align="center">
@@ -71,7 +71,7 @@ ScreenManager.Close();
 <h3>6. Load a scene with automatic fade</h3>
 
 ```cs
-ScreenManager.Load<Scene1Controller>(sceneName: "Scene1", onSceneLoaded: (scene1) => { });
+ScreenManager.Load<Scene1Controller>(sceneName: "Scene1");
 ```
 
 <p align="center">
