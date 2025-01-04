@@ -11,6 +11,24 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+public enum ScreenAnimation
+{
+    BottomHide,
+    BottomShow,
+    FadeHide,
+    FadeShow,
+    LeftHide,
+    LeftShow,
+    RightHide,
+    RightShow,
+    RotateHide,
+    RotateShow,
+    ScaleHide,
+    ScaleShow,
+    TopHide,
+    TopShow
+}
+
 public class ScreenManager : MonoBehaviour
 {
     class ScreenCoroutine
@@ -134,6 +152,14 @@ public class ScreenManager : MonoBehaviour
     {
         var c = instance.StartCoroutine(instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName, useExistingScreen, onScreenLoad, hasShield, manually, addCondition, waitUntilNoScreen, destroyTopScreen));
         instance.m_ScreenCoroutines.Add(new ScreenCoroutine(c, screenName));
+    }
+
+    /// <summary>
+    /// Add a screen on top of all screens. Use ScreenAnimation enum instead of string for animations
+    /// </summary>
+    public static void Add<T>(string screenName, ScreenAnimation showAnimation = ScreenAnimation.ScaleShow, ScreenAnimation hideAnimation = ScreenAnimation.ScaleHide, string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true, AddConditionDelegate addCondition = null, bool waitUntilNoScreen = false, bool destroyTopScreen = false) where T : Component
+    {
+        Add(screenName, showAnimation.ToString(), hideAnimation.ToString(), animationObjectName, useExistingScreen, onScreenLoad, hasShield, manually, addCondition, waitUntilNoScreen, destroyTopScreen);
     }
 
     /// <summary>
