@@ -207,6 +207,14 @@ public class ScreenManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Close the screen which is at the top of all screens. Use ScreenAnimation enum instead of string for animations
+    /// </summary>\
+    public static void Close(Callback onScreenClosed, ScreenAnimation hideAnimation)
+    {
+        Close(onScreenClosed, hideAnimation.ToString());
+    }
+
+    /// <summary>
     /// Close a specific screen.
     /// </summary>
     /// <param name="screen">The component in screen which is returned by the Add function.</param>
@@ -215,6 +223,14 @@ public class ScreenManager : MonoBehaviour
     public static void Close(Component screen, Callback onScreenClosed = null, string hideAnimation = null)
     {
         instance.CloseScreen(screen, onScreenClosed, hideAnimation);
+    }
+
+    /// <summary>
+    /// Close a specific screen. Use ScreenAnimation enum instead of string for animations
+    /// </summary>
+    public static void Close(Component screen, Callback onScreenClosed, ScreenAnimation hideAnimation)
+    {
+        Close(screen, onScreenClosed, hideAnimation.ToString());
     }
 
     /// <summary>
