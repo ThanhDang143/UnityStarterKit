@@ -1,3 +1,4 @@
+
 <h1>Simple Screen Manager for Unity (aka SS)</h1>
 
 <h2>Who is this for?</h2>
@@ -105,3 +106,56 @@ Make sure the addressable name is the same as the screen name, not a path to the
 <p align="center">
   <img width="500px" src="learn/unity/ss/advance/addressable-groups.gif?raw=true" alt="Demo">
 </p>
+
+<h3>2. Screen Animations</h3>
+
+<h4>2.1. Default Screen Animations: </h4>
+
+```cs
+public enum ScreenAnimation
+{
+    BottomHide, // The screen slides from the center to the bottom when hiding.
+    BottomShow, // The screen slides from the bottom to the center when showing.
+    FadeHide,   // The screen fades out when hiding.
+    FadeShow,   // The screen fades in when showing.
+    LeftHide,   // The screen slides from the center to the left when hiding.
+    LeftShow,   // The screen slides from the left to the center when showing.
+    RightHide,  // The screen slides from the center to the right when hiding.
+    RightShow,  // The screen slides from the right to the center when showing.
+    RotateHide, // The screen rotates clockwise when hiding.
+    RotateShow, // The screen rotates counterclockwise when showing.
+    ScaleHide,  // The screen scales down to 0 when hiding.
+    ScaleShow,  // The screen scales up to 1 when showing.
+    TopHide,    // The screen slides from the center to the top when hiding.
+    TopShow     // The screen slides from the top to the center when showing.
+}
+```
+
+<h4>2.2. Set Animation when adding screen: </h4>
+
+The screen slides from the left to the center when showing.
+```cs
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1", showAnimation: ScreenAnimation.LeftShow, hideAnimation: ScreenAnimation.LeftHide, onScreenLoad: (screen) => { });
+```
+
+The screen slides from the center to the left when hiding. The 'hideAnimation' which is declared in the Add function will be used
+```cs
+ScreenManager.Close();
+```
+
+The screen fades out when hiding.
+```cs
+ScreenManager.Close(onScreenClosed: null, hideAnimation: ScreenAnimation.FadeHide);
+```
+
+<h4>2.3. Custom Screen Animation: </h4>
+
+Put your custom animations (Unity legacy animations) in Resources/Animations
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/custom-screen-animations.png?raw=true" alt="Demo">
+</p>
+
+Add screen with custom animations
+```cs
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1", showAnimation: "Custom1Show", hideAnimation: "Custom1Hide", onScreenLoad: (screen) => { });
+```
