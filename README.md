@@ -216,10 +216,14 @@ ScreenManager.AddListener(onScreenAdded: (toScreen, fromScreen, manually) => {
     Debug.Log(string.Format("Add screen {0} from screen {1} ") + (manually ? "manually" : "automatically"));
 });
 ScreenManager.Load<Scene1Controller>(sceneName: "Scene1");
+```
 
+```cs
 // On Screen1 Button Tap
 ScreenManager.Add<Screen1Controller>(screenName: "Screen1", manually:true);
+```
 
+```cs
 // On Start of Screen1Controller
 ScreenManager.Add<Screen2Controller>(screenName: "Screen2", manually:false);
 ```
@@ -240,12 +244,16 @@ void OnEnable()
 {
     ScreenManager.AddListener(OnScreenChanged);
 }
+```
 
+```cs
 void OnDisable()
 {
     ScreenManager.RemoveListener(OnScreenChanged);
 }
+```
 
+```cs
 void OnScreenChanged(int screenCount)
 {
     if (screenCount > 0)
@@ -256,5 +264,53 @@ void OnScreenChanged(int screenCount)
     {
         // Banner.Show();
     }
+}
+```
+
+<h3>4. Set conditions to display screen</h3>
+
+<h4>4.1. Wait Until No Screen </h4>
+
+In this example, Screen2 will be shown when user closes Screen1, then Screen3 will be shown when user closes Screen2. 
+
+```cs
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1");
+ScreenManager.Add<Screen2Controller>(screenName: "Screen2",  waitUntilNoScreen: true);
+ScreenManager.Add<Screen3Controller>(screenName: "Screen3",  waitUntilNoScreen: true);
+```
+
+
+<h4>4.2. Custom Add-Condition </h4>
+
+In this example, Screen1 will be shown when the bool something variable becomes true
+
+```cs
+bool something = false;
+```
+
+```cs
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1", addCondition: WaitSomething);
+```
+
+```cs
+bool WaitSomething()
+{
+    return something;
+}
+```
+
+<h4>4.3. Wait until no screen to do other things </h4>
+
+In some cases, you have to wait until there is no more Screen displayed before doing something to avoid being covered by a Screen.
+
+```cs
+IEnumerator WaitUntilNoScreenToDoSomething()
+{
+    while (!ScreenManager.IsNoMoreScreen())
+    {
+        yield return 0;
+    }
+
+    // Do somethings
 }
 ```
