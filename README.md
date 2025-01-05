@@ -8,10 +8,11 @@
 
 <h2>Concept</h2>
 
-* Regardless of fullscreen page or modal/modeless window, everything is considered a **Screen**.
+* Regardless of fullscreen page or modal/modeless window, they are all considered **Screen**.
 * At any given time, **only one Screen is visible** to optimize performance. If a Screen is shown on top of another, the underlying Screen will be temporarily hidden, and it will reappear when the top Screen is closed.
 * A Screen is a freeform prefab that does **not require any specific scripts**, allowing it to be used as a child object anywhere.
 * A **Scene** is freeform and contains any object, including its own UI canvas. The Scene’s canvas will not be hidden when a Screen is displayed on top.
+* The package size is only 38 KB and does **not depend** on any external libraries.
 
 <p align="center">
   <img width="200px" src="/learn/unity/ss/demo.gif?raw=true" alt="Demo">
@@ -50,7 +51,7 @@ From Menu: SS / Screen Generator / Input Screen Name / Generate
 <h3>4. Add a screen on top with default animation</h3>
 
 ```cs
-ScreenManager.Add<Screen1Controller>(screenName: "Screen1", onScreenLoad: (screen) => { });
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1");
 ```
 
 <p align="center">
@@ -70,7 +71,7 @@ ScreenManager.Close();
 <h3>6. Load a scene with automatic fade</h3>
 
 ```cs
-ScreenManager.Load<Scene1Controller>(sceneName: "Scene1", onSceneLoaded: (scene1) => { });
+ScreenManager.Load<Scene1Controller>(sceneName: "Scene1");
 ```
 
 <p align="center">
@@ -180,3 +181,80 @@ ScreenManager.Add<Screen1Controller>(screenName: "Screen1", animationObjectName:
 <p align="center">
   <img width="500px" src="/learn/unity/ss/advance/custom-animation-object.png?raw=true" alt="Demo">
 </p>
+
+<h3>3. Events</h3>
+
+<h4>3.1. On Screen Loaded </h4>
+
+Note: onScreenLoaded is called after Awake & OnEnable, before Start of scripts in screen
+
+```cs
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1", onScreenLoad: (screen) => {
+    // screen.Init();
+});
+```
+
+
+<h4>3.2. On Scene Loaded </h4>
+
+Note: onSceneLoaded is called after Awake & OnEnable, before Start of scripts in scene
+
+```cs
+ScreenManager.Load<Scene1Controller>(sceneName: "Scene1", onSceneLoaded: (scene1) =>
+{
+    // scene1.Init();
+});
+```
+
+<h4>3.3. On Screen Added </h4>
+
+Some projects require sending logs for analytics, indicating which screen is added, from which screen, and whether it was added manually (user click) or automatically.
+
+```cs
+// On Start of Main
+ScreenManager.AddListener(onScreenAdded: (toScreen, fromScreen, manually) => {
+    Debug.Log(string.Format("Add screen {0} from screen {1} ") + (manually ? "manually" : "automatically"));
+});
+ScreenManager.Load<Scene1Controller>(sceneName: "Scene1");
+
+// On Screen1 Button Tap
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1", manually:true);
+
+// On Start of Screen1Controller
+ScreenManager.Add<Screen2Controller>(screenName: "Screen2", manually:false);
+```
+
+Output:
+```cs
+Added Screen1 from Scene1 manually
+Added Screen2 from Screen1 automatically
+```
+
+
+<h4>3.4. On Screen Changed </h4>
+
+Some projects require displaying an ads banner only when no screens are being shown.
+
+```cs
+void OnEnable()
+{
+    ScreenManager.AddListener(OnScreenChanged);
+}
+
+void OnDisable()
+{
+    ScreenManager.RemoveListener(OnScreenChanged);
+}
+
+void OnScreenChanged(int screenCount)
+{
+    if (screenCount > 0)
+    {
+        // Banner.Hide();
+    }
+    else
+    {
+        // Banner.Show();
+    }
+}
+```
