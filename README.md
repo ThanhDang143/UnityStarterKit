@@ -1,4 +1,3 @@
-
 <h1>Simple Screen Manager for Unity (aka SS)</h1>
 
 <h2>Who is this for?</h2>
@@ -51,7 +50,7 @@ From Menu: SS / Screen Generator / Input Screen Name / Generate
 <h3>4. Add a screen on top with default animation</h3>
 
 ```cs
-ScreenManager.Add<Screen1Controller>(screenName: "Screen1");
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1", onScreenLoad: (screen) => { });
 ```
 
 <p align="center">
@@ -71,7 +70,7 @@ ScreenManager.Close();
 <h3>6. Load a scene with automatic fade</h3>
 
 ```cs
-ScreenManager.Load<Scene1Controller>(sceneName: "Scene1");
+ScreenManager.Load<Scene1Controller>(sceneName: "Scene1", onSceneLoaded: (scene1) => { });
 ```
 
 <p align="center">
@@ -159,3 +158,25 @@ Add screen with custom animations
 ```cs
 ScreenManager.Add<Screen1Controller>(screenName: "Screen1", showAnimation: "Custom1Show", hideAnimation: "Custom1Hide", onScreenLoad: (screen) => { });
 ```
+
+<h4>2.4. Custom Animation Object: </h4>
+
+In default, animations will be added to the root object of screen
+
+```cs
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1");
+```
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/default-animation-object.png?raw=true" alt="Demo">
+</p>
+
+In case you only want to animate a few objects on the screen, the rest are static and not animated
+
+```cs
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1", animationObjectName: "Animation");
+```
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/custom-animation-object.png?raw=true" alt="Demo">
+</p>
