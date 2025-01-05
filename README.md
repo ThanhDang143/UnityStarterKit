@@ -314,3 +314,29 @@ IEnumerator WaitUntilNoScreenToDoSomething()
     // Do somethings
 }
 ```
+
+<h3>5. Screen Shield</h3>
+
+The Screen shield is an image with customizable color and transparency, located between the current Scene (with its UI canvas) and the top Screen. By default, the Screen shield will be shown when a Screen is displayed.
+
+<h4>5.1. Set Screen Shield Color </h4>
+
+```cs
+ScreenManager.Set(screenShieldColor: new Color(0, 0, 0, 0.8f));
+```
+
+<h4>5.2. Display a Screen without a Shield </h4>
+
+```cs
+ScreenManager.Add<Screen1Controller>(screenName:"Screen1", hasShield: false);
+```
+
+<h4>5.3. Show/Hide the Screen shield manually (with fade animation) </h4>
+
+```cs
+ScreenManager.ShowShield();
+```
+
+```cs
+ScreenManager.HideShield();
+```
