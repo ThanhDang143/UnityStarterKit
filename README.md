@@ -283,6 +283,18 @@ ScreenManager.Add<Screen3Controller>(screenName: "Screen3",  waitUntilNoScreen: 
   <img width="500px" src="/learn/unity/ss/advance/wait-until-no-screen.gif?raw=true" alt="Demo">
 </p>
 
+This example does not use waitUntilNoScreen, 3 Screens will appear consecutively.
+
+```cs
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1");
+ScreenManager.Add<Screen2Controller>(screenName: "Screen2");
+ScreenManager.Add<Screen3Controller>(screenName: "Screen3");
+```
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/no-wait-until-no-screen.gif?raw=true" alt="Demo">
+</p>
+
 <h4>4.2. Custom Add-Condition </h4>
 
 In this example, Screen1 will be shown when the bool something variable becomes true
