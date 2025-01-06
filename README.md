@@ -280,7 +280,7 @@ ScreenManager.Add<Screen3Controller>(screenName: "Screen3",  waitUntilNoScreen: 
 ```
 
 <p align="center">
-  <img width="500px" src="/learn/unity/ss/advance/wait-until-no-screen.png?raw=true" alt="Demo">
+  <img width="500px" src="/learn/unity/ss/advance/wait-until-no-screen.gif?raw=true" alt="Demo">
 </p>
 
 <h4>4.2. Custom Add-Condition </h4>
