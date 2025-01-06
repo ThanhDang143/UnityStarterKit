@@ -279,6 +279,9 @@ ScreenManager.Add<Screen2Controller>(screenName: "Screen2",  waitUntilNoScreen: 
 ScreenManager.Add<Screen3Controller>(screenName: "Screen3",  waitUntilNoScreen: true);
 ```
 
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/wait-until-no-screen.png?raw=true" alt="Demo">
+</p>
 
 <h4>4.2. Custom Add-Condition </h4>
 
@@ -325,11 +328,23 @@ The Screen shield is an image with customizable color and transparency, located 
 ScreenManager.Set(screenShieldColor: new Color(0, 0, 0, 0.8f));
 ```
 
-<h4>5.2. Display a Screen without a Shield </h4>
+<h4>5.2. Display a Screen with/without a Shield </h4>
+
+```cs
+ScreenManager.Add<Screen1Controller>(screenName:"Screen1");
+```
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/with-shield.png?raw=true" alt="Demo">
+</p>
 
 ```cs
 ScreenManager.Add<Screen1Controller>(screenName:"Screen1", hasShield: false);
 ```
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/without-shield.png?raw=true" alt="Demo">
+</p>
 
 <h4>5.3. Show/Hide the Screen shield manually (with fade animation) </h4>
 
@@ -340,3 +355,7 @@ ScreenManager.ShowShield();
 ```cs
 ScreenManager.HideShield();
 ```
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/show-hide-shield.gif?raw=true" alt="Demo">
+</p>
