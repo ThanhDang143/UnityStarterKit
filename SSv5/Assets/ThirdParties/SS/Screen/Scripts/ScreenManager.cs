@@ -522,13 +522,25 @@ public class ScreenManager : MonoBehaviour
         {
             if (m_SceneLoading == null)
             {
-                m_SceneLoading = Instantiate(Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_SceneLoadingName)));
-                m_SceneLoading.name = m_SceneLoadingName;
-                AddScreenToCanvas(m_SceneLoading);
+#if ADDRESSABLE
+                var async = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(m_LoadingName);
+                async.Completed += (a => {
+                    if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        CreateSceneLoading(async.Result);
+                        ShowSceneLoading();
+                    }
+                });
+#else
+                var prefab = Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_SceneLoadingName));
+                CreateSceneLoading(prefab);
+                ShowSceneLoading();
+#endif
             }
-
-            m_SceneLoading.transform.SetAsLastSibling();
-            m_SceneLoading.SetActive(true);
+            else
+            {
+                ShowSceneLoading();
+            }
         }
 
         asyncOperation = SceneManager.LoadSceneAsync(sceneName, mode);
@@ -553,6 +565,19 @@ public class ScreenManager : MonoBehaviour
 
             m_SceneLoading.SetActive(false);
         }
+    }
+
+    private void CreateSceneLoading(GameObject prefab)
+    {
+        m_SceneLoading = Instantiate(prefab);
+        m_SceneLoading.name = m_SceneLoadingName;
+        AddScreenToCanvas(m_SceneLoading);
+    }
+
+    private void ShowSceneLoading()
+    {
+        m_SceneLoading.transform.SetAsLastSibling();
+        m_SceneLoading.SetActive(true);
     }
 
     private IEnumerator AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true, AddConditionDelegate addCondition = null, bool waitUntilNoScreen = false, bool destroyTopScreen = false) where T : Component
