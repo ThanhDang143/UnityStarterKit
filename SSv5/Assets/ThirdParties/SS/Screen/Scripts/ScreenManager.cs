@@ -364,6 +364,11 @@ public class ScreenManager : MonoBehaviour
     {
         if (m_Instance != null && m_Instance.m_ScreenShield != null)
         {
+            if (!m_Instance.m_ScreenShield.gameObject.activeInHierarchy)
+            {
+                m_Instance.m_ScreenShield.gameObject.SetActive(true);
+            }
+
             m_Instance.m_ScreenShield.Play("ShieldShow");
         }
     }
