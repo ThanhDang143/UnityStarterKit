@@ -78,6 +78,7 @@ ScreenManager.Load<Scene1Controller>(sceneName: "Scene1");
   <img width="500px" src="/learn/unity/ss/load-scene.gif?raw=true" alt="Demo">
 </p>
 
+<br>
 <h2>Advance Usage</h2>
 
 <h3>1. Addressables</h3>
@@ -488,3 +489,38 @@ ScreenManager.Loading(false);
 <p align="center">
   <img width="500px" src="/learn/unity/ss/advance/loading.gif?raw=true" alt="Demo">
 </p>
+
+<h3>8. Other useful methods of ScreenManager</h3>
+
+<h4>8.1. Top </h4>
+
+In some cases, you want to add somethings to the top of all Screens (like some flying coins)
+
+```cs
+// Coin.cs
+transform.SetParent(ScreenManager.Top);
+```
+
+<h4>8.2. Destroy </h4>
+
+Destroy immediately the screen which is at the top of all screens, without playing animation.
+
+```cs
+ScreenManager.Destroy();
+```
+
+<h4>8.3. DestroyAll </h4>
+
+Destroy immediately all screens, without playing animation.
+
+```cs
+ScreenManager.DestroyAll();
+```
+
+<h2>License</h2>
+
+This software is released under the MIT License.  
+You are free to use it within the scope of the license.  
+However, the following copyright and license notices are required for use.
+
+https://github.com/AnhPham/Simple-Screen-Manager-for-Unity-aka-SS?tab=MIT-1-ov-file
