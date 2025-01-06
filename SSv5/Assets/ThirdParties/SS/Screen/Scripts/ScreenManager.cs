@@ -119,6 +119,18 @@ public class ScreenManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Set some basic parameters of ScreenManager.
+    /// </summary>
+    /// <param name="screenPath">The path (in Resources folder) of screen's prefabs</param>
+    /// <param name="screenAnimationPath">The path (in Resources folder) of screen's animation clips</param>
+    /// <param name="sceneLoadingName">The name of the scene loading screen which is put in 'screenPath'. Set it to empty if you do not want to show the loading screen while loading a scene</param>
+    /// <param name="loadingName">The name of the loading screen which is put in 'screenPath'. This screen can show/hide on the top of all screens at any time using Loading(bool). Set it to empty if you don't need</param>
+    public static void Set(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "")
+    {
+        instance.Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName);
+    }
+
+    /// <summary>
     /// Load a scene.
     /// </summary>
     /// <typeparam name="T">The type of a (any) component in the scene</typeparam>
@@ -487,12 +499,17 @@ public class ScreenManager : MonoBehaviour
     private void Setup(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "")
     {
         m_ScreenShieldColor = screenShieldColor;
+        Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName);
+
+        UpdateScreenShieldColor();
+    }
+
+    private void Setup(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "")
+    {
         m_ScreenPath = screenPath;
         m_ScreenAnimationPath = screenAnimationPath;
         m_SceneLoadingName = sceneLoadingName;
         m_LoadingName = loadingName;
-
-        UpdateScreenShieldColor();
     }
 
     private void LoadScene<T>(string sceneName, LoadSceneMode mode = LoadSceneMode.Single, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true) where T : Component
