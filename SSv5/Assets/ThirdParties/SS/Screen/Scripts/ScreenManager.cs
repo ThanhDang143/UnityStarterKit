@@ -523,7 +523,7 @@ public class ScreenManager : MonoBehaviour
             if (m_SceneLoading == null)
             {
 #if ADDRESSABLE
-                var async = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(m_LoadingName);
+                var async = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(m_SceneLoadingName);
                 async.Completed += (a => {
                     if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
                     {
@@ -557,6 +557,14 @@ public class ScreenManager : MonoBehaviour
         if (mode == LoadSceneMode.Single)
         {
             m_SceneShield.Play("ShieldHide");
+        }
+
+        if (mode == LoadSceneMode.Single && !string.IsNullOrEmpty(m_SceneLoadingName))
+        {
+            while (m_SceneLoading == null)
+            {
+                yield return 0;
+            }
         }
 
         if (m_SceneLoading != null)
