@@ -426,3 +426,65 @@ ScreenManager.Add<Screen2Controller>(screenName: "Screen2");
 <p align="center">
   <img width="500px" src="/learn/unity/ss/advance/not-destroy-top-screen.gif?raw=true" alt="Demo">
 </p>
+
+<h3>7. Loading</h3>
+
+<h4>7.1. Scene Loading </h4>
+
+Show a loading UI while loading a Scene.
+
+From Menu, SS / Screen Generator, create a Screen named SceneLoading. Use *ScreenManager.asyncOperation.progress* to get progress of scene loading, like below example
+
+```cs
+public class SceneLoadingController : MonoBehaviour
+{
+    const float PROGRESS_WIDTH = 500;
+    const float PROGRESS_HEIGHT = 50;
+
+    [SerializeField] RectTransform m_Progress;
+
+    private void Update()
+    {
+        m_Progress.sizeDelta = new Vector2(ScreenManager.asyncOperation.progress * PROGRESS_WIDTH, PROGRESS_HEIGHT);
+    }
+}
+```
+
+Do not forget to set the Scene Loading name on App Launch 
+
+```cs
+ScreenManager.Set(sceneLoadingName: "SceneLoading");
+```
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/scene-loading.gif?raw=true" alt="Demo">
+</p>
+
+<h4>7.2. Loading on Top</h4>
+
+Show a loading UI on top of all screens
+
+From Menu, SS / Screen Generator, create a Screen named *Loading*. You should add a loop loading animation to it.
+
+Do not forget to set the Loading name on App Launch 
+
+```cs
+ScreenManager.Set(loadingName: "Loading");
+```
+
+
+Show Loading
+
+```cs
+ScreenManager.Loading(true);
+```
+
+Hide Loading
+
+```cs
+ScreenManager.Loading(false);
+```
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/loading.gif?raw=true" alt="Demo">
+</p>
