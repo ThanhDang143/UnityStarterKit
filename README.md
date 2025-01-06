@@ -371,3 +371,58 @@ ScreenManager.HideShield();
 <p align="center">
   <img width="500px" src="/learn/unity/ss/advance/show-hide-shield.gif?raw=true" alt="Demo">
 </p>
+
+<h3>6. Other parameters of adding a screen</h3>
+
+<h4>6.1. Use Existing Screen </h4>
+
+If this parameter is true, check if the screen is existing, bring it to the top. If not found, instantiate a new one
+
+```cs
+ScreenManager.Add<Screen2Controller>(screenName: "Screen2", useExistingScreen: true);
+```
+
+```cs
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1", useExistingScreen: true);
+```
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/use-existing-screen.gif?raw=true" alt="Demo">
+</p>
+
+
+By default, this parameter is false, instantiate a new screen whenever Add is called
+
+```cs
+ScreenManager.Add<Screen2Controller>(screenName: "Screen2");
+```
+
+```cs
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1");
+```
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/not-use-existing-screen.gif?raw=true" alt="Demo">
+</p>
+
+<h4>6.2. Destroy Top Screen</h4>
+
+If this parameter is true, destroy the top screen before adding a screen
+
+```cs
+ScreenManager.Add<Screen2Controller>(screenName: "Screen2", destroyTopScreen: true);
+```
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/destroy-top-screen.gif?raw=true" alt="Demo">
+</p>
+
+By default, this parameter is false, temporary hide the top screen when add the Screen2, and show it again after closing the Screen2
+
+```cs
+ScreenManager.Add<Screen2Controller>(screenName: "Screen2");
+```
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/not-destroy-top-screen.gif?raw=true" alt="Demo">
+</p>
