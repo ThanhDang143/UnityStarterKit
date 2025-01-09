@@ -10,7 +10,7 @@ public class Screen2 : MonoBehaviour, IKeyBack
 
     public void OnLoadScene1ButtonTap()
     {
-        ScreenManager.Load<Scene1>("Scene1", LoadSceneMode.Single, (scene1) =>
+        ScreenManager.Load<Scene1>(sceneName: "Scene1", mode: LoadSceneMode.Single, onSceneLoaded: (scene1) =>
         {
             scene1.data = "Scene1...";
         });
@@ -27,7 +27,7 @@ public class Screen2 : MonoBehaviour, IKeyBack
 
         if (screen1 != null)
         {
-            ScreenManager.Destroy(screen1);
+            ScreenManager.Destroy(screen: screen1);
         }
     }
 
@@ -43,7 +43,7 @@ public class Screen2 : MonoBehaviour, IKeyBack
 
     public void OnAddScreen1ButtonTap()
     {
-        ScreenManager.Add<Screen1>("Screen1", "RightShow", "RightHide", null, true, (screen) => {
+        ScreenManager.Add<Screen1>(screenName: "Screen1", showAnimation: ScreenAnimation.RightShow, hideAnimation: ScreenAnimation.RightHide, useExistingScreen: true, onScreenLoad: (screen) => {
             screen.label.text = "Screen1";
         });
     }

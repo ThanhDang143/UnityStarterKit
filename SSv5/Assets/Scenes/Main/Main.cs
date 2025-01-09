@@ -9,9 +9,9 @@ public class Main : MonoBehaviour
     {
         Application.targetFrameRate = 60;
 
-        ScreenManager.Set(new Color(0, 0, 0, 0.8f), "Screens", "Animations", "SceneLoading", "Loading");
+        ScreenManager.Set(sceneLoadingName: "SceneLoading", loadingName: "Loading");
 
-        ScreenManager.Load<Scene1>("Scene1", LoadSceneMode.Single, (scene1) =>
+        ScreenManager.Load<Scene1>(sceneName: "Scene1", onSceneLoaded: (scene1) =>
         {
             scene1.data = "Scene1";
         });
