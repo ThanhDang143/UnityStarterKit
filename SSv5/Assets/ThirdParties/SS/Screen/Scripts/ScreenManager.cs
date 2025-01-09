@@ -49,6 +49,7 @@ public class ScreenManager : MonoBehaviour
     [SerializeField] string m_SceneLoadingName;
     [SerializeField] string m_LoadingName;
     [SerializeField] Color m_ScreenShieldColor = new Color(0, 0, 0, 0.8f);
+    [SerializeField] float m_ScreenAnimationSpeed = 1;
     [SerializeField] Camera m_BackgroundCamera;
     [SerializeField] Canvas m_Canvas;
     [SerializeField] UnscaledAnimation m_SceneShield;
@@ -113,9 +114,10 @@ public class ScreenManager : MonoBehaviour
     /// <param name="screenAnimationPath">The path (in Resources folder) of screen's animation clips</param>
     /// <param name="sceneLoadingName">The name of the scene loading screen which is put in 'screenPath'. Set it to empty if you do not want to show the loading screen while loading a scene</param>
     /// <param name="loadingName">The name of the loading screen which is put in 'screenPath'. This screen can show/hide on the top of all screens at any time using Loading(bool). Set it to empty if you don't need</param>
-    public static void Set(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "")
+    /// <param name="screenAnimationSpeed">Screen Animation speed</param>
+    public static void Set(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1)
     {
-        instance.Setup(screenShieldColor, screenPath, screenAnimationPath, sceneLoadingName, loadingName);
+        instance.Setup(screenShieldColor, screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed);
     }
 
     /// <summary>
@@ -125,9 +127,10 @@ public class ScreenManager : MonoBehaviour
     /// <param name="screenAnimationPath">The path (in Resources folder) of screen's animation clips</param>
     /// <param name="sceneLoadingName">The name of the scene loading screen which is put in 'screenPath'. Set it to empty if you do not want to show the loading screen while loading a scene</param>
     /// <param name="loadingName">The name of the loading screen which is put in 'screenPath'. This screen can show/hide on the top of all screens at any time using Loading(bool). Set it to empty if you don't need</param>
-    public static void Set(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "")
+    /// <param name="screenAnimationSpeed">Screen Animation speed</param>
+    public static void Set(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1)
     {
-        instance.Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName);
+        instance.Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed);
     }
 
     /// <summary>
@@ -227,6 +230,14 @@ public class ScreenManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Close the screen which is at the top of all screens. Use ScreenAnimation enum instead of string for animations
+    /// </summary>\
+    public static void Close(ScreenAnimation hideAnimation)
+    {
+        Close(null, hideAnimation.ToString());
+    }
+
+    /// <summary>
     /// Close a specific screen.
     /// </summary>
     /// <param name="screen">The component in screen which is returned by the Add function.</param>
@@ -243,6 +254,14 @@ public class ScreenManager : MonoBehaviour
     public static void Close(Component screen, Callback onScreenClosed, ScreenAnimation hideAnimation)
     {
         Close(screen, onScreenClosed, hideAnimation.ToString());
+    }
+
+    /// <summary>
+    /// Close a specific screen. Use ScreenAnimation enum instead of string for animations
+    /// </summary>
+    public static void Close(Component screen, ScreenAnimation hideAnimation)
+    {
+        Close(screen, null, hideAnimation.ToString());
     }
 
     /// <summary>
@@ -381,7 +400,7 @@ public class ScreenManager : MonoBehaviour
                 m_Instance.m_ScreenShield.gameObject.SetActive(true);
             }
 
-            m_Instance.m_ScreenShield.Play("ShieldShow");
+            m_Instance.m_ScreenShield.Play("ShieldShow", speed: m_Instance.m_ScreenAnimationSpeed);
         }
     }
 
@@ -392,7 +411,7 @@ public class ScreenManager : MonoBehaviour
     {
         if (m_Instance != null && m_Instance.m_ScreenShield != null)
         {
-            m_Instance.m_ScreenShield.Play("ShieldHide");
+            m_Instance.m_ScreenShield.Play("ShieldHide", speed: m_Instance.m_ScreenAnimationSpeed);
         }
     }
 
@@ -496,20 +515,25 @@ public class ScreenManager : MonoBehaviour
     #endregion
 
     #region Private Functions
-    private void Setup(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "")
+    private void Setup(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1)
     {
         m_ScreenShieldColor = screenShieldColor;
-        Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName);
+        Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed);
 
         UpdateScreenShieldColor();
     }
 
-    private void Setup(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "")
+    private void Setup(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1)
     {
         m_ScreenPath = screenPath;
         m_ScreenAnimationPath = screenAnimationPath;
         m_SceneLoadingName = sceneLoadingName;
         m_LoadingName = loadingName;
+
+        if (screenAnimationSpeed > 0)
+        {
+            m_ScreenAnimationSpeed = screenAnimationSpeed;
+        }
     }
 
     private void LoadScene<T>(string sceneName, LoadSceneMode mode = LoadSceneMode.Single, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true) where T : Component
@@ -523,9 +547,9 @@ public class ScreenManager : MonoBehaviour
 
         if (mode == LoadSceneMode.Single)
         {
-            m_SceneShield.Play("ShieldShow");
+            m_SceneShield.Play("ShieldShow", speed: m_ScreenAnimationSpeed);
 
-            yield return new WaitForSecondsRealtime(m_SceneShield.GetLength("ShieldShow"));
+            yield return new WaitForSecondsRealtime(m_SceneShield.GetLength("ShieldShow") / m_ScreenAnimationSpeed);
 
             if (clearAllScreen)
             {
@@ -573,7 +597,7 @@ public class ScreenManager : MonoBehaviour
 
         if (mode == LoadSceneMode.Single)
         {
-            m_SceneShield.Play("ShieldHide");
+            m_SceneShield.Play("ShieldHide", speed: m_ScreenAnimationSpeed);
         }
 
         if (mode == LoadSceneMode.Single && !string.IsNullOrEmpty(m_SceneLoadingName))
@@ -872,7 +896,7 @@ public class ScreenManager : MonoBehaviour
         if (!m_ScreenShield.gameObject.activeInHierarchy)
         {
             m_ScreenShield.gameObject.SetActive(true);
-            m_ScreenShield.Play("ShieldShow");
+            m_ScreenShield.Play("ShieldShow", speed: m_ScreenAnimationSpeed);
         }
     }
 
@@ -882,7 +906,7 @@ public class ScreenManager : MonoBehaviour
         {
             m_ScreenShield.Play("ShieldHide", (anim) => {
                 m_ScreenShield.gameObject.SetActive(false);
-            });
+            }, speed: m_ScreenAnimationSpeed);
         }
     }
 
@@ -1012,10 +1036,10 @@ public class ScreenManager : MonoBehaviour
             }
 
             // Play animation
-            unscaledAnim.Play(animationName);
+            unscaledAnim.Play(animationName, speed: m_ScreenAnimationSpeed);
 
             // Wait animation
-            yield return new WaitForSecondsRealtime(anim[animationName].length);
+            yield return new WaitForSecondsRealtime(anim[animationName].length / m_ScreenAnimationSpeed);
 
             // Turn off screen shield after animation end
             m_ScreenShieldTop.SetActive(false);

@@ -12,7 +12,7 @@ public class UnscaledAnimation : MonoBehaviour
     OnAnimationEndDelegate m_OnAnimationEnd;
 
     float m_AccumTime = 0F;
-
+    float m_Speed = 1f;
     AnimationState m_CurState;
     bool m_IsPlayingAnim = false;
     bool m_IsEndAnim = false;
@@ -47,7 +47,7 @@ public class UnscaledAnimation : MonoBehaviour
         }
     }
 
-    public void Play(string clip, OnAnimationEndDelegate onAnimationEnd = null)
+    public void Play(string clip, OnAnimationEndDelegate onAnimationEnd = null, float speed = 1)
     {
         m_AccumTime = 0F;
         m_CurClipName = clip;
@@ -59,6 +59,7 @@ public class UnscaledAnimation : MonoBehaviour
         m_IsPlayingAnim = true;
         m_IsEndAnim = false;
         m_OnAnimationEnd = onAnimationEnd;
+        m_Speed = speed;
     }
 
     public void PauseAtBeginning(string animationName)
@@ -72,14 +73,6 @@ public class UnscaledAnimation : MonoBehaviour
     public float GetLength(string animationName)
     {
         return Animation[animationName].length;
-    }
-
-    public void SetDuration(string animationName, float duration)
-    {
-        if (duration > 0)
-        {
-            Animation[animationName].speed = Animation[animationName].length / duration;
-        }
     }
 
     private void Start()
@@ -108,7 +101,7 @@ public class UnscaledAnimation : MonoBehaviour
                 return;
             }
 
-            m_AccumTime += Time.unscaledDeltaTime * Animation[m_CurClipName].speed;
+            m_AccumTime += Time.unscaledDeltaTime * m_Speed;
             if (m_AccumTime >= m_CurState.length)
             {
                 if (m_CurState.wrapMode == WrapMode.Loop)
