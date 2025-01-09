@@ -146,7 +146,7 @@ ScreenManager.Close();
 
 The screen fades out when hiding.
 ```cs
-ScreenManager.Close(onScreenClosed: null, hideAnimation: ScreenAnimation.FadeHide);
+ScreenManager.Close(hideAnimation: ScreenAnimation.FadeHide);
 ```
 
 <h4>2.3. Custom Screen Animations: </h4>
@@ -182,6 +182,14 @@ ScreenManager.Add<Screen1Controller>(screenName: "Screen1", animationObjectName:
 <p align="center">
   <img width="500px" src="/learn/unity/ss/advance/custom-animation-object.png?raw=true" alt="Demo">
 </p>
+
+<h4>2.5. Screen Animation Speed </h4>
+
+In default, Screen Animation Speed is 1. You can change it.
+
+```cs
+ScreenManager.Set(screenAnimationSpeed: 1.5f);
+```
 
 <h3>3. Events</h3>
 
