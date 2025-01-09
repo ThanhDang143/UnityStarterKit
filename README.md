@@ -136,7 +136,7 @@ public enum ScreenAnimation
 
 The screen slides from the left to the center when showing.
 ```cs
-ScreenManager.Add<Screen1Controller>(screenName: "Screen1", showAnimation: ScreenAnimation.LeftShow, hideAnimation: ScreenAnimation.LeftHide, onScreenLoad: (screen) => { });
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1", showAnimation: ScreenAnimation.LeftShow, hideAnimation: ScreenAnimation.LeftHide);
 ```
 
 The screen slides from the center to the left when hiding. The 'hideAnimation' which is declared in the Add function will be used
@@ -158,7 +158,7 @@ Put your custom animations (Unity legacy animations) in Resources/Animations
 
 Add screen with custom animations
 ```cs
-ScreenManager.Add<Screen1Controller>(screenName: "Screen1", showAnimation: "Custom1Show", hideAnimation: "Custom1Hide", onScreenLoad: (screen) => { });
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1", showAnimation: "Custom1Show", hideAnimation: "Custom1Hide");
 ```
 
 <h4>2.4. Custom Animation Object: </h4>
