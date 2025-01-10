@@ -215,7 +215,18 @@ ScreenManager.Load<Scene1Controller>(sceneName: "Scene1", onSceneLoaded: (scene1
 });
 ```
 
-<h4>3.3. On Screen Added </h4>
+<h4>3.3. On Screen Closed </h4>
+
+Note: onScreenClosed is called after the hideAnimation is ended (right after the screen is destroyed)
+
+```cs
+ScreenManager.Close(() =>
+{
+    // Code after closing this screen
+});
+```
+
+<h4>3.4. On Screen Added </h4>
 
 Some projects require sending logs for analytics, indicating which screen is added, from which screen, and whether it was added manually (user click) or automatically.
 
@@ -244,7 +255,7 @@ Added Screen2 from Screen1 automatically
 ```
 
 
-<h4>3.4. On Screen Changed </h4>
+<h4>3.5. On Screen Changed </h4>
 
 Some projects require displaying an ads banner only when no screens are being shown.
 
