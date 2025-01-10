@@ -525,6 +525,30 @@ Destroy immediately all screens, without playing animation.
 ScreenManager.DestroyAll();
 ```
 
+<h4>8.4. Destroy or Close a specific screen </h4>
+
+```cs
+var screen1 = FindObjectOfType<Screen1Controller>(true);
+```
+
+```cs
+ScreenManager.Destroy(screen: screen1);
+```
+
+```cs
+ScreenManager.Close(screen: screen1);
+```
+
+<h2>Render pipeline compatibility</h2>
+
+:white_check_mark: Built-in<br>
+:white_check_mark: URP<br>
+:white_check_mark: HDRP<br>
+
+<h2>Unity Version</h2>
+
+2020.3.30 or higher
+
 <h2>License</h2>
 
 This software is released under the MIT License.  
