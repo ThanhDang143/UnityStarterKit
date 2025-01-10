@@ -558,7 +558,8 @@ ScreenManager.Close(screen: screen1);
 
 <h2>Unity Version</h2>
 
-2020.3.30 or higher
+2022.3.30 or higher.
+In fact this package can work on most versions of Unity because it is very compact.
 
 <h2>License</h2>
 
