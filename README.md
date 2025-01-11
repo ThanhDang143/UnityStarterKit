@@ -78,6 +78,10 @@ ScreenManager.Load<Scene1Controller>(sceneName: "Scene1");
   <img width="500px" src="/learn/unity/ss/load-scene.gif?raw=true" alt="Demo">
 </p>
 
+<h3>Basic Usage Tutorial Video</h3>
+
+https://youtu.be/mzCAjf7hye4
+
 <br>
 <h2>Advance Usage</h2>
 
@@ -226,7 +230,21 @@ ScreenManager.Close(() =>
 });
 ```
 
-<h4>3.4. On Screen Added </h4>
+<h4>3.4. On Key Back </h4>
+
+If you create a screen by the Screen Generator, the screen controller will implement OnKeyBack of the IKeyBack interface by default. It means when players press the physics back button on Android (or ESC key on PC), the screen will be closed. If you don't want that, just remove IKeyBack in the script.
+
+```cs
+public class Screen1Controller : MonoBehaviour, IKeyBack
+{
+    public void OnKeyBack()
+    {
+        ScreenManager.Close();
+    }
+}
+```
+
+<h4>3.5. On Screen Added </h4>
 
 Some projects require sending logs for analytics, indicating which screen is added, from which screen, and whether it was added manually (user click) or automatically.
 
@@ -255,7 +273,7 @@ Added Screen2 from Screen1 automatically
 ```
 
 
-<h4>3.5. On Screen Changed </h4>
+<h4>3.6. On Screen Changed </h4>
 
 Some projects require displaying an ads banner only when no screens are being shown.
 
