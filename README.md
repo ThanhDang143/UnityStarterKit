@@ -80,7 +80,7 @@ ScreenManager.Load<Scene1Controller>(sceneName: "Scene1");
 
 <h3>Basic Usage Tutorial Video</h3>
 
-https://youtu.be/mzCAjf7hye4
+<a href="https://youtu.be/mzCAjf7hye4" target="_blank" rel="noopener noreferrer">https://youtu.be/mzCAjf7hye4</a>
 
 <br>
 <h2>Advance Usage</h2>
