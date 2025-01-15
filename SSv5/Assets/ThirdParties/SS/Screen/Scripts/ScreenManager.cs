@@ -893,7 +893,7 @@ public class ScreenManager : MonoBehaviour
 
     private void ShowScreenShield()
     {
-        if (!m_ScreenShield.gameObject.activeInHierarchy)
+        if (!m_ScreenShield.gameObject.activeInHierarchy || (m_ScreenShield.isPlaying && m_ScreenShield.currentClipName == "ShieldHide"))
         {
             m_ScreenShield.gameObject.SetActive(true);
             m_ScreenShield.Play("ShieldShow", speed: m_ScreenAnimationSpeed);
