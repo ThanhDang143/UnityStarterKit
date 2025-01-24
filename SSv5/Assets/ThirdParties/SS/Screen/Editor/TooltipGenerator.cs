@@ -148,11 +148,14 @@ public class TooltipGenerator : EditorWindow
             return false;
         }
 
-        var textClass = GetAssemblyType("TMPro.TextMeshProUGUI");
-        if (textClass == null)
+        if (textType == TextType.TextMeshPro)
         {
-            Debug.LogWarning("TextMeshPro package is not installed yet");
-            return false;
+            var textClass = GetAssemblyType("TMPro.TextMeshProUGUI");
+            if (textClass == null)
+            {
+                Debug.LogWarning("TextMeshPro package is not installed yet");
+                return false;
+            }
         }
 
         SavePrefs();
