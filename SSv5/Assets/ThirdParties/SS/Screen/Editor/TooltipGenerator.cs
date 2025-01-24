@@ -148,12 +148,20 @@ public class TooltipGenerator : EditorWindow
             return false;
         }
 
+        var textClass = GetAssemblyType("TMPro.TextMeshProUGUI");
+        if (textClass == null)
+        {
+            Debug.LogWarning("TextMeshPro package is not installed yet");
+            return false;
+        }
+
         SavePrefs();
         if (!CreatePrefab())
         {
             Debug.LogWarning("Tooltip template file is not exist!");
             return false;
         }
+
         CreateScene();
         CreateController();
         return true;
