@@ -527,9 +527,37 @@ ScreenManager.Loading(false);
   <img width="500px" src="/learn/unity/ss/advance/loading.gif?raw=true" alt="Demo">
 </p>
 
-<h3>8. Other useful methods of ScreenManager</h3>
+<h3>8. Tooltip</h3>
 
-<h4>8.1. Top </h4>
+Show a tooltip with automatic screen padding.
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/tooltip-demo.gif?raw=true" alt="Demo">
+</p>
+
+From Menu, SS / Tooltip Generator, input Tooltip name, select Text type (Default or TextMeshPro), click Generate
+
+<p align="center">
+  <img width="500px" src="/learn/unity/ss/advance/tooltip-generator.png?raw=true" alt="Demo">
+</p>
+
+Edit the Tooltip prefab as you want, drag it to Resources/Screens folder (or drag to Addressable Group in case of using Addressables). You can also edit the Tooltip showing animation
+
+Do not forget to set the Tooltip name on App Launch 
+
+```cs
+ScreenManager.Set(tooltipName: "Tooltip");
+```
+
+Show the tooltip
+
+```cs
+ScreenManager.ShowTooltip(text: "Tooltip Text", anchoredPosition: Vector2.zero, targetY: 100f);
+```
+
+<h3>9. Other useful methods of ScreenManager</h3>
+
+<h4>9.1. Top </h4>
 
 In some cases, you want to add somethings to the top of all Screens (like some flying coins)
 
@@ -538,7 +566,7 @@ In some cases, you want to add somethings to the top of all Screens (like some f
 transform.SetParent(ScreenManager.Top);
 ```
 
-<h4>8.2. Destroy </h4>
+<h4>9.2. Destroy </h4>
 
 Destroy immediately the screen which is at the top of all screens, without playing animation.
 
@@ -546,7 +574,7 @@ Destroy immediately the screen which is at the top of all screens, without playi
 ScreenManager.Destroy();
 ```
 
-<h4>8.3. DestroyAll </h4>
+<h4>9.3. DestroyAll </h4>
 
 Destroy immediately all screens, without playing animation.
 
@@ -554,7 +582,7 @@ Destroy immediately all screens, without playing animation.
 ScreenManager.DestroyAll();
 ```
 
-<h4>8.4. Destroy or Close a specific screen </h4>
+<h4>9.4. Destroy or Close a specific screen </h4>
 
 ```cs
 var screen1 = FindObjectOfType<Screen1Controller>(true);
