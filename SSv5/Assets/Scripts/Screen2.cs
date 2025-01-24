@@ -48,6 +48,11 @@ public class Screen2 : MonoBehaviour, IKeyBack
         });
     }
 
+    public void OnShowTooltipButtonTap(Button button)
+    {
+        ScreenManager.ShowTooltip(text: "This is a long tooltip to test overflowing the screen", anchoredPosition: button.GetComponent<RectTransform>().anchoredPosition, targetY:Random.Range(100f, 300f));
+    }
+
     private IEnumerator ShowLoadingASecond()
     {
         ScreenManager.Loading(true);

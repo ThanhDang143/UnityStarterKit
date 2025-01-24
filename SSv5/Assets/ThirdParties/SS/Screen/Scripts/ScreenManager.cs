@@ -48,6 +48,7 @@ public class ScreenManager : MonoBehaviour
     [SerializeField] string m_ScreenAnimationPath = "Animations";
     [SerializeField] string m_SceneLoadingName;
     [SerializeField] string m_LoadingName;
+    [SerializeField] string m_TooltipName;
     [SerializeField] Color m_ScreenShieldColor = new Color(0, 0, 0, 0.8f);
     [SerializeField] float m_ScreenAnimationSpeed = 1;
     [SerializeField] Camera m_BackgroundCamera;
@@ -70,6 +71,7 @@ public class ScreenManager : MonoBehaviour
     private List<Component> m_ScreenList = new List<Component>();
     private GameObject m_SceneLoading;
     private GameObject m_Loading;
+    private TooltipController m_Tooltip;
     private UnscaledAnimation m_ScreenShield;
     private GameObject m_ScreenShieldTop;
     private OnScreenAddedDelegate m_OnScreenAdded;
@@ -115,9 +117,9 @@ public class ScreenManager : MonoBehaviour
     /// <param name="sceneLoadingName">The name of the scene loading screen which is put in 'screenPath'. Set it to empty if you do not want to show the loading screen while loading a scene</param>
     /// <param name="loadingName">The name of the loading screen which is put in 'screenPath'. This screen can show/hide on the top of all screens at any time using Loading(bool). Set it to empty if you don't need</param>
     /// <param name="screenAnimationSpeed">Screen Animation speed</param>
-    public static void Set(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1)
+    public static void Set(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "")
     {
-        instance.Setup(screenShieldColor, screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed);
+        instance.Setup(screenShieldColor, screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName);
     }
 
     /// <summary>
@@ -128,9 +130,9 @@ public class ScreenManager : MonoBehaviour
     /// <param name="sceneLoadingName">The name of the scene loading screen which is put in 'screenPath'. Set it to empty if you do not want to show the loading screen while loading a scene</param>
     /// <param name="loadingName">The name of the loading screen which is put in 'screenPath'. This screen can show/hide on the top of all screens at any time using Loading(bool). Set it to empty if you don't need</param>
     /// <param name="screenAnimationSpeed">Screen Animation speed</param>
-    public static void Set(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1)
+    public static void Set(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "")
     {
-        instance.Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed);
+        instance.Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName);
     }
 
     /// <summary>
@@ -447,6 +449,21 @@ public class ScreenManager : MonoBehaviour
 
         return (m_Instance.m_ScreenList.Count <= 0 && m_Instance.m_PendingScreens <= 0 && m_Instance.m_AnimationPlayingScreens <= 0);
     }
+
+    /// <summary>
+    /// Show tooltip
+    /// </summary>
+    /// <param name="text">Tooltip content</param>
+    /// <param name="anchoredPosition">Tooltip position</param>
+    /// <param name="tooltipName">Tooltip prefab name</param>
+    /// <param name="targetY">Target Y</param>
+    public static void ShowTooltip(string text, Vector2 anchoredPosition, float targetY = 100f)
+    {
+        if (m_Instance == null)
+            return;
+
+        m_Instance.LoadAndShowTooltip(text, anchoredPosition, targetY);
+    }
     #endregion
 
     #region Unity Functions
@@ -515,20 +532,21 @@ public class ScreenManager : MonoBehaviour
     #endregion
 
     #region Private Functions
-    private void Setup(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1)
+    private void Setup(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "")
     {
         m_ScreenShieldColor = screenShieldColor;
-        Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed);
+        Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName);
 
         UpdateScreenShieldColor();
     }
 
-    private void Setup(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1)
+    private void Setup(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "")
     {
         m_ScreenPath = screenPath;
         m_ScreenAnimationPath = screenAnimationPath;
         m_SceneLoadingName = sceneLoadingName;
         m_LoadingName = loadingName;
+        m_TooltipName = tooltipName;
 
         if (screenAnimationSpeed > 0)
         {
@@ -1159,6 +1177,42 @@ public class ScreenManager : MonoBehaviour
 
             m_OnScreenChanged?.Invoke(m_ScreenList.Count);
         }
+    }
+
+    private void CreateAndShowTooltip(GameObject tooltipPrefab, string text, Vector2 anchoredPosition, float targetY)
+    {
+        var tooltip = Instantiate(tooltipPrefab, Top);
+        m_Tooltip = tooltip.GetComponent<TooltipController>();
+
+        if (m_Tooltip != null)
+        {
+            m_Tooltip.ShowTooltip(text, anchoredPosition, targetY);
+        }
+    }
+
+    private void LoadAndShowTooltip(string text, Vector2 anchoredPosition, float targetY = 100f)
+    {
+        if (string.IsNullOrEmpty(m_TooltipName))
+            return;
+
+        if (m_Tooltip != null)
+        {
+            m_Tooltip.ShowTooltip(text, anchoredPosition, targetY);
+            return;
+        }
+
+#if ADDRESSABLE
+            var async = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(m_TooltipName);
+            async.Completed += (a => {
+                if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                {
+                    CreateAndShowTooltip(async.Result, text, anchoredPosition, targetY);
+                }
+            });
+#else
+        var tooltipPrefab = Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_TooltipName));
+        CreateAndShowTooltip(tooltipPrefab, text, anchoredPosition, targetY);
+#endif
     }
     #endregion
 }
