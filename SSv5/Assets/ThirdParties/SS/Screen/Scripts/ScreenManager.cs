@@ -71,7 +71,7 @@ public class ScreenManager : MonoBehaviour
     private List<Component> m_ScreenList = new List<Component>();
     private GameObject m_SceneLoading;
     private GameObject m_Loading;
-    private TooltipController m_Tooltip;
+    private TooltipBaseController m_Tooltip;
     private UnscaledAnimation m_ScreenShield;
     private GameObject m_ScreenShieldTop;
     private OnScreenAddedDelegate m_OnScreenAdded;
@@ -1182,7 +1182,7 @@ public class ScreenManager : MonoBehaviour
     private void CreateAndShowTooltip(GameObject tooltipPrefab, string text, Vector2 anchoredPosition, float targetY)
     {
         var tooltip = Instantiate(tooltipPrefab, Top);
-        m_Tooltip = tooltip.GetComponent<TooltipController>();
+        m_Tooltip = tooltip.GetComponent<TooltipBaseController>();
 
         if (m_Tooltip != null)
         {
@@ -1197,6 +1197,7 @@ public class ScreenManager : MonoBehaviour
 
         if (m_Tooltip != null)
         {
+            m_Tooltip.transform.SetParent(Top, true);
             m_Tooltip.ShowTooltip(text, anchoredPosition, targetY);
             return;
         }

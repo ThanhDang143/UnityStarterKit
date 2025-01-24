@@ -2,18 +2,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class TooltipController : MonoBehaviour
+public class TooltipBaseController : MonoBehaviour
 {
-    public RectTransform tooltipRect;
-    public Text tooltipText;
     public float padding = 10f;
 
+    RectTransform tooltipRect;
     UnscaledAnimation m_Animation;
     Vector2 m_StartPosition;
     float m_TargetY;
 
-    private void Awake()
+    protected virtual void Awake()
     {
+        tooltipRect = GetComponent<RectTransform>();
         m_Animation = GetComponent<UnscaledAnimation>();
     }
 
@@ -44,7 +44,7 @@ public class TooltipController : MonoBehaviour
         m_TargetY = targetY;
 
         // Text
-        tooltipText.text = text;
+        SetText(text);
         LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipRect);
 
         // Size
@@ -69,6 +69,10 @@ public class TooltipController : MonoBehaviour
         gameObject.SetActive(true);
 
         m_Animation.Play("Tooltip", OnAnimationEnd);
+    }
+
+    protected virtual void SetText(string text)
+    {
     }
 
     public void HideToolTip()
