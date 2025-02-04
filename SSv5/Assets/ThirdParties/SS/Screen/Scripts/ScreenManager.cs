@@ -454,15 +454,15 @@ public class ScreenManager : MonoBehaviour
     /// Show tooltip
     /// </summary>
     /// <param name="text">Tooltip content</param>
-    /// <param name="anchoredPosition">Tooltip position</param>
+    /// <param name="worldPosition">Tooltip position</param>
     /// <param name="tooltipName">Tooltip prefab name</param>
     /// <param name="targetY">Target Y</param>
-    public static void ShowTooltip(string text, Vector2 anchoredPosition, float targetY = 100f)
+    public static void ShowTooltip(string text, Vector3 worldPosition, float targetY = 100f)
     {
         if (m_Instance == null)
             return;
 
-        m_Instance.LoadAndShowTooltip(text, anchoredPosition, targetY);
+        m_Instance.LoadAndShowTooltip(text, worldPosition, targetY);
     }
     #endregion
 
@@ -1179,18 +1179,18 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
-    private void CreateAndShowTooltip(GameObject tooltipPrefab, string text, Vector2 anchoredPosition, float targetY)
+    private void CreateAndShowTooltip(GameObject tooltipPrefab, string text, Vector3 worldPosition, float targetY)
     {
         var tooltip = Instantiate(tooltipPrefab, Top);
         m_Tooltip = tooltip.GetComponent<TooltipBaseController>();
 
         if (m_Tooltip != null)
         {
-            m_Tooltip.ShowTooltip(text, anchoredPosition, targetY);
+            m_Tooltip.ShowTooltip(text, worldPosition, targetY);
         }
     }
 
-    private void LoadAndShowTooltip(string text, Vector2 anchoredPosition, float targetY = 100f)
+    private void LoadAndShowTooltip(string text, Vector3 worldPosition, float targetY = 100f)
     {
         if (string.IsNullOrEmpty(m_TooltipName))
             return;
@@ -1198,7 +1198,7 @@ public class ScreenManager : MonoBehaviour
         if (m_Tooltip != null)
         {
             m_Tooltip.transform.SetParent(Top, true);
-            m_Tooltip.ShowTooltip(text, anchoredPosition, targetY);
+            m_Tooltip.ShowTooltip(text, worldPosition, targetY);
             return;
         }
 
@@ -1207,12 +1207,12 @@ public class ScreenManager : MonoBehaviour
             async.Completed += (a => {
                 if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
                 {
-                    CreateAndShowTooltip(async.Result, text, anchoredPosition, targetY);
+                    CreateAndShowTooltip(async.Result, text, worldPosition, targetY);
                 }
             });
 #else
         var tooltipPrefab = Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_TooltipName));
-        CreateAndShowTooltip(tooltipPrefab, text, anchoredPosition, targetY);
+        CreateAndShowTooltip(tooltipPrefab, text, worldPosition, targetY);
 #endif
     }
     #endregion

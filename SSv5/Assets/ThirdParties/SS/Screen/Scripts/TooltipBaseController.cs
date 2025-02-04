@@ -70,6 +70,20 @@ public class TooltipBaseController : MonoBehaviour
         m_Animation.Play("Tooltip", OnAnimationEnd);
     }
 
+    public void ShowTooltip(string text, Vector3 worldPosition, float targetY = 100f)
+    {
+        // Canvas
+        var canvas = GetComponentInParent<Canvas>();
+        if (canvas == null)
+        {
+            return;
+        }
+
+        var localPosition = canvas.transform.InverseTransformPoint(worldPosition);
+
+        ShowTooltip(text, new Vector2(localPosition.x, localPosition.y), targetY);
+    }
+
     protected virtual void SetText(string text)
     {
     }
