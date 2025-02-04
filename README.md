@@ -552,7 +552,11 @@ ScreenManager.Set(tooltipName: "Tooltip");
 Show the tooltip
 
 ```cs
-ScreenManager.ShowTooltip(text: "Tooltip Text", anchoredPosition: Vector2.zero, targetY: 100f);
+public Transform button;
+```
+
+```cs
+ScreenManager.ShowTooltip(text: "Tooltip Text", worldPosition: button.position, targetY: 100f);
 ```
 
 <h3>9. Other useful methods of ScreenManager</h3>
