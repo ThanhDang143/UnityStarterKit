@@ -556,7 +556,14 @@ public Transform button;
 ```
 
 ```cs
+// targetY is the distance from the start position along the Y axis
 ScreenManager.ShowTooltip(text: "Tooltip Text", worldPosition: button.position, targetY: 100f);
+```
+
+Hide the tooltip
+
+```cs
+ScreenManager.HideTooltip();
 ```
 
 <h3>9. Other useful methods of ScreenManager</h3>

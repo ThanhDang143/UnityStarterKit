@@ -464,6 +464,17 @@ public class ScreenManager : MonoBehaviour
 
         m_Instance.LoadAndShowTooltip(text, worldPosition, targetY);
     }
+
+    /// <summary>
+    /// Hide Tooltip
+    /// </summary>
+    public static void HideTooltip()
+    {
+        if (m_Instance == null)
+            return;
+
+        m_Instance.HideTooltipImmediately();
+    }
     #endregion
 
     #region Unity Functions
@@ -1214,6 +1225,14 @@ public class ScreenManager : MonoBehaviour
         var tooltipPrefab = Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_TooltipName));
         CreateAndShowTooltip(tooltipPrefab, text, worldPosition, targetY);
 #endif
+    }
+
+    private void HideTooltipImmediately()
+    {
+        if (m_Tooltip != null)
+        {
+            m_Tooltip.HideToolTip();
+        }
     }
     #endregion
 }
