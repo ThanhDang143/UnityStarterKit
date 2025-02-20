@@ -42,7 +42,7 @@ namespace SS.IO
 
                     case PathType.Relative:
                         var fullPath = fis[0].FullName;
-                        var assetIndex = fullPath.LastIndexOf("Assets/");
+                        var assetIndex = fullPath.LastIndexOf("Assets");
 
                         if (assetIndex >= 0)
                         {
