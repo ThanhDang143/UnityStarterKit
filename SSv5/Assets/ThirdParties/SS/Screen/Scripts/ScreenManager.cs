@@ -79,6 +79,7 @@ public class ScreenManager : MonoBehaviour
     private int m_PendingScreens = 0;
     private int m_AnimationPlayingScreens = 0;
     private List<ScreenCoroutine> m_ScreenCoroutines = new List<ScreenCoroutine>();
+    private Coroutine m_LoadingCoroutine;
     #endregion
 
     #region Private Static
@@ -270,9 +271,10 @@ public class ScreenManager : MonoBehaviour
     /// Show/Hide the loading screen (which has the name 'loadingName') on top of all screens.
     /// </summary>
     /// <param name="isShow">True if show, False if hide</param>
-    public static void Loading(bool isShow)
+    /// <param name="timeout">If timeout == 0, no timeout</param>
+    public static void Loading(bool isShow, float timeout = 0)
     {
-        instance.ShowLoading(isShow);
+        instance.ShowLoading(isShow, timeout);
     }
 
     /// <summary>
@@ -845,7 +847,7 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
-    private void ShowLoading(bool isShow)
+    private void ShowLoading(bool isShow, float timeout = 0)
     {
         if (isShow)
         {
@@ -859,27 +861,24 @@ public class ScreenManager : MonoBehaviour
                         if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
                         {
                             CreateLoading(async.Result);
-                            ShowLoading();
+                            ShowLoading(timeout);
                         }
                     });
 #else
                     var prefab = Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_LoadingName));
                     CreateLoading(prefab);
-                    ShowLoading();
+                    ShowLoading(timeout);
 #endif
                 }
                 else
                 {
-                    ShowLoading();
+                    ShowLoading(timeout);
                 }
             }
         }
         else
         {
-            if (m_Loading != null)
-            {
-                m_Loading.SetActive(false);
-            }
+            HideLoading();
         }
     }
 
@@ -890,10 +889,48 @@ public class ScreenManager : MonoBehaviour
         AddScreenToCanvas(m_Loading);
     }
 
-    private void ShowLoading()
+    private void ShowLoading(float timeout = 0)
     {
         m_Loading.transform.SetAsLastSibling();
+
+        StopLoadingCoroutine();
+
+        if (timeout > 0)
+        {
+            m_LoadingCoroutine = StartCoroutine(CoShowLoading(timeout));
+        }
+        else
+        {
+            m_Loading.SetActive(true);
+        }
+    }
+
+    private void HideLoading()
+    {
+        StopLoadingCoroutine();
+
+        if (m_Loading != null)
+        {
+            m_Loading.SetActive(false);
+        }
+    }
+
+    private void StopLoadingCoroutine()
+    {
+        if (m_LoadingCoroutine != null)
+        {
+            StopCoroutine(m_LoadingCoroutine);
+            m_LoadingCoroutine = null;
+        }
+    }
+
+    private IEnumerator CoShowLoading(float timeout)
+    {
         m_Loading.SetActive(true);
+
+        yield return new WaitForSecondsRealtime(timeout);
+
+        m_Loading.SetActive(false);
     }
 
     private void AddScreenToCanvas(GameObject screen)
