@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Collections.Pooled</id>
+    <version>1.0.82</version>
+    <authors>Joel Mueller</authors>
+    <owners>Joel Mueller</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/jtmueller/Collections.Pooled</projectUrl>
+    <description>Includes PooledList, PooledDictionary, PooledSet, PooledStack, and PooledQueue: based on the corresponding collections in System.Collections.Generic, but using ArrayPool internally to reduce allocations, and with some API changes that allow for better compatibility with Span.</description>
+    <releaseNotes>Adds `sizeToCapacity` parameter to PooledList constructor. When set to true, this parameter causes the list to start out with `Count == Capacity`. All entries in the list will have the default value for the type, or if `clearMode` is set to `ClearMode.Never` then entries in the list may have a previously-used value from the array pool. This feature is primarily useful when working with value types and avoiding unnecessary allocations. Thanks to Dzmitry Lahoda for the contribution!</releaseNotes>
+    <copyright>Copyright (c) 2018, 2019 Joel Mueller, Dzmitry Lahoda, based on code from the .NET Foundation</copyright>
+    <tags>List ArrayPool Span Dictionary Stack Set HashSet</tags>
+    <repository type="Git" url="https://github.com/jtmueller/Collections.Pooled.git" />
+    <dependencies>
+      <group targetFramework=".NETCoreApp2.1" />
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="System.Buffers" version="4.5.0" exclude="Build,Analyzers" />
+        <dependency id="System.Memory" version="4.5.2" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
