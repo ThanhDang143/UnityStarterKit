@@ -500,6 +500,7 @@ public class ScreenManager : MonoBehaviour
             SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
 
             SetupCameras();
+            SetupCanvases();
             CreateShield();
         }
     }
@@ -539,6 +540,7 @@ public class ScreenManager : MonoBehaviour
     private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode mode)
     {
         SetupCameras();
+        SetupCanvases();
 
         m_LastLoadedScene = scene;
     }
@@ -1148,6 +1150,22 @@ public class ScreenManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void SetupCanvases()
+    {
+        var screenRatio = (float)Screen.width / Screen.height;
+
+        var canvasScalers = FindObjectsOfType<CanvasScaler>(true);
+        for (int i = 0; i < canvasScalers.Length; i++)
+        {
+            SetupCanvasScaler(canvasScalers[i], screenRatio);
+        }
+    }
+
+    private void SetupCanvasScaler(CanvasScaler canvasScaler, float screenRatio)
+    {
+        canvasScaler.matchWidthOrHeight = screenRatio > 0.44f ? 1f : 0f;
     }
 
     private T GetSceneComponent<T>(Scene scene) where T : Component
