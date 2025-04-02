@@ -20,9 +20,8 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/PluginPackages/SSSystem/Scenes/SSEmpty.unity
     guid: ef0246d6486ba4a62a69aec8c91a2af1
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SceneLoading.unity
     guid: 37d65bebdb94b41ed8bac41e72970134
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 38b3f175d676b4ef59531da5aa9816f9, type: 2}
-  m_UseUCBPForAssetBundles: 0
