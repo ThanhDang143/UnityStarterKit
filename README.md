@@ -195,6 +195,22 @@ In default, Screen Animation Speed is 1. You can change it.
 ScreenManager.Set(screenAnimationSpeed: 1.5f);
 ```
 
+<h4>2.6. Show Animation One Time </h4>
+
+Indicate whether a screen play its show animation again when the screen above it closes. By default, showAnimationOneTime is false.
+
+```cs
+ScreenManager.Set(showAnimationOneTime: true);
+```
+
+<h4>2.7. None Screen Animation </h4>
+
+For None Screen Animation, you can use an empty string for showAnimation & hideAnimation like this:
+
+```cs
+ScreenManager.Add<Screen1Controller>(screenName: "Screen1", showAnimation: "", hideAnimation: "");
+```
+
 <h3>3. Events</h3>
 
 <h4>3.1. On Screen Loaded </h4>
@@ -409,6 +425,14 @@ ScreenManager.HideShield();
 <p align="center">
   <img width="500px" src="/learn/unity/ss/advance/show-hide-shield.gif?raw=true" alt="Demo">
 </p>
+
+<h4>5.4. Close on tapping Shield </h4>
+
+Indicate whether close the top screen when users tap the shield. By default, closeOnTappingShield is false.
+
+```cs
+ScreenManager.Set(closeOnTappingShield: true);
+```
 
 <h3>6. Other parameters of adding a screen</h3>
 
