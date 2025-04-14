@@ -51,6 +51,7 @@ public class ScreenManager : MonoBehaviour
     [SerializeField] string m_TooltipName;
     [SerializeField] Color m_ScreenShieldColor = new Color(0, 0, 0, 0.8f);
     [SerializeField] float m_ScreenAnimationSpeed = 1;
+    [SerializeField] bool m_ShowAnimationOneTime = false;
     [SerializeField] Camera m_BackgroundCamera;
     [SerializeField] Canvas m_Canvas;
     [SerializeField] UnscaledAnimation m_SceneShield;
@@ -118,9 +119,11 @@ public class ScreenManager : MonoBehaviour
     /// <param name="sceneLoadingName">The name of the scene loading screen which is put in 'screenPath'. Set it to empty if you do not want to show the loading screen while loading a scene</param>
     /// <param name="loadingName">The name of the loading screen which is put in 'screenPath'. This screen can show/hide on the top of all screens at any time using Loading(bool). Set it to empty if you don't need</param>
     /// <param name="screenAnimationSpeed">Screen Animation speed</param>
-    public static void Set(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "")
+    /// <param name="tooltipName">Tooltip Name</param>
+    /// <param name="showAnimationOneTime">Indicate whether a screen play its show animation again when the screen above it closes</param>
+    public static void Set(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "", bool showAnimationOneTime = false)
     {
-        instance.Setup(screenShieldColor, screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName);
+        instance.Setup(screenShieldColor, screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName, showAnimationOneTime);
     }
 
     /// <summary>
@@ -131,9 +134,11 @@ public class ScreenManager : MonoBehaviour
     /// <param name="sceneLoadingName">The name of the scene loading screen which is put in 'screenPath'. Set it to empty if you do not want to show the loading screen while loading a scene</param>
     /// <param name="loadingName">The name of the loading screen which is put in 'screenPath'. This screen can show/hide on the top of all screens at any time using Loading(bool). Set it to empty if you don't need</param>
     /// <param name="screenAnimationSpeed">Screen Animation speed</param>
-    public static void Set(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "")
+    /// <param name="tooltipName">Tooltip Name</param>
+    /// <param name="showAnimationOneTime">Indicate whether a screen play its show animation again when the screen above it closes</param>
+    public static void Set(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "", bool showAnimationOneTime = false)
     {
-        instance.Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName);
+        instance.Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName, showAnimationOneTime);
     }
 
     /// <summary>
@@ -547,21 +552,22 @@ public class ScreenManager : MonoBehaviour
     #endregion
 
     #region Private Functions
-    private void Setup(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "")
+    private void Setup(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "", bool showAnimationOneTime = false)
     {
         m_ScreenShieldColor = screenShieldColor;
-        Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName);
+        Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName, showAnimationOneTime);
 
         UpdateScreenShieldColor();
     }
 
-    private void Setup(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "")
+    private void Setup(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "", bool showAnimationOneTime = false)
     {
         m_ScreenPath = screenPath;
         m_ScreenAnimationPath = screenAnimationPath;
         m_SceneLoadingName = sceneLoadingName;
         m_LoadingName = loadingName;
         m_TooltipName = tooltipName;
+        m_ShowAnimationOneTime = showAnimationOneTime;
 
         if (screenAnimationSpeed > 0)
         {
@@ -803,6 +809,16 @@ public class ScreenManager : MonoBehaviour
         {
             var screen = m_ScreenList[m_ScreenList.Count - 1];
             CloseScreen(screen, onScreenClosed, hideAnimation);
+        }
+
+        if (m_ShowAnimationOneTime && m_ScreenList.Count > 0)
+        {
+            var topScreen = m_ScreenList[m_ScreenList.Count - 1];
+
+            if (topScreen != null)
+            {
+                topScreen.gameObject.SetActive(true);
+            }
         }
     }
 
@@ -1198,25 +1214,48 @@ public class ScreenManager : MonoBehaviour
         {
             var topScreen = m_ScreenList[m_ScreenList.Count - 1];
 
-            if (topScreen != null && topScreen.gameObject != null && !topScreen.gameObject.activeInHierarchy)
+            if (!m_ShowAnimationOneTime)
             {
-                m_ScreenShield.name = ScreenShieldName(topScreen.name);
-
-                topScreen.transform.SetSiblingIndex(m_ScreenShield.transform.GetSiblingIndex() + 1);
-                topScreen.gameObject.SetActive(true);
-
-                var topController = topScreen.GetComponent<ScreenController>();
-
-                if (topController.hasShield)
+                if (topScreen != null && topScreen.gameObject != null && !topScreen.gameObject.activeInHierarchy)
                 {
-                    ShowScreenShield();
-                }
-                else
-                {
-                    HideScreenShield();
-                }
+                    m_ScreenShield.name = ScreenShieldName(topScreen.name);
 
-                PlayAnimation(topScreen, topController.showAnimation);
+                    topScreen.transform.SetSiblingIndex(m_ScreenShield.transform.GetSiblingIndex() + 1);
+                    topScreen.gameObject.SetActive(true);
+
+                    var topController = topScreen.GetComponent<ScreenController>();
+
+                    if (topController.hasShield)
+                    {
+                        ShowScreenShield();
+                    }
+                    else
+                    {
+                        HideScreenShield();
+                    }
+
+                    PlayAnimation(topScreen, topController.showAnimation);
+                }
+            }
+            else
+            {
+                if (topScreen != null && topScreen.gameObject != null)
+                {
+                    m_ScreenShield.name = ScreenShieldName(topScreen.name);
+
+                    topScreen.transform.SetSiblingIndex(m_ScreenShield.transform.GetSiblingIndex() + 1);
+
+                    var topController = topScreen.GetComponent<ScreenController>();
+
+                    if (topController.hasShield)
+                    {
+                        ShowScreenShield();
+                    }
+                    else
+                    {
+                        HideScreenShield();
+                    }
+                }
             }
         }
     }
