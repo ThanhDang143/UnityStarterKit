@@ -52,6 +52,7 @@ public class ScreenManager : MonoBehaviour
     [SerializeField] Color m_ScreenShieldColor = new Color(0, 0, 0, 0.8f);
     [SerializeField] float m_ScreenAnimationSpeed = 1;
     [SerializeField] bool m_ShowAnimationOneTime = false;
+    [SerializeField] bool m_CloseOnTappingShield = false;
     [SerializeField] Camera m_BackgroundCamera;
     [SerializeField] Canvas m_Canvas;
     [SerializeField] UnscaledAnimation m_SceneShield;
@@ -121,9 +122,10 @@ public class ScreenManager : MonoBehaviour
     /// <param name="screenAnimationSpeed">Screen Animation speed</param>
     /// <param name="tooltipName">Tooltip Name</param>
     /// <param name="showAnimationOneTime">Indicate whether a screen play its show animation again when the screen above it closes</param>
-    public static void Set(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "", bool showAnimationOneTime = false)
+    /// <param name="closeOnTappingShield">Indicate whether close the top screen when users tap the shield</param>
+    public static void Set(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "", bool showAnimationOneTime = false, bool closeOnTappingShield = false)
     {
-        instance.Setup(screenShieldColor, screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName, showAnimationOneTime);
+        instance.Setup(screenShieldColor, screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName, showAnimationOneTime, closeOnTappingShield);
     }
 
     /// <summary>
@@ -136,9 +138,10 @@ public class ScreenManager : MonoBehaviour
     /// <param name="screenAnimationSpeed">Screen Animation speed</param>
     /// <param name="tooltipName">Tooltip Name</param>
     /// <param name="showAnimationOneTime">Indicate whether a screen play its show animation again when the screen above it closes</param>
-    public static void Set(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "", bool showAnimationOneTime = false)
+    /// <param name="closeOnTappingShield">Indicate whether close the top screen when users tap the shield</param>
+    public static void Set(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "", bool showAnimationOneTime = false, bool closeOnTappingShield = false)
     {
-        instance.Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName, showAnimationOneTime);
+        instance.Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName, showAnimationOneTime, closeOnTappingShield);
     }
 
     /// <summary>
@@ -552,15 +555,15 @@ public class ScreenManager : MonoBehaviour
     #endregion
 
     #region Private Functions
-    private void Setup(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "", bool showAnimationOneTime = false)
+    private void Setup(Color screenShieldColor, string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "", bool showAnimationOneTime = false, bool closeOnTappingShield = false)
     {
         m_ScreenShieldColor = screenShieldColor;
-        Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName, showAnimationOneTime);
+        Setup(screenPath, screenAnimationPath, sceneLoadingName, loadingName, screenAnimationSpeed, tooltipName, showAnimationOneTime, closeOnTappingShield);
 
         UpdateScreenShieldColor();
     }
 
-    private void Setup(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "", bool showAnimationOneTime = false)
+    private void Setup(string screenPath = "Screens", string screenAnimationPath = "Animations", string sceneLoadingName = "", string loadingName = "", float screenAnimationSpeed = 1, string tooltipName = "", bool showAnimationOneTime = false, bool closeOnTappingShield = false)
     {
         m_ScreenPath = screenPath;
         m_ScreenAnimationPath = screenAnimationPath;
@@ -568,11 +571,28 @@ public class ScreenManager : MonoBehaviour
         m_LoadingName = loadingName;
         m_TooltipName = tooltipName;
         m_ShowAnimationOneTime = showAnimationOneTime;
+        m_CloseOnTappingShield = closeOnTappingShield;
 
         if (screenAnimationSpeed > 0)
         {
             m_ScreenAnimationSpeed = screenAnimationSpeed;
         }
+
+        if (m_CloseOnTappingShield)
+        {
+            var eventTrigger = m_ScreenShield.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+
+            UnityEngine.EventSystems.EventTrigger.Entry entry = new UnityEngine.EventSystems.EventTrigger.Entry();
+            entry.eventID = UnityEngine.EventSystems.EventTriggerType.PointerClick;
+            entry.callback.AddListener((eventData) => { OnShieldTap(); });
+
+            eventTrigger.triggers.Add(entry);
+        }
+    }
+
+    private void OnShieldTap()
+    {
+        Close();
     }
 
     private void LoadScene<T>(string sceneName, LoadSceneMode mode = LoadSceneMode.Single, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true) where T : Component
