@@ -1,5 +1,12 @@
 # Unity Starter Kit for ThanhDV... and anyone else brave enough to give it a try!
-This main branch is **inactive**. Modules will be developed in parallel on their **respective branches**.
+## Include
+- Utilities (https://github.com/ThanhDang143/UnityStarterKit.git?path=/Assets/CustomPackages/Utilities)
+
+## Changelog v0.0.10
+### Utilities
+- Add DebugExtension, EventDispatcher
+- Fix Singleton
+- Package can add via Git URL
 
 ## Changelog v0.0.9
 - Update Singleton for exception case, MonoBehaviour dont destroy and can destroy.
@@ -9,7 +16,7 @@ This main branch is **inactive**. Modules will be developed in parallel on their
 - Add UIBackground to Utilities.
 
 ## Changelog v0.0.6
-Remove the installation function through Git URL.
+- Remove the installation function through Git URL.
 
 ## Changelog v0.0.5
 - Merge Singleton, UIAdaptation, RectTransform Extension into Utilities and remove them.
