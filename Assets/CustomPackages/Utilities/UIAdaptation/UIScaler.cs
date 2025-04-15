@@ -1,44 +1,40 @@
+using ThanhDV.Utilities.DebugExtensions;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(CanvasScaler))]
-public class UIScaler : MonoBehaviour
+namespace ThanhDV.Utilities.UIAdaptation
 {
-    [Space]
-    [SerializeField] private bool isSetupOnAwake = true;
-
-    [Space]
-#if ThanhDV_UIADAPTATION_VERTICAL
-    [SerializeField] private float baseWidth = 1080f;
-    [SerializeField] private float baseHeight = 1920f;
-#elif ThanhDV_UIADAPTATION_HORIZONTAL
-    [SerializeField] private float baseWidth = 1920f;
-    [SerializeField] private float baseHeight = 1080f;
-#else
-    [SerializeField] private float baseWidth = 1080f;
-    [SerializeField] private float baseHeight = 1920f;
-#endif
-
-    private void Awake()
+    [RequireComponent(typeof(CanvasScaler))]
+    public class UIScaler : MonoBehaviour
     {
-        if (isSetupOnAwake) Setup();
-    }
+        [Space]
+        [SerializeField] private bool setupOnAwake = true;
 
-    public void Setup()
-    {
-        if (!TryGetComponent(out CanvasScaler scaler))
+        [Space]
+        [SerializeField] private float baseWidth = 1080f;
+        [SerializeField] private float baseHeight = 1920f;
+
+        private void Awake()
         {
-            Debug.Log("<color=red> CanvasScaler not found </color>");
-            return;
+            if (setupOnAwake) Setup();
         }
 
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(baseWidth, baseHeight);
+        public void Setup()
+        {
+            if (!TryGetComponent(out CanvasScaler scaler))
+            {
+                DebugExtension.Log("CanvasScaler not found!!!", Color.red);
+                return;
+            }
 
-        float w = baseWidth / Screen.width;
-        float h = baseHeight / Screen.height;
-        float ratio = h / w;
-        ratio = ratio >= 1 ? 1 : 0;
-        scaler.matchWidthOrHeight = ratio;
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(baseWidth, baseHeight);
+
+            float w = baseWidth / Screen.width;
+            float h = baseHeight / Screen.height;
+            float ratio = h / w;
+            ratio = ratio >= 1 ? 1 : 0;
+            scaler.matchWidthOrHeight = ratio;
+        }
     }
 }
