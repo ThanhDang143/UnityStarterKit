@@ -82,6 +82,7 @@ public class ScreenManager : MonoBehaviour
     private int m_AnimationPlayingScreens = 0;
     private List<ScreenCoroutine> m_ScreenCoroutines = new List<ScreenCoroutine>();
     private Coroutine m_LoadingCoroutine;
+    private bool m_IsLoading;
     #endregion
 
     #region Private Static
@@ -887,6 +888,7 @@ public class ScreenManager : MonoBehaviour
 
     private void ShowLoading(bool isShow, float timeout = 0)
     {
+        m_IsLoading = isShow;
         if (isShow)
         {
             if (!string.IsNullOrEmpty(m_LoadingName))
@@ -929,17 +931,20 @@ public class ScreenManager : MonoBehaviour
 
     private void ShowLoading(float timeout = 0)
     {
-        m_Loading.transform.SetAsLastSibling();
-
-        StopLoadingCoroutine();
-
-        if (timeout > 0)
+        if (m_IsLoading)
         {
-            m_LoadingCoroutine = StartCoroutine(CoShowLoading(timeout));
-        }
-        else
-        {
-            m_Loading.SetActive(true);
+            m_Loading.transform.SetAsLastSibling();
+
+            StopLoadingCoroutine();
+
+            if (timeout > 0)
+            {
+                m_LoadingCoroutine = StartCoroutine(CoShowLoading(timeout));
+            }
+            else
+            {
+                m_Loading.SetActive(true);
+            }
         }
     }
 
