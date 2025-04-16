@@ -926,6 +926,7 @@ public class ScreenManager : MonoBehaviour
     {
         m_Loading = Instantiate(prefab);
         m_Loading.name = m_LoadingName;
+        m_Loading.SetActive(false);
         AddScreenToCanvas(m_Loading);
     }
 
