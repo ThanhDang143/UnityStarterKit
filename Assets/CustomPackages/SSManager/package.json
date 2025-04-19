@@ -1,0 +1,21 @@
+{
+    "name": "thanhdv.ssmanager",
+    "version": "0.0.1",
+    "displayName": "ThanhDV's Simple Screen Manager",
+    "description": "A fork of Simple Screen Manager by AnhPham, with some ThanhDV's improvements and additional features.",
+    "unity": "2022.3",
+    "keywords": [
+        "Screen",
+        "Screen Manager"
+    ],
+    "author": {
+        "name": "ThanhDV",
+        "email": "vanthanh1998@gmail.com",
+        "url": "https://docs.thanhdv.icu"
+    },
+    "dependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ThanhDang143/UnityStarterKit.git"
+    }
+}
