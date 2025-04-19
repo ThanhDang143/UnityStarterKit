@@ -1,9 +1,6 @@
-﻿// This code is part of the SS-Scene library, released by Anh Pham (anhpt.csit@gmail.com).
+﻿using UnityEngine;
 
-using UnityEngine;
-using System.Collections;
-
-namespace SS.IO
+namespace SSManager.IO
 {
 	public class Path
 	{

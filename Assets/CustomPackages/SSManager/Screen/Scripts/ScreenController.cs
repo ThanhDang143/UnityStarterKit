@@ -1,49 +1,22 @@
-/**
- * @author Anh Pham (Zenga Inc)
- * @email anhpt.csit@gmail.com
- * @date 2024/03/29
- */
-
 using UnityEngine;
 
-public class ScreenController : MonoBehaviour
+namespace SSManager.Manager
 {
-    public Component screen
+    public class ScreenController : MonoBehaviour
     {
-        get;
-        set;
-    }
+        public Component Screen { get; set; }
+        public string ShowAnimation { get; set; }
+        public string HideAnimation { get; set; }
+        public string AnimationObjectName { get; set; }
+        public bool HasShield { get; set; }
 
-    public string showAnimation
-    {
-        get;
-        set;
-    }
-
-    public string hideAnimation
-    {
-        get;
-        set;
-    }
-
-    public string animationObjectName
-    {
-        get;
-        set;
-    }
-
-    public bool hasShield
-    {
-        get;
-        set;
-    }
-
-    private void OnDestroy()
-    {
-        if (screen != null)
+        private void OnDestroy()
         {
-            ScreenManager.RemoveScreen(screen);
-            ScreenManager.HideShieldOrShowTop(name);
-        }   
+            if (Screen != null)
+            {
+                ScreenManager.RemoveScreen(Screen);
+                ScreenManager.HideShieldOrShowTop(name);
+            }
+        }
     }
 }

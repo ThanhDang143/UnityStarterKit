@@ -1,9 +1,4 @@
-﻿// This code is part of the SS-Scene library, released by Anh Pham (anhpt.csit@gmail.com).
-
-using UnityEngine;
-using System.Collections;
-
-namespace SS.Tool
+﻿namespace SSManager.Tool
 {
     public class Scene
     {

@@ -1,14 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using SSManager.Manager;
 
-public class Screen3 : MonoBehaviour, IKeyBack
+public class Screen3 : MonoBehaviour, IBtnBack
 {
     public Text label;
 
-    public void OnKeyBack()
+    public void OnBtnBack()
     {
         ScreenManager.Close(hideAnimation: ScreenAnimation.RightHide);
     }

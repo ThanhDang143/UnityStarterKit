@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using SSManager.Manager;
 using UnityEngine;
 
 public class SceneLoading : MonoBehaviour

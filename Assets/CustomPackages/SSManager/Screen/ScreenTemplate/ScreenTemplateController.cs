@@ -1,13 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ScreenTemplateController : MonoBehaviour, IKeyBack
+namespace SSManager.Manager.Template
 {
-    public const string NAME = "ScreenTemplate";
-
-    public void OnKeyBack()
+    public class ScreenTemplateController : MonoBehaviour, IBtnBack
     {
-        ScreenManager.Close();
+        public const string NAME = "ScreenTemplate";
+
+        public void OnBtnBack()
+        {
+            ScreenManager.Close();
+        }
     }
 }

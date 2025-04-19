@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+using SSManager.Manager;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour
 {

@@ -5,7 +5,7 @@ using System.Reflection;
 
 public class ScreenUtils
 {
-    [MenuItem("SS/Capture")]
+    [MenuItem("SSManager/Capture")]
     public static void Capture()
     {
         string dirPath = Application.dataPath.Substring(0, Application.dataPath.Length - 6) + "Screenshots";
@@ -22,7 +22,7 @@ public class ScreenUtils
 
     //Add or change if want different resolutions
     static string[] sizesToCapture = { "1080x1920", "1242x2208", "1290x2796", "2048x2732" };
-    [MenuItem("SS/Capture Store Screenshots")]
+    [MenuItem("SSManager/Capture Store Screenshots")]
     public static void CaptureStoreScreenshots()
     {
         EditorApplication.isPaused = true;

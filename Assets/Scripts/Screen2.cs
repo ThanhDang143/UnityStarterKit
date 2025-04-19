@@ -1,10 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using SSManager.Manager;
 
-public class Screen2 : MonoBehaviour, IKeyBack
+public class Screen2 : MonoBehaviour, IBtnBack
 {
     public Text label;
 
@@ -16,7 +16,7 @@ public class Screen2 : MonoBehaviour, IKeyBack
         });
     }
 
-    public void OnKeyBack()
+    public void OnBtnBack()
     {
         ScreenManager.Close();
     }
@@ -43,14 +43,15 @@ public class Screen2 : MonoBehaviour, IKeyBack
 
     public void OnAddScreen1ButtonTap()
     {
-        ScreenManager.Add<Screen1>(screenName: "Screen1", showAnimation: ScreenAnimation.RightShow, hideAnimation: ScreenAnimation.RightHide, useExistingScreen: true, onScreenLoad: (screen) => {
+        ScreenManager.Add<Screen1>(screenName: "Screen1", showAnimation: ScreenAnimation.RightShow, hideAnimation: ScreenAnimation.RightHide, useExistingScreen: true, onScreenLoad: (screen) =>
+        {
             screen.label.text = "Screen1";
         });
     }
 
     public void OnShowTooltipButtonTap(Button button)
     {
-        ScreenManager.ShowTooltip(text: "This is a long tooltip to test overflowing the screen", worldPosition: button.transform.position, targetY:Random.Range(100f, 300f));
+        ScreenManager.ShowTooltip(text: "This is a long tooltip to test overflowing the screen", worldPosition: button.transform.position, targetY: Random.Range(100f, 300f));
     }
 
     private IEnumerator ShowLoadingASecond()
