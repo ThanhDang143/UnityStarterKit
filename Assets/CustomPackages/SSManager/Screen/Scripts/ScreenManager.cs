@@ -623,7 +623,7 @@ public class ScreenManager : MonoBehaviour
         {
             if (m_SceneLoading == null)
             {
-#if ADDRESSABLE
+#if SSMANAGER_ADDRESSABLE
                 var async = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(m_SceneLoadingName);
                 async.Completed += (a => {
                     if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
@@ -780,7 +780,7 @@ public class ScreenManager : MonoBehaviour
 
         if (!hasExistingScreen)
         {
-#if ADDRESSABLE
+#if SSMANAGER_ADDRESSABLE
             var async = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(screenName);
             async.Completed += (a => {
                 if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
@@ -895,7 +895,7 @@ public class ScreenManager : MonoBehaviour
             {
                 if (m_Loading == null)
                 {
-#if ADDRESSABLE
+#if SSMANAGER_ADDRESSABLE
                     var async = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(m_LoadingName);
                     async.Completed += (a => {
                         if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
@@ -1014,7 +1014,8 @@ public class ScreenManager : MonoBehaviour
     {
         if (m_ScreenShield.gameObject.activeInHierarchy)
         {
-            m_ScreenShield.Play("ShieldHide", (anim) => {
+            m_ScreenShield.Play("ShieldHide", (anim) =>
+            {
                 m_ScreenShield.gameObject.SetActive(false);
             }, speed: m_ScreenAnimationSpeed);
         }
@@ -1179,7 +1180,7 @@ public class ScreenManager : MonoBehaviour
 
     private void SetupCameras()
     {
-        var cameras = FindObjectsOfType<Camera>();
+        var cameras = FindObjectsByType<Camera>(FindObjectsSortMode.None);
 
         for (int i = 0; i < cameras.Length; i++)
         {
@@ -1198,7 +1199,7 @@ public class ScreenManager : MonoBehaviour
     {
         var screenRatio = (float)Screen.width / Screen.height;
 
-        var canvasScalers = FindObjectsOfType<CanvasScaler>(true);
+        var canvasScalers = FindObjectsByType<CanvasScaler>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         for (int i = 0; i < canvasScalers.Length; i++)
         {
             SetupCanvasScaler(canvasScalers[i], screenRatio);
@@ -1333,7 +1334,7 @@ public class ScreenManager : MonoBehaviour
             return;
         }
 
-#if ADDRESSABLE
+#if SSMANAGER_ADDRESSABLE
             var async = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(m_TooltipName);
             async.Completed += (a => {
                 if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)

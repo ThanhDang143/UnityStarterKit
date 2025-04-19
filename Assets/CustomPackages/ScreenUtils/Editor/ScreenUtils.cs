@@ -167,7 +167,7 @@ public class ScreenUtils
     static GameViewSizeGroupType GetCurrentGroupType()
     {
 #if UNITY_STANDALONE
-            return GameViewSizeGroupType.Standalone;
+        return GameViewSizeGroupType.Standalone;
 #elif UNITY_IOS
             return GameViewSizeGroupType.iOS;
 #elif UNITY_ANDROID
