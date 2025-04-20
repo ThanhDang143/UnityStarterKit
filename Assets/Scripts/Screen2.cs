@@ -23,7 +23,7 @@ public class Screen2 : MonoBehaviour, IBtnBack
 
     public void OnCloseScreen1ButtonTap()
     {
-        var screen1 = FindObjectOfType<Screen1>(true);
+        var screen1 = FindFirstObjectByType<Screen1>();
 
         if (screen1 != null)
         {

@@ -1,9 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Cysharp.Threading.Tasks;
+using System.Threading;
 
 namespace SSManager.Manager
 {
@@ -27,18 +28,6 @@ namespace SSManager.Manager
 
     public class ScreenManager : MonoBehaviour
     {
-        class ScreenCoroutine
-        {
-            public Coroutine coroutine;
-            public string screenName;
-
-            public ScreenCoroutine(Coroutine coroutine, string screenName)
-            {
-                this.coroutine = coroutine;
-                this.screenName = screenName;
-            }
-        }
-
         #region SerializeField
         [SerializeField] string m_ScreenPath = "Screens";
         [SerializeField] string m_ScreenAnimationPath = "Animations";
@@ -76,8 +65,8 @@ namespace SSManager.Manager
         private OnScreenChangedDelegate m_OnScreenChanged;
         private int m_PendingScreens = 0;
         private int m_AnimationPlayingScreens = 0;
-        private List<ScreenCoroutine> m_ScreenCoroutines = new List<ScreenCoroutine>();
-        private Coroutine m_LoadingCoroutine;
+        private CancellationTokenSource m_ScreenCTS = new CancellationTokenSource();
+        private CancellationTokenSource m_LoadingCTS = new CancellationTokenSource();
         private bool m_IsLoading;
         #endregion
 
@@ -102,7 +91,7 @@ namespace SSManager.Manager
         /// <summary>
         /// Get the scene loading operation. Can get some values like % progress.
         /// </summary>
-        public static AsyncOperation asyncOperation
+        public static AsyncOperation ScreenLoadOperation
         {
             get;
             protected set;
@@ -151,8 +140,8 @@ namespace SSManager.Manager
         /// <param name="clearAllScreens">Clear all screens when the scene is loaded?</param>
         public static void Load<T>(string sceneName, LoadSceneMode mode = LoadSceneMode.Single, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreens = true) where T : Component
         {
-            StopAllAddScreenCoroutines();
-            instance.LoadScene(sceneName, mode, onSceneLoaded, clearAllScreens);
+            CancelAddScreens();
+            instance.LoadScene(sceneName, mode, onSceneLoaded, clearAllScreens).Forget();
         }
 
         /// <summary>
@@ -173,8 +162,7 @@ namespace SSManager.Manager
         /// <returns>The component type T in the screen.</returns>
         public static void Add<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true, AddConditionDelegate addCondition = null, bool waitUntilNoScreen = false, bool destroyTopScreen = false) where T : Component
         {
-            var c = instance.StartCoroutine(instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName, useExistingScreen, onScreenLoad, hasShield, manually, addCondition, waitUntilNoScreen, destroyTopScreen));
-            instance.m_ScreenCoroutines.Add(new ScreenCoroutine(c, screenName));
+            instance.AddScreen<T>(screenName, showAnimation, hideAnimation, animationObjectName, useExistingScreen, onScreenLoad, hasShield, manually, addCondition, waitUntilNoScreen, destroyTopScreen).Forget();
         }
 
         /// <summary>
@@ -277,9 +265,9 @@ namespace SSManager.Manager
         /// </summary>
         /// <param name="isShow">True if show, False if hide</param>
         /// <param name="timeout">If timeout == 0, no timeout</param>
-        public static void Loading(bool isShow, float timeout = 0)
+        public static void Loading(bool isShow, float timeout = 0, bool ignoreTimeScale = true)
         {
-            instance.ShowLoading(isShow, timeout);
+            instance.ShowLoading(isShow, timeout, ignoreTimeScale).Forget();
         }
 
         /// <summary>
@@ -427,22 +415,19 @@ namespace SSManager.Manager
         /// <summary>
         /// Stop All AddScreen Coroutines
         /// </summary>
-        public static void StopAllAddScreenCoroutines()
+        public static void CancelAddScreens()
         {
-            if (m_Instance != null)
+            if (m_Instance == null) return;
+
+            if (instance.m_ScreenCTS != null)
             {
-                for (int i = 0; i < instance.m_ScreenCoroutines.Count; i++)
-                {
-                    var sc = instance.m_ScreenCoroutines[i];
-                    if (sc != null && sc.coroutine != null)
-                    {
-                        instance.StopCoroutine(sc.coroutine);
-                        sc.coroutine = null;
-                        Debug.LogWarning("CM: StopCoroutine " + sc.screenName.ToString());
-                    }
-                }
-                instance.m_ScreenCoroutines.Clear();
+                if (!instance.m_ScreenCTS.IsCancellationRequested) instance.m_ScreenCTS.Cancel();
+
+                instance.m_ScreenCTS.Dispose();
+                instance.m_ScreenCTS = null;
             }
+
+            instance.m_ScreenCTS = new CancellationTokenSource();
         }
 
         /// <summary>
@@ -469,7 +454,7 @@ namespace SSManager.Manager
             if (m_Instance == null)
                 return;
 
-            m_Instance.LoadAndShowTooltip(text, worldPosition, targetY);
+            m_Instance.LoadAndShowTooltip(text, worldPosition, targetY).Forget();
         }
 
         /// <summary>
@@ -592,12 +577,7 @@ namespace SSManager.Manager
             Close();
         }
 
-        private void LoadScene<T>(string sceneName, LoadSceneMode mode = LoadSceneMode.Single, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true) where T : Component
-        {
-            StartCoroutine(CoLoadScene(sceneName, mode, onSceneLoaded, clearAllScreen));
-        }
-
-        private IEnumerator CoLoadScene<T>(string sceneName, LoadSceneMode mode, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true) where T : Component
+        private async UniTask LoadScene<T>(string sceneName, LoadSceneMode mode = LoadSceneMode.Single, OnSceneLoad<T> onSceneLoaded = null, bool clearAllScreen = true, CancellationToken cancellationToken = default) where T : Component
         {
             m_SceneShield.transform.SetAsLastSibling();
 
@@ -605,7 +585,8 @@ namespace SSManager.Manager
             {
                 m_SceneShield.Play("ShieldShow", speed: m_ScreenAnimationSpeed);
 
-                yield return new WaitForSecondsRealtime(m_SceneShield.GetLength("ShieldShow") / m_ScreenAnimationSpeed);
+                float shieldTime = m_SceneShield.GetLength("ShieldShow") / m_ScreenAnimationSpeed;
+                await UniTask.WaitForSeconds(shieldTime, true, cancellationToken: cancellationToken);
 
                 if (clearAllScreen)
                 {
@@ -620,17 +601,21 @@ namespace SSManager.Manager
                 if (m_SceneLoading == null)
                 {
 #if SSMANAGER_ADDRESSABLE
-                var async = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(m_SceneLoadingName);
-                async.Completed += (a => {
-                    if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(m_SceneLoadingName);
+                    await handle.WithCancellation(cancellationToken);
+                    if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
                     {
-                        CreateSceneLoading(async.Result);
+                        CreateSceneLoading(handle.Result);
                         ShowSceneLoading();
                     }
-                });
+                    else
+                    {
+                        Debug.LogError($"<color=red>CM: SceneLoading prefab not found</color>");
+                    }
 #else
-                    var prefab = Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_SceneLoadingName));
-                    CreateSceneLoading(prefab);
+                    var request = Resources.LoadAsync<GameObject>(Path.Combine(m_ScreenPath, m_SceneLoadingName));
+                    await request.WithCancellation(cancellationToken);
+                    CreateSceneLoading(request.asset as GameObject);
                     ShowSceneLoading();
 #endif
                 }
@@ -640,16 +625,13 @@ namespace SSManager.Manager
                 }
             }
 
-            asyncOperation = SceneManager.LoadSceneAsync(sceneName, mode);
-            asyncOperation.completed += (asyncOp) =>
+            ScreenLoadOperation = SceneManager.LoadSceneAsync(sceneName, mode);
+            ScreenLoadOperation.completed += (asyncOp) =>
             {
                 onSceneLoaded?.Invoke(GetSceneComponent<T>(instance.m_LastLoadedScene));
             };
 
-            while (!asyncOperation.isDone)
-            {
-                yield return null;
-            }
+            await UniTask.WaitUntil(() => ScreenLoadOperation.isDone, cancellationToken: cancellationToken);
 
             if (mode == LoadSceneMode.Single)
             {
@@ -658,15 +640,12 @@ namespace SSManager.Manager
 
             if (mode == LoadSceneMode.Single && !string.IsNullOrEmpty(m_SceneLoadingName))
             {
-                while (m_SceneLoading == null)
-                {
-                    yield return 0;
-                }
+                await UniTask.WaitUntil(() => m_SceneLoading != null, cancellationToken: cancellationToken);
             }
 
             if (m_SceneLoading != null)
             {
-                yield return 0;
+                await UniTask.DelayFrame(1, cancellationToken: cancellationToken);
 
                 m_SceneLoading.SetActive(false);
             }
@@ -685,21 +664,21 @@ namespace SSManager.Manager
             m_SceneLoading.SetActive(true);
         }
 
-        private IEnumerator AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true, AddConditionDelegate addCondition = null, bool waitUntilNoScreen = false, bool destroyTopScreen = false) where T : Component
+        private async UniTaskVoid AddScreen<T>(string screenName, string showAnimation = "ScaleShow", string hideAnimation = "ScaleHide", string animationObjectName = "", bool useExistingScreen = false, OnScreenLoad<T> onScreenLoad = null, bool hasShield = true, bool manually = true, AddConditionDelegate addCondition = null, bool waitUntilNoScreen = false, bool destroyTopScreen = false) where T : Component
         {
             while (addCondition != null && !addCondition())
             {
-                yield return 0;
+                await UniTask.DelayFrame(1, cancellationToken: m_ScreenCTS.Token);
             }
 
             while (m_PendingScreens > 0 || m_AnimationPlayingScreens > 0)
             {
-                yield return 0;
+                await UniTask.DelayFrame(1, cancellationToken: m_ScreenCTS.Token);
             }
 
             while (waitUntilNoScreen && (m_PendingScreens > 0 || m_ScreenList.Count > 0))
             {
-                yield return 0;
+                await UniTask.DelayFrame(1, cancellationToken: m_ScreenCTS.Token);
             }
 
             m_PendingScreens++;
@@ -769,7 +748,7 @@ namespace SSManager.Manager
 
                         onScreenLoad?.Invoke(screen);
 
-                        break;
+                        return;
                     }
                 }
             }
@@ -777,16 +756,16 @@ namespace SSManager.Manager
             if (!hasExistingScreen)
             {
 #if SSMANAGER_ADDRESSABLE
-            var async = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(screenName);
-            async.Completed += (a => {
-                if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(screenName);
+                await handle.WithCancellation(m_ScreenCTS.Token);
+                if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
                 {
-                    CreateScreen<T>(async.Result, screenName, showAnimation, hideAnimation, animationObjectName, onScreenLoad, hasShield);
+                    CreateScreen<T>(handle.Result, screenName, showAnimation, hideAnimation, animationObjectName, onScreenLoad, hasShield);
                 }
-            });
 #else
-                var prefab = Resources.Load<GameObject>(Path.Combine(m_ScreenPath, screenName));
-                CreateScreen<T>(prefab, screenName, showAnimation, hideAnimation, animationObjectName, onScreenLoad, hasShield);
+                var request = Resources.LoadAsync<GameObject>(Path.Combine(m_ScreenPath, screenName));
+                await request.WithCancellation(m_ScreenCTS.Token);
+                CreateScreen<T>(request.asset as GameObject, screenName, showAnimation, hideAnimation, animationObjectName, onScreenLoad, hasShield);
 #endif
             }
 
@@ -882,7 +861,7 @@ namespace SSManager.Manager
             }
         }
 
-        private void ShowLoading(bool isShow, float timeout = 0)
+        private async UniTaskVoid ShowLoading(bool isShow, float timeout = 0, bool ignoreTimeScale = true)
         {
             m_IsLoading = isShow;
             if (isShow)
@@ -892,23 +871,23 @@ namespace SSManager.Manager
                     if (m_Loading == null)
                     {
 #if SSMANAGER_ADDRESSABLE
-                    var async = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(m_LoadingName);
-                    async.Completed += (a => {
-                        if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                        var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(m_LoadingName);
+                        await handle;
+                        if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
                         {
-                            CreateLoading(async.Result);
-                            ShowLoading(timeout);
+                            CreateLoading(handle.Result);
+                            ShowLoading(timeout, ignoreTimeScale);
                         }
-                    });
 #else
-                        var prefab = Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_LoadingName));
-                        CreateLoading(prefab);
+                        var request = Resources.LoadAsync<GameObject>(Path.Combine(m_ScreenPath, m_LoadingName));
+                        await request;
+                        CreateLoading(request.asset as GameObject);
                         ShowLoading(timeout);
 #endif
                     }
                     else
                     {
-                        ShowLoading(timeout);
+                        ShowLoading(timeout, ignoreTimeScale);
                     }
                 }
             }
@@ -926,49 +905,49 @@ namespace SSManager.Manager
             AddScreenToCanvas(m_Loading);
         }
 
-        private void ShowLoading(float timeout = 0)
+        private void ShowLoading(float timeout = 0, bool ignoreTimeScale = true)
         {
-            if (m_IsLoading)
+            if (!m_IsLoading) return;
+
+            m_Loading.transform.SetAsLastSibling();
+
+            CancelLoading();
+
+            if (timeout > 0)
             {
-                m_Loading.transform.SetAsLastSibling();
-
-                StopLoadingCoroutine();
-
-                if (timeout > 0)
-                {
-                    m_LoadingCoroutine = StartCoroutine(CoShowLoading(timeout));
-                }
-                else
-                {
-                    m_Loading.SetActive(true);
-                }
+                ShowLoadingAsync(timeout, true).Forget();
+            }
+            else
+            {
+                m_Loading.SetActive(true);
             }
         }
 
         private void HideLoading()
         {
-            StopLoadingCoroutine();
+            CancelLoading();
 
-            if (m_Loading != null)
-            {
-                m_Loading.SetActive(false);
-            }
+            if (m_Loading != null) m_Loading.SetActive(false);
         }
 
-        private void StopLoadingCoroutine()
+        private void CancelLoading()
         {
-            if (m_LoadingCoroutine != null)
+            if (m_LoadingCTS != null)
             {
-                StopCoroutine(m_LoadingCoroutine);
-                m_LoadingCoroutine = null;
+                if (!m_LoadingCTS.IsCancellationRequested) m_LoadingCTS.Cancel();
+
+                m_LoadingCTS.Dispose();
+                m_LoadingCTS = null;
             }
+
+            m_LoadingCTS = new CancellationTokenSource();
         }
 
-        private IEnumerator CoShowLoading(float timeout)
+        private async UniTaskVoid ShowLoadingAsync(float timeout, bool ignoreTimeScale = true)
         {
             m_Loading.SetActive(true);
 
-            yield return new WaitForSecondsRealtime(timeout);
+            await UniTask.WaitForSeconds(timeout, ignoreTimeScale);
 
             m_Loading.SetActive(false);
         }
@@ -1114,10 +1093,10 @@ namespace SSManager.Manager
 
             var anim = AddAnimations(screen, screen.GetComponent<ScreenController>().AnimationObjectName, animationName);
 
-            StartCoroutine(CoPlayAnimation(anim, animationName, delayFrames, onAnimationEnd, destroyScreenAtAnimationEnd ? screen : null));
+            PlayAnimationAsync(anim, animationName, delayFrames, onAnimationEnd, destroyScreenAtAnimationEnd ? screen : null).Forget();
         }
 
-        private IEnumerator CoPlayAnimation(Animation anim, string animationName, int delayFrames, Callback onAnimationEnd = null, Component screenToBeDestroyed = null)
+        private async UniTaskVoid PlayAnimationAsync(Animation anim, string animationName, int delayFrames, Callback onAnimationEnd = null, Component screenToBeDestroyed = null)
         {
             if (anim.GetClip(animationName) != null)
             {
@@ -1137,16 +1116,14 @@ namespace SSManager.Manager
                 }
 
                 // Wating some frames for smooth
-                for (int i = 0; i < delayFrames; i++)
-                {
-                    yield return 0;
-                }
+                await UniTask.DelayFrame(delayFrames);
 
                 // Play animation
                 unscaledAnim.Play(animationName, speed: m_ScreenAnimationSpeed);
 
                 // Wait animation
-                yield return new WaitForSecondsRealtime(anim[animationName].length / m_ScreenAnimationSpeed);
+                float animLength = anim[animationName].length / m_ScreenAnimationSpeed;
+                await UniTask.WaitForSeconds(animLength, true);
 
                 // Turn off screen shield after animation end
                 m_ScreenShieldTop.SetActive(false);
@@ -1318,10 +1295,9 @@ namespace SSManager.Manager
             }
         }
 
-        private void LoadAndShowTooltip(string text, Vector3 worldPosition, float targetY = 100f)
+        private async UniTaskVoid LoadAndShowTooltip(string text, Vector3 worldPosition, float targetY = 100f)
         {
-            if (string.IsNullOrEmpty(m_TooltipName))
-                return;
+            if (string.IsNullOrEmpty(m_TooltipName)) return;
 
             if (m_Tooltip != null)
             {
@@ -1331,16 +1307,16 @@ namespace SSManager.Manager
             }
 
 #if SSMANAGER_ADDRESSABLE
-            var async = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(m_TooltipName);
-            async.Completed += (a => {
-                if (a.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
-                {
-                    CreateAndShowTooltip(async.Result, text, worldPosition, targetY);
-                }
-            });
+            var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(m_TooltipName);
+            await handle;
+            if (handle.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+            {
+                CreateAndShowTooltip(handle.Result, text, worldPosition, targetY);
+            }
 #else
-            var tooltipPrefab = Resources.Load<GameObject>(Path.Combine(m_ScreenPath, m_TooltipName));
-            CreateAndShowTooltip(tooltipPrefab, text, worldPosition, targetY);
+            var request = Resources.LoadAsync<GameObject>(Path.Combine(m_ScreenPath, m_TooltipName));
+            await request;
+            CreateAndShowTooltip(request.asset as GameObject, text, worldPosition, targetY);
 #endif
         }
 
