@@ -1,103 +1,106 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TooltipBaseController : MonoBehaviour
+namespace SSManager.Manager
 {
-    public float padding = 10f;
-
-    RectTransform tooltipRect;
-    UnscaledAnimation m_Animation;
-    Vector2 m_StartPosition;
-    float m_TargetY;
-
-    protected virtual void Awake()
+    public class TooltipBaseController : MonoBehaviour
     {
-        tooltipRect = GetComponent<RectTransform>();
-        m_Animation = GetComponent<UnscaledAnimation>();
-    }
+        public float padding = 10f;
 
-    private void LateUpdate()
-    {
-        if (m_Animation != null && m_Animation.isPlaying)
+        RectTransform tooltipRect;
+        UnscaledAnimation m_Animation;
+        Vector2 m_StartPosition;
+        float m_TargetY;
+
+        protected virtual void Awake()
         {
-            Reposition();
-        }
-    }
-
-    private void Reposition()
-    {
-        tooltipRect.anchoredPosition = new Vector2(tooltipRect.anchoredPosition.x + m_StartPosition.x, tooltipRect.anchoredPosition.y * m_TargetY + m_StartPosition.y); ;
-    }
-
-    public void ShowTooltip(string text, Vector2 anchoredPosition, float targetY = 100f)
-    {
-        // Canvas
-        var canvas = GetComponentInParent<Canvas>();
-        if (canvas == null)
-        {
-            return;
-        }
-        var canvasRect = canvas.GetComponent<RectTransform>();
-
-        // Target Y
-        m_TargetY = targetY;
-
-        // Text
-        SetText(text);
-        LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipRect);
-
-        // Size
-        float halfWidth = tooltipRect.rect.width * 0.5f;
-        float canvasHalfWidth = canvasRect.rect.width * 0.5f;
-
-        // Update position to avoid overflow screen
-        if (anchoredPosition.x - halfWidth < -canvasHalfWidth + padding)
-        {
-            anchoredPosition.x = -canvasHalfWidth + halfWidth + padding;
-        }
-        else if (anchoredPosition.x + halfWidth > canvasHalfWidth - padding)
-        {
-            anchoredPosition.x = canvasHalfWidth - halfWidth - padding;
-        }
-        tooltipRect.anchoredPosition = anchoredPosition;
-
-        // Start position
-        m_StartPosition = anchoredPosition;
-
-        // Activate
-        gameObject.SetActive(true);
-
-        m_Animation.Play("Tooltip", OnAnimationEnd);
-    }
-
-    public void ShowTooltip(string text, Vector3 worldPosition, float targetY = 100f)
-    {
-        // Canvas
-        var canvas = GetComponentInParent<Canvas>();
-        if (canvas == null)
-        {
-            return;
+            tooltipRect = GetComponent<RectTransform>();
+            m_Animation = GetComponent<UnscaledAnimation>();
         }
 
-        var localPosition = canvas.transform.InverseTransformPoint(worldPosition);
-
-        ShowTooltip(text, new Vector2(localPosition.x, localPosition.y), targetY);
-    }
-
-    protected virtual void SetText(string text)
-    {
-    }
-
-    public void HideToolTip()
-    {
-        if (gameObject != null)
+        private void LateUpdate()
         {
-            gameObject.SetActive(false);
+            if (m_Animation != null && m_Animation.isPlaying)
+            {
+                Reposition();
+            }
         }
-    }
 
-    public void OnAnimationEnd(string clipName)
-    {
-        HideToolTip();
+        private void Reposition()
+        {
+            tooltipRect.anchoredPosition = new Vector2(tooltipRect.anchoredPosition.x + m_StartPosition.x, tooltipRect.anchoredPosition.y * m_TargetY + m_StartPosition.y); ;
+        }
+
+        public void ShowTooltip(string text, Vector2 anchoredPosition, float targetY = 100f)
+        {
+            // Canvas
+            var canvas = GetComponentInParent<Canvas>();
+            if (canvas == null)
+            {
+                return;
+            }
+            var canvasRect = canvas.GetComponent<RectTransform>();
+
+            // Target Y
+            m_TargetY = targetY;
+
+            // Text
+            SetText(text);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipRect);
+
+            // Size
+            float halfWidth = tooltipRect.rect.width * 0.5f;
+            float canvasHalfWidth = canvasRect.rect.width * 0.5f;
+
+            // Update position to avoid overflow screen
+            if (anchoredPosition.x - halfWidth < -canvasHalfWidth + padding)
+            {
+                anchoredPosition.x = -canvasHalfWidth + halfWidth + padding;
+            }
+            else if (anchoredPosition.x + halfWidth > canvasHalfWidth - padding)
+            {
+                anchoredPosition.x = canvasHalfWidth - halfWidth - padding;
+            }
+            tooltipRect.anchoredPosition = anchoredPosition;
+
+            // Start position
+            m_StartPosition = anchoredPosition;
+
+            // Activate
+            gameObject.SetActive(true);
+
+            m_Animation.Play("Tooltip", OnAnimationEnd);
+        }
+
+        public void ShowTooltip(string text, Vector3 worldPosition, float targetY = 100f)
+        {
+            // Canvas
+            var canvas = GetComponentInParent<Canvas>();
+            if (canvas == null)
+            {
+                return;
+            }
+
+            var localPosition = canvas.transform.InverseTransformPoint(worldPosition);
+
+            ShowTooltip(text, new Vector2(localPosition.x, localPosition.y), targetY);
+        }
+
+        protected virtual void SetText(string text)
+        {
+        }
+
+        public void HideToolTip()
+        {
+            if (gameObject != null)
+            {
+                gameObject.SetActive(false);
+            }
+        }
+
+        public void OnAnimationEnd(string clipName)
+        {
+            HideToolTip();
+        }
     }
 }

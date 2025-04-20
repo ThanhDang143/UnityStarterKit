@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 using System;
 
-namespace SS.Tool
+namespace SSManager.Tool
 {
     public class GameWindow
     {

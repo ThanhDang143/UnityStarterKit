@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
     "com.unity.multiplayer.center": "1.0.0",
     "com.unity.recorder": "5.1.2",
     "com.unity.timeline": "1.8.7",

@@ -1,12 +1,9 @@
-﻿// This code is part of the SS-Scene library, released by Anh Pham (anhpt.csit@gmail.com).
-
-using UnityEngine;
-using System.Collections;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SS.IO
+namespace SSManager.IO
 {
     public class Searcher
     {

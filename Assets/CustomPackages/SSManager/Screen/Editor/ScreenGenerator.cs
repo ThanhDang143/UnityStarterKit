@@ -1,244 +1,324 @@
-// This code is part of the SS-Scene library, released by Anh Pham (anhpt.csit@gmail.com).
-
 using UnityEditor;
 using UnityEngine;
-using System.IO;
 using System;
-using System.Collections.Generic;
+using SSManager.IO;
+using SSManager.Tool;
+using UnityEngine.UI;
 
-public class ScreenGenerator : EditorWindow
+namespace SSManager.Manager.Editor
 {
-    enum State
+    public class ScreenGenerator : EditorWindow
     {
-        IDLE,
-        GENERATING,
-        COMPILING,
-        COMPILING_AGAIN
-    }
-
-    public string sceneName;
-    public string sceneDirectoryPath;
-    public string sceneTemplateFile;
-
-    string scenePath;
-    string prefabPath;
-    string controllerPath;
-    State state = State.IDLE;
-
-    [MenuItem("SS/Screen Generator")]
-    public static void ShowWindow()
-    {
-        ScreenGenerator win = ScriptableObject.CreateInstance<ScreenGenerator>();
-
-        win.minSize = new Vector2(400, 200);
-        win.maxSize = new Vector2(400, 200);
-
-        win.ResetParams();
-        win.ShowUtility();
-
-        win.LoadPrefs();
-    }
-
-    void ResetParams()
-    {
-        sceneName = string.Empty;
-    }
-
-    void LoadPrefs()
-    {
-        sceneDirectoryPath = EditorPrefs.GetString("SS_SCREEN_SCENE_DIRECTORY_PATH", "Project/Screens/");
-        sceneTemplateFile = EditorPrefs.GetString("SS_SCREEN_SCENE_TEMPLATE_FILE", "ScreenTemplate.prefab");
-    }
-
-    void SavePrefs()
-    {
-        EditorPrefs.SetString("SS_SCREEN_SCENE_DIRECTORY_PATH", sceneDirectoryPath);
-        EditorPrefs.SetString("SS_SCREEN_SCENE_TEMPLATE_FILE", sceneTemplateFile);
-    }
-
-    void OnGUI()
-    {
-        GUILayout.Label("Scene Generator", EditorStyles.boldLabel);
-        sceneName = EditorGUILayout.TextField("Screen Name", sceneName);
-        sceneDirectoryPath = EditorGUILayout.TextField("Screen Directory Path", sceneDirectoryPath);
-        sceneTemplateFile = EditorGUILayout.TextField("Screen Template File", sceneTemplateFile);
-
-        switch (state)
+        enum State
         {
-            case State.IDLE:
-                if (GUILayout.Button("Generate"))
-                {
-                    if (GenerateScene())
+            IDLE,
+            GENERATING,
+            COMPILING,
+            COMPILING_AGAIN
+        }
+
+        private const int DEFAULT_SCREEN_WIDTH = 1080;
+        private const int DEFAULT_SCREEN_HEIGHT = 1920;
+
+        static class PrefKeys
+        {
+            public const string SCREEN_SCENE_DIRECTORY_PATH = "SS_SCREEN_SCENE_DIRECTORY_PATH";
+            public const string SCREEN_SCENE_TEMPLATE_FILE = "SS_SCREEN_SCENE_TEMPLATE_FILE";
+            public const string SCREEN_WIDTH = "SS_SCREEN_WIDTH";
+            public const string SCREEN_HEIGHT = "SS_SCREEN_HEIGHT";
+        }
+
+        public string sceneName;
+        public string sceneDirectoryPath;
+        public string sceneTemplateFile;
+
+        public string screenCanvasPath;
+        public Vector2Int sceneSize = new Vector2Int(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
+
+
+        string scenePath;
+        string prefabPath;
+        string controllerPath;
+        State state = State.IDLE;
+
+        [MenuItem("SSManager/Screen Generator")]
+        public static void ShowWindow()
+        {
+            ScreenGenerator win = ScriptableObject.CreateInstance<ScreenGenerator>();
+
+            win.titleContent = new GUIContent("Screen Generator");
+            win.minSize = new Vector2(400, 250);
+            win.maxSize = new Vector2(400, 250);
+
+            win.ResetParams();
+            win.ShowUtility();
+
+            win.LoadPrefs();
+        }
+
+        void ResetParams()
+        {
+            sceneName = string.Empty;
+        }
+
+        void LoadPrefs()
+        {
+            sceneDirectoryPath = EditorPrefs.GetString(PrefKeys.SCREEN_SCENE_DIRECTORY_PATH, "Screens/");
+            sceneTemplateFile = EditorPrefs.GetString(PrefKeys.SCREEN_SCENE_TEMPLATE_FILE, "ScreenTemplate.prefab");
+            int screenWidth = EditorPrefs.GetInt(PrefKeys.SCREEN_WIDTH, DEFAULT_SCREEN_WIDTH);
+            int screenHeight = EditorPrefs.GetInt(PrefKeys.SCREEN_HEIGHT, DEFAULT_SCREEN_HEIGHT);
+            sceneSize = new Vector2Int(screenWidth, screenHeight);
+        }
+
+        void SavePrefs()
+        {
+            EditorPrefs.SetString("SS_SCREEN_SCENE_DIRECTORY_PATH", sceneDirectoryPath);
+            EditorPrefs.SetString("SS_SCREEN_SCENE_TEMPLATE_FILE", sceneTemplateFile);
+            EditorPrefs.SetInt("SS_SCREEN_WIDTH", sceneSize.x);
+            EditorPrefs.SetInt("SS_SCREEN_HEIGHT", sceneSize.y);
+        }
+
+        void OnGUI()
+        {
+            #region Scene Generator 
+            GUILayout.Label("Screen Generator", EditorStyles.boldLabel);
+            sceneName = EditorGUILayout.TextField("Screen Name", sceneName);
+            sceneDirectoryPath = EditorGUILayout.TextField("Screen Directory Path", sceneDirectoryPath);
+            sceneTemplateFile = EditorGUILayout.TextField("Screen Template File", sceneTemplateFile);
+
+            switch (state)
+            {
+                case State.IDLE:
+                    if (GUILayout.Button("Generate"))
                     {
-                        state = State.GENERATING;
+                        if (GenerateScene())
+                        {
+                            state = State.GENERATING;
+                        }
                     }
-                }
-                break;
-            case State.GENERATING:
-                if (EditorApplication.isCompiling)
+                    break;
+                case State.GENERATING:
+                    if (EditorApplication.isCompiling)
+                    {
+                        state = State.COMPILING;
+                    }
+                    break;
+                case State.COMPILING:
+                    if (EditorApplication.isCompiling)
+                    {
+                        EditorApplication.delayCall += () =>
+                        {
+                            EditorUtility.DisplayProgressBar("Compiling Scripts", "Wait for a few seconds...", 0.33f);
+                        };
+                    }
+                    else
+                    {
+                        EditorUtility.ClearProgressBar();
+                        SetupPrefab();
+                        state = State.COMPILING_AGAIN;
+                    }
+                    break;
+                case State.COMPILING_AGAIN:
+                    if (EditorApplication.isCompiling)
+                    {
+                        EditorApplication.delayCall += () =>
+                        {
+                            EditorUtility.DisplayProgressBar("Compiling Scripts", "Wait for a few seconds...", 0.66f);
+                        };
+                    }
+                    else
+                    {
+                        state = State.IDLE;
+                        EditorUtility.ClearProgressBar();
+                        SetupScene();
+                        SaveScene();
+                        EditorApplication.delayCall += () =>
+                        {
+                            EditorUtility.DisplayDialog("Successful!", "Screen was generated.", "OK");
+                        };
+
+                    }
+                    break;
+            }
+            #endregion
+
+            #region Screen Settings
+            GUILayout.Space(10);
+            GUILayout.Label("Screen Size", EditorStyles.boldLabel);
+            ShowScreenSize();
+
+            if (GUILayout.Button("Update"))
+            {
+                if (sceneSize.x > 0 && sceneSize.y > 0)
                 {
-                    state = State.COMPILING;
+                    SavePrefs();
+                    EditScreenCanvas();
+                    GameWindow.Resize(sceneSize.x, sceneSize.y);
+                    Close();
                 }
-                break;
-            case State.COMPILING:
-                if (EditorApplication.isCompiling)
-                {
-                    EditorApplication.delayCall += () => {
-                        EditorUtility.DisplayProgressBar("Compiling Scripts", "Wait for a few seconds...", 0.33f);
-                    };
-                }
-                else
-                {
-                    EditorUtility.ClearProgressBar();
-                    SetupPrefab();
-                    state = State.COMPILING_AGAIN;
-                }
-                break;
-            case State.COMPILING_AGAIN:
-                if (EditorApplication.isCompiling)
-                {
-                    EditorApplication.delayCall += () => {
-                        EditorUtility.DisplayProgressBar("Compiling Scripts", "Wait for a few seconds...", 0.66f);
-                    };
-                }
-                else
-                {
-                    state = State.IDLE;
-                    EditorUtility.ClearProgressBar();
-                    SetupScene();
-                    SaveScene();
-                    EditorApplication.delayCall += () => {
-                        EditorUtility.DisplayDialog("Successful!", "Screen was generated.", "OK");
-                    };
+            }
+            #endregion
 
-                }
-                break;
-        }
-    }
-
-    bool GenerateScene()
-    {
-        if (string.IsNullOrEmpty(sceneName))
-        {
-            Debug.LogWarning("You have to input an unique name to 'Screen Name'");
-            return false;
+            #region Clear Settings
+            GUILayout.Space(10);
+            GUILayout.Label("Clear Settings", EditorStyles.boldLabel);
+            if (GUILayout.Button("Clear"))
+            {
+                EditorPrefs.DeleteAll();
+                LoadPrefs();
+            }
+            #endregion
         }
 
-        string targetRelativePath = System.IO.Path.Combine(sceneDirectoryPath, sceneName + "/" + sceneName + ".unity");
-        string targetFullPath = SS.IO.Path.GetAbsolutePath(targetRelativePath);
-
-        if (System.IO.File.Exists(targetFullPath))
+        private void ShowScreenSize()
         {
-            Debug.LogWarning("This screen is already exist!");
-            return false;
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Screen Size", GUILayout.Width(EditorGUIUtility.labelWidth)); // Sử dụng EditorGUIUtility.labelWidth để căn thẳng hàng
+            sceneSize.x = EditorGUILayout.IntField(sceneSize.x, GUILayout.MinWidth(50)); // Đặt độ rộng tối thiểu
+            GUILayout.Label("x", GUILayout.Width(10)); // Thêm dấu "x" giữa hai ô nhập liệu
+            sceneSize.y = EditorGUILayout.IntField(sceneSize.y, GUILayout.MinWidth(50)); // Đặt độ rộng tối thiểu
+            EditorGUILayout.EndHorizontal();
         }
 
-        if (string.IsNullOrEmpty(sceneTemplateFile))
+
+        void EditScreenCanvas()
         {
-            Debug.LogWarning("You have to input screen template file!");
-            return false;
+            string prefabPath = screenCanvasPath;
+
+            var prefabInstance = PrefabUtility.LoadPrefabContents(prefabPath);
+
+            var canvasScaler = prefabInstance.GetComponentInChildren<CanvasScaler>();
+            canvasScaler.referenceResolution = new Vector2(sceneSize.x, sceneSize.y);
+
+            PrefabUtility.SaveAsPrefabAsset(prefabInstance, prefabPath);
+
+            PrefabUtility.UnloadPrefabContents(prefabInstance);
         }
 
-        SavePrefs();
-        if (!CreatePrefab())
+        bool GenerateScene()
         {
-            Debug.LogWarning("Screen template file is not exist!");
-            return false;
-        }
-        CreateScene();
-        CreateController();
-        return true;
-    }
+            if (string.IsNullOrEmpty(sceneName))
+            {
+                Debug.Log("<color=yellow>You have to input an unique name to 'Screen Name'</color>");
+                return false;
+            }
 
-    bool CreatePrefab()
-    {
-        string targetRelativePath = System.IO.Path.Combine(sceneDirectoryPath, sceneName + "/" + sceneName + ".prefab");
-        string targetFullPath = SS.IO.File.Copy(sceneTemplateFile, targetRelativePath);
+            string targetRelativePath = System.IO.Path.Combine(sceneDirectoryPath, sceneName + "/" + sceneName + ".unity");
+            string targetFullPath = Path.GetAbsolutePath(targetRelativePath);
 
-        if (targetFullPath == null)
-        {
-            return false;
-        }
+            if (System.IO.File.Exists(targetFullPath))
+            {
+                Debug.Log("<color=yellow>This screen is already exist!</color>");
+                return false;
+            }
 
-        prefabPath = SS.IO.Path.GetRelativePathWithAssets(targetRelativePath);
+            if (string.IsNullOrEmpty(sceneTemplateFile))
+            {
+                Debug.Log("<color=yellow>You have to input screen template file!</color>");
+                return false;
+            }
 
-        AssetDatabase.ImportAsset(prefabPath);
-
-        return true;
-    }
-
-    void SetupPrefab()
-    {
-        GameObject prefab = PrefabUtility.LoadPrefabContents(prefabPath);
-
-        if (prefab != null)
-        {
-            var type = GetAssemblyType(sceneName + "Controller");
-
-            prefab.AddComponent(type);
-
-            PrefabUtility.SaveAsPrefabAsset(prefab, prefabPath);
-
-            PrefabUtility.UnloadPrefabContents(prefab);
+            SavePrefs();
+            if (!CreatePrefab())
+            {
+                Debug.Log("<color=yellow>Screen template file is not exist!</color>");
+                return false;
+            }
+            CreateScene();
+            CreateController();
+            return true;
         }
 
-        AssetDatabase.ImportAsset(prefabPath);
-    }
-
-    void CreateController()
-    {
-        string targetRelativePath = System.IO.Path.Combine(sceneDirectoryPath, sceneName + "/" + sceneName + "Controller.cs");
-        string targetFullPath = SS.IO.File.Copy("ScreenTemplateController.cs", targetRelativePath);
-
-        SS.IO.File.ReplaceFileContent(targetFullPath, "ScreenTemplate", sceneName);
-
-        controllerPath = SS.IO.Path.GetRelativePathWithAssets(targetRelativePath);
-
-        AssetDatabase.ImportAsset(controllerPath);
-    }
-
-    void CreateScene()
-    {
-        string targetRelativePath = System.IO.Path.Combine(sceneDirectoryPath, sceneName + "/" + sceneName + ".unity");
-        string targetFullPath = SS.IO.File.Copy("ScreenTemplate.unity", targetRelativePath);
-
-        scenePath = SS.IO.Path.GetRelativePathWithAssets(targetRelativePath);
-
-        AssetDatabase.ImportAsset(scenePath);
-
-        SS.Tool.Scene.OpenScene(targetFullPath);
-    }
-
-    void SetupScene()
-    {
-        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-
-        if (prefab != null)
+        bool CreatePrefab()
         {
-            PrefabUtility.InstantiatePrefab(prefab, FindObjectOfType<Canvas>().transform);
-        }
-    }
+            string targetRelativePath = System.IO.Path.Combine(sceneDirectoryPath, sceneName + "/" + sceneName + ".prefab");
+            string targetFullPath = File.Copy(sceneTemplateFile, targetRelativePath);
 
-    void SaveScene()
-    {
-        SS.Tool.Scene.MarkCurrentSceneDirty();
-        SS.Tool.Scene.SaveScene();
-    }
+            if (targetFullPath == null)
+            {
+                return false;
+            }
 
-    Type GetAssemblyType(string typeName)
-    {
-        var type = Type.GetType(typeName);
-        if (type != null)
-        {
-            return type;
+            prefabPath = Path.GetRelativePathWithAssets(targetRelativePath);
+
+            AssetDatabase.ImportAsset(prefabPath);
+
+            return true;
         }
 
-        foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+        void SetupPrefab()
         {
-            type = a.GetType(typeName);
+            GameObject prefab = PrefabUtility.LoadPrefabContents(prefabPath);
+
+            if (prefab != null)
+            {
+                var type = GetAssemblyType(sceneName + "Controller");
+
+                prefab.AddComponent(type);
+
+                PrefabUtility.SaveAsPrefabAsset(prefab, prefabPath);
+
+                PrefabUtility.UnloadPrefabContents(prefab);
+            }
+
+            AssetDatabase.ImportAsset(prefabPath);
+        }
+
+        void CreateController()
+        {
+            string targetRelativePath = System.IO.Path.Combine(sceneDirectoryPath, sceneName + "/" + sceneName + "Controller.cs");
+            string targetFullPath = File.Copy("ScreenTemplateController.cs", targetRelativePath);
+
+            File.ReplaceFileContent(targetFullPath, "ScreenTemplate", sceneName);
+
+            controllerPath = Path.GetRelativePathWithAssets(targetRelativePath);
+
+            AssetDatabase.ImportAsset(controllerPath);
+        }
+
+        void CreateScene()
+        {
+            string targetRelativePath = System.IO.Path.Combine(sceneDirectoryPath, sceneName + "/" + sceneName + ".unity");
+            string targetFullPath = File.Copy("ScreenTemplate.unity", targetRelativePath);
+
+            scenePath = Path.GetRelativePathWithAssets(targetRelativePath);
+
+            AssetDatabase.ImportAsset(scenePath);
+
+            Scene.OpenScene(targetFullPath);
+        }
+
+        void SetupScene()
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+
+            if (prefab != null)
+            {
+                PrefabUtility.InstantiatePrefab(prefab, FindFirstObjectByType<Canvas>().transform);
+            }
+        }
+
+        void SaveScene()
+        {
+            Scene.MarkCurrentSceneDirty();
+            Scene.SaveScene();
+        }
+
+        Type GetAssemblyType(string typeName)
+        {
+            var type = Type.GetType(typeName);
             if (type != null)
+            {
                 return type;
+            }
+
+            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                type = a.GetType(typeName);
+                if (type != null)
+                    return type;
+            }
+            return null;
         }
-        return null;
     }
 }

@@ -1,23 +1,20 @@
-﻿// This code is part of the SS-Scene library, released by Anh Pham (anhpt.csit@gmail.com).
+﻿using UnityEngine;
 
-using UnityEngine;
-using UnityEditor;
-
-namespace SS.IO
+namespace SSManager.IO
 {
 	public class File
 	{
-        public static string Copy(string sourceFileName, string targetRelativePath, bool replaceExistFile = true)
+		public static string Copy(string sourceFileName, string targetRelativePath, bool replaceExistFile = true)
 		{
-            string targetFullPath = System.IO.Path.Combine(Application.dataPath, targetRelativePath);
+			string targetFullPath = System.IO.Path.Combine(Application.dataPath, targetRelativePath);
 
-            string directoryPath = System.IO.Path.GetDirectoryName(targetFullPath);
-            string templatePath = SS.IO.Searcher.SearchFileInProject(sourceFileName);
+			string directoryPath = System.IO.Path.GetDirectoryName(targetFullPath);
+			string templatePath = Searcher.SearchFileInProject(sourceFileName);
 
-            if (templatePath == null)
-            {
-                return null;
-            }
+			if (templatePath == null)
+			{
+				return null;
+			}
 
 			if (!System.IO.Directory.Exists(directoryPath))
 			{
@@ -37,14 +34,14 @@ namespace SS.IO
 				UnityEditor.FileUtil.CopyFileOrDirectory(templatePath, targetFullPath);
 			}
 
-            return targetFullPath;
+			return targetFullPath;
 		}
 
-        public static void ReplaceFileContent(string fullPath, string oldString, string newString)
-        {
-            string fileContents = System.IO.File.ReadAllText(fullPath);
-            fileContents = fileContents.Replace(oldString, newString);
-            System.IO.File.WriteAllText(fullPath, fileContents);
-        }
+		public static void ReplaceFileContent(string fullPath, string oldString, string newString)
+		{
+			string fileContents = System.IO.File.ReadAllText(fullPath);
+			fileContents = fileContents.Replace(oldString, newString);
+			System.IO.File.WriteAllText(fullPath, fileContents);
+		}
 	}
 }

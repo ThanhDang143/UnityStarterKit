@@ -1,36 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
+using SSManager.Manager;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Screen1 : MonoBehaviour, IKeyBack
+public class Screen1 : MonoBehaviour, IBtnBack
 {
     public Text label;
 
     private bool pressedSpaceKey;
 
-    public void OnKeyBack()
+    public void OnBtnBack()
     {
         ScreenManager.Close();
     }
 
     public void OnAddScreen2ButtonTap()
     {
-        ScreenManager.Add<Screen2>(screenName: "Screen2", animationObjectName: "AnimationRoot", useExistingScreen: true, onScreenLoad: (screen) => {
+        ScreenManager.Add<Screen2>(screenName: "Screen2", animationObjectName: "AnimationRoot", useExistingScreen: true, onScreenLoad: (screen) =>
+        {
             screen.label.text = "Screen2";
         });
     }
 
     public void OnAddScreen2UntilNoScreenButtonTap()
     {
-        ScreenManager.Add<Screen2>(screenName: "Screen2", animationObjectName: "AnimationRoot", onScreenLoad: (screen) => {
+        ScreenManager.Add<Screen2>(screenName: "Screen2", animationObjectName: "AnimationRoot", onScreenLoad: (screen) =>
+        {
             screen.label.text = "Screen2";
         }, waitUntilNoScreen: true);
     }
 
     public void OnAddScreen2UntilSpacePressedButtonTap()
     {
-        ScreenManager.Add<Screen2>(screenName: "Screen2", animationObjectName: "AnimationRoot", onScreenLoad: (screen) => {
+        ScreenManager.Add<Screen2>(screenName: "Screen2", animationObjectName: "AnimationRoot", onScreenLoad: (screen) =>
+        {
             screen.label.text = "Screen2";
             pressedSpaceKey = false;
         }, addCondition: WaitSpaceKey);
@@ -38,7 +40,8 @@ public class Screen1 : MonoBehaviour, IKeyBack
 
     public void OnAddScreen3AndDestroyMeButtonTap()
     {
-        ScreenManager.Add<Screen3>(screenName: "Screen3", animationObjectName: "AnimationRoot", onScreenLoad: (screen) => {
+        ScreenManager.Add<Screen3>(screenName: "Screen3", animationObjectName: "AnimationRoot", onScreenLoad: (screen) =>
+        {
             screen.label.text = "Screen3";
         }, destroyTopScreen: true);
     }

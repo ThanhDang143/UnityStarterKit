@@ -1,23 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class TooltipTemplateController : TooltipBaseController
+namespace SSManager.Manager.Template
 {
-    UnityEngine.UI.Text contentText;
-
-    protected override void Awake()
+    public class TooltipTemplateController : TooltipBaseController
     {
-        base.Awake();
+        UnityEngine.UI.Text contentText;
 
-        this.contentText = GetComponentInChildren<UnityEngine.UI.Text>();
-    }
-
-    protected override void SetText(string text)
-    {
-        if (this.contentText != null)
+        protected override void Awake()
         {
-            this.contentText.text = text;
+            base.Awake();
+
+            this.contentText = GetComponentInChildren<UnityEngine.UI.Text>();
+        }
+
+        protected override void SetText(string text)
+        {
+            if (this.contentText != null)
+            {
+                this.contentText.text = text;
+            }
         }
     }
 }
