@@ -13,9 +13,7 @@
         "email": "vanthanh1998@gmail.com",
         "url": "https://docs.thanhdv.icu"
     },
-    "dependencies": {
-        "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask"
-    },
+    "dependencies": {},
     "repository": {
         "type": "git",
         "url": "https://github.com/ThanhDang143/UnityStarterKit.git"

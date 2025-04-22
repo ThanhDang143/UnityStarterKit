@@ -80,11 +80,28 @@ namespace SSManager.Manager.Editor
 
         void OnGUI()
         {
+            #region Screen Settings
+            GUILayout.Label("Screen Size", EditorStyles.boldLabel);
+            ShowScreenSize();
+
+            if (GUILayout.Button("Update"))
+            {
+                if (sceneSize.x > 0 && sceneSize.y > 0)
+                {
+                    SavePrefs();
+                    EditScreenCanvas();
+                    GameWindow.Resize(sceneSize.x, sceneSize.y);
+                    Close();
+                }
+            }
+            #endregion
+
             #region Scene Generator 
+            GUILayout.Space(10);
             GUILayout.Label("Screen Generator", EditorStyles.boldLabel);
             sceneName = EditorGUILayout.TextField("Screen Name", sceneName);
-            sceneDirectoryPath = EditorGUILayout.TextField("Screen Directory Path", sceneDirectoryPath);
-            sceneTemplateFile = EditorGUILayout.TextField("Screen Template File", sceneTemplateFile);
+            ShowScreenDirectoryPath();
+            ShowScreenTemplateFile();
 
             switch (state)
             {
@@ -142,23 +159,6 @@ namespace SSManager.Manager.Editor
             }
             #endregion
 
-            #region Screen Settings
-            GUILayout.Space(10);
-            GUILayout.Label("Screen Size", EditorStyles.boldLabel);
-            ShowScreenSize();
-
-            if (GUILayout.Button("Update"))
-            {
-                if (sceneSize.x > 0 && sceneSize.y > 0)
-                {
-                    SavePrefs();
-                    EditScreenCanvas();
-                    GameWindow.Resize(sceneSize.x, sceneSize.y);
-                    Close();
-                }
-            }
-            #endregion
-
             #region Clear Settings
             GUILayout.Space(10);
             GUILayout.Label("Clear Settings", EditorStyles.boldLabel);
@@ -170,13 +170,49 @@ namespace SSManager.Manager.Editor
             #endregion
         }
 
+        private void ShowScreenDirectoryPath()
+        {
+            EditorGUILayout.BeginHorizontal();
+            sceneDirectoryPath = EditorGUILayout.TextField("Screen Directory Path", sceneDirectoryPath);
+            if (GUILayout.Button(EditorGUIUtility.IconContent("Folder Icon"), GUILayout.Width(24), GUILayout.Height(18)))
+            {
+                string path = EditorUtility.OpenFolderPanel("Select Screen Directory", Application.dataPath, "cs");
+                if (!string.IsNullOrEmpty(path))
+                {
+                    if (path.StartsWith(Application.dataPath))
+                        sceneDirectoryPath = "Assets" + path.Substring(Application.dataPath.Length);
+                    else
+                        sceneDirectoryPath = path;
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void ShowScreenTemplateFile()
+        {
+            EditorGUILayout.BeginHorizontal();
+            sceneTemplateFile = EditorGUILayout.TextField("Screen Template File", sceneTemplateFile);
+            if (GUILayout.Button(EditorGUIUtility.IconContent("Folder Icon"), GUILayout.Width(24), GUILayout.Height(18)))
+            {
+                string path = EditorUtility.OpenFilePanel("Select Screen Template Prefab", Application.dataPath, "prefab");
+                if (!string.IsNullOrEmpty(path))
+                {
+                    if (path.StartsWith(Application.dataPath))
+                        sceneTemplateFile = "Assets" + path.Substring(Application.dataPath.Length);
+                    else
+                        sceneTemplateFile = path;
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
         private void ShowScreenSize()
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Screen Size", GUILayout.Width(EditorGUIUtility.labelWidth)); // Sử dụng EditorGUIUtility.labelWidth để căn thẳng hàng
-            sceneSize.x = EditorGUILayout.IntField(sceneSize.x, GUILayout.MinWidth(50)); // Đặt độ rộng tối thiểu
-            GUILayout.Label("x", GUILayout.Width(10)); // Thêm dấu "x" giữa hai ô nhập liệu
-            sceneSize.y = EditorGUILayout.IntField(sceneSize.y, GUILayout.MinWidth(50)); // Đặt độ rộng tối thiểu
+            EditorGUILayout.LabelField("Screen Size", GUILayout.Width(EditorGUIUtility.labelWidth));
+            sceneSize.x = EditorGUILayout.IntField(sceneSize.x, GUILayout.MinWidth(50));
+            GUILayout.Label("x", GUILayout.Width(10));
+            sceneSize.y = EditorGUILayout.IntField(sceneSize.y, GUILayout.MinWidth(50));
             EditorGUILayout.EndHorizontal();
         }
 
@@ -252,7 +288,7 @@ namespace SSManager.Manager.Editor
 
             if (prefab != null)
             {
-                var type = GetAssemblyType(sceneName + "Controller");
+                var type = GetAssemblyType($"SSManager.Manager.Template.{sceneName}Controller");
 
                 prefab.AddComponent(type);
 
