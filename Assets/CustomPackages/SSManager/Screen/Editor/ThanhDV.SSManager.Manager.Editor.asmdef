@@ -1,0 +1,17 @@
+{
+    "name": "ThanhDV.SSManager.Manager.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:74f998fe01b404bc6958503cbe2e1533",
+        "GUID:e6008f024d10148318c03ec2907910c0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
