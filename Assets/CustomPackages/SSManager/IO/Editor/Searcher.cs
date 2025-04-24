@@ -27,6 +27,14 @@ namespace SSManager.IO
 
         public static string SearchFileInProject(string fileName, PathType pathType = PathType.Absolute)
         {
+            string result = SearchFileInPackages(fileName, pathType);
+            result ??= SearchFileInAssets(fileName, pathType);
+
+            return result;
+        }
+
+        public static string SearchFileInAssets(string fileName, PathType pathType = PathType.Absolute)
+        {
             DirectoryInfo di = new DirectoryInfo(Application.dataPath);
             List<FileInfo> fis = SearchFile(di, fileName);
 
@@ -40,6 +48,40 @@ namespace SSManager.IO
                     case PathType.Relative:
                         var fullPath = fis[0].FullName;
                         var assetIndex = fullPath.LastIndexOf("Assets");
+
+                        if (assetIndex >= 0)
+                        {
+                            return fullPath.Substring(assetIndex);
+                        }
+                        return fullPath;
+                }
+            }
+
+            return null;
+        }
+
+        public static string SearchFileInPackages(string fileName, PathType pathType = PathType.Absolute)
+        {
+            string dataPath = Application.dataPath;
+            dataPath = dataPath.Replace("Assets", "Library/PackageCache");
+            DirectoryInfo di = new DirectoryInfo(dataPath);
+            DirectoryInfo[] dis = di.GetDirectories();
+            DirectoryInfo packageDir = dis.FirstOrDefault(d => d.Name.Contains("thanhdv.ssmanager"));
+
+            if (packageDir == null) return null;
+
+            List<FileInfo> fis = SearchFile(packageDir, fileName);
+
+            if (fis.Count >= 1)
+            {
+                switch (pathType)
+                {
+                    case PathType.Absolute:
+                        return fis[0].FullName;
+
+                    case PathType.Relative:
+                        var fullPath = fis[0].FullName;
+                        var assetIndex = fullPath.LastIndexOf("Packages");
 
                         if (assetIndex >= 0)
                         {

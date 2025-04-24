@@ -32,13 +32,13 @@ namespace SSManager.Manager.Editor
         public string sceneDirectoryPath;
         public string sceneTemplateFile;
 
-        public string screenCanvasPath;
         public Vector2Int sceneSize = new Vector2Int(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
 
 
-        string scenePath;
-        string prefabPath;
-        string controllerPath;
+        private string screenCanvasPath;
+        private string scenePath;
+        private string prefabPath;
+        private string controllerPath;
         State state = State.IDLE;
 
         [MenuItem("SSManager/Screen Generator")]
@@ -68,6 +68,8 @@ namespace SSManager.Manager.Editor
             int screenWidth = EditorPrefs.GetInt(PrefKeys.SCREEN_WIDTH, DEFAULT_SCREEN_WIDTH);
             int screenHeight = EditorPrefs.GetInt(PrefKeys.SCREEN_HEIGHT, DEFAULT_SCREEN_HEIGHT);
             sceneSize = new Vector2Int(screenWidth, screenHeight);
+
+            screenCanvasPath = Searcher.SearchFileInProject("ScreenCanvas.prefab", Searcher.PathType.Relative);
         }
 
         void SavePrefs()
@@ -91,6 +93,9 @@ namespace SSManager.Manager.Editor
                     SavePrefs();
                     EditScreenCanvas();
                     GameWindow.Resize(sceneSize.x, sceneSize.y);
+
+                    ResizeGameWindow();
+
                     Close();
                 }
             }
@@ -217,9 +222,9 @@ namespace SSManager.Manager.Editor
         }
 
 
-        void EditScreenCanvas()
+        private void EditScreenCanvas()
         {
-            string prefabPath = screenCanvasPath;
+            string prefabPath = Path.GetAbsolutePath(screenCanvasPath);
 
             var prefabInstance = PrefabUtility.LoadPrefabContents(prefabPath);
 
@@ -229,6 +234,20 @@ namespace SSManager.Manager.Editor
             PrefabUtility.SaveAsPrefabAsset(prefabInstance, prefabPath);
 
             PrefabUtility.UnloadPrefabContents(prefabInstance);
+        }
+
+        private void ResizeGameWindow()
+        {
+            var prefabInstance = PrefabUtility.LoadPrefabContents(screenCanvasPath);
+
+            var canvasScaler = prefabInstance.GetComponentInChildren<CanvasScaler>();
+            if (canvasScaler != null)
+            {
+                var width = canvasScaler.referenceResolution.x;
+                var height = canvasScaler.referenceResolution.y;
+
+                GameWindow.Resize((int)width, (int)height);
+            }
         }
 
         bool GenerateScene()
