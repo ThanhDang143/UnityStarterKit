@@ -6,7 +6,7 @@ namespace SSManager.Manager.Template
     {
         public const string NAME = "XXX";
 
-        public void OnBtnBack()
+        public void OnBtnBackClicked()
         {
             ScreenManager.Close();
         }
