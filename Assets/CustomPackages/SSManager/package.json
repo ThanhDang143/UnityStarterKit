@@ -16,6 +16,6 @@
     "dependencies": {},
     "repository": {
         "type": "git",
-        "url": "https://github.com/ThanhDang143/UnityStarterKit.git"
+        "url": "git+https://github.com/ThanhDang143/UnityStarterKit.git"
     }
 }
