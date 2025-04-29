@@ -6,7 +6,7 @@ public class Screen3 : MonoBehaviour, IBtnBack
 {
     public Text label;
 
-    public void OnBtnBack()
+    public void OnBtnBackClicked()
     {
         ScreenManager.Close(hideAnimation: ScreenAnimation.RightHide);
     }

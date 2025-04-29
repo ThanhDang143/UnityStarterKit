@@ -8,7 +8,7 @@ public class Screen1 : MonoBehaviour, IBtnBack
 
     private bool pressedSpaceKey;
 
-    public void OnBtnBack()
+    public void OnBtnBackClicked()
     {
         ScreenManager.Close();
     }

@@ -15,7 +15,7 @@
 * The package size is only 38 KB and does **not depend** on any external libraries.
 
 <p align="center">
-  <img width="200px" src="../../../learn/unity/ss/demo.gif?raw=true" alt="Demo">
+  <img width="200px" src="./ReadmeFiles/demo.gif?raw=true" alt="Demo">
   <p align="center">In this demo, even though they share the same prefab, the Store can be displayed as a modal window or as the content of the Store Tab.</p>
 </p>
 
@@ -36,7 +36,7 @@ From Menu: SS / Screen Settings / Input Screen Width & Height / Save
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/screen-settings.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/screen-settings.gif?raw=true" alt="Demo">
 </p>
 
 <h3>2. Create a screen</h3>
@@ -46,13 +46,13 @@ From Menu: SS / Screen Generator / Input Screen Name / Generate
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/screen-generator.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/screen-generator.gif?raw=true" alt="Demo">
 </p>
 
 <h3>3. Drag screen prefab to Resources/Screens folder</h3>In case of not using Addressables
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/drag-screen.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/drag-screen.gif?raw=true" alt="Demo">
 </p>
 
 <h3>4. Add a screen on top with default animation</h3>
@@ -62,7 +62,7 @@ ScreenManager.Add<Screen1Controller>(screenName: "Screen1");
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/add-screen.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/add-screen.gif?raw=true" alt="Demo">
 </p>
 
 <h3>5. Close a screen</h3>
@@ -72,7 +72,7 @@ ScreenManager.Close();
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/close-screen.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/close-screen.gif?raw=true" alt="Demo">
 </p>
 
 <h3>6. Load a scene with automatic fade</h3>
@@ -82,7 +82,7 @@ ScreenManager.Load<Scene1Controller>(sceneName: "Scene1");
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/load-scene.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/load-scene.gif?raw=true" alt="Demo">
 </p>
 
 <h3>Basic Usage Tutorial Video</h3>
@@ -108,7 +108,7 @@ From Menu: Edit / Project Settings / Player / Other Settings / Scripting Define 
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/addressable-symbol.png?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/addressable-symbol.png?raw=true" alt="Demo">
 </p>
 
 <h4>1.3. Add screen prefab to addressables groups  </h4>
@@ -116,7 +116,7 @@ From Menu: Edit / Project Settings / Player / Other Settings / Scripting Define 
 Make sure the addressable name is the same as the screen name, not a path to the prefab.
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/addressable-groups.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/addressable-groups.gif?raw=true" alt="Demo">
 </p>
 
 <h3>2. Screen Animations</h3>
@@ -164,7 +164,7 @@ ScreenManager.Close(hideAnimation: ScreenAnimation.FadeHide);
 
 Put your custom animations (Unity legacy animations) in Resources/Animations
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/custom-screen-animations.png?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/custom-screen-animations.png?raw=true" alt="Demo">
 </p>
 
 Add screen with custom animations
@@ -181,7 +181,7 @@ ScreenManager.Add<Screen1Controller>(screenName: "Screen1");
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/default-animation-object.png?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/default-animation-object.png?raw=true" alt="Demo">
 </p>
 
 In case you only want to animate a few objects on the screen, the rest are static and not animated
@@ -191,7 +191,7 @@ ScreenManager.Add<Screen1Controller>(screenName: "Screen1", animationObjectName:
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/custom-animation-object.png?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/custom-animation-object.png?raw=true" alt="Demo">
 </p>
 
 <h4>2.5. Screen Animation Speed </h4>
@@ -341,7 +341,7 @@ ScreenManager.Add<Screen3Controller>(screenName: "Screen3",  waitUntilNoScreen: 
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/wait-until-no-screen.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/wait-until-no-screen.gif?raw=true" alt="Demo">
 </p>
 
 This example does not use waitUntilNoScreen, 3 Screens will appear consecutively.
@@ -353,7 +353,7 @@ ScreenManager.Add<Screen3Controller>(screenName: "Screen3");
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/no-wait-until-no-screen.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/no-wait-until-no-screen.gif?raw=true" alt="Demo">
 </p>
 
 <h4>4.2. Custom Add-Condition </h4>
@@ -408,7 +408,7 @@ ScreenManager.Add<Screen1Controller>(screenName:"Screen1");
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/with-shield.png?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/with-shield.png?raw=true" alt="Demo">
 </p>
 
 ```cs
@@ -416,7 +416,7 @@ ScreenManager.Add<Screen1Controller>(screenName:"Screen1", hasShield: false);
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/without-shield.png?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/without-shield.png?raw=true" alt="Demo">
 </p>
 
 <h4>5.3. Show/Hide the Screen shield manually (with fade animation) </h4>
@@ -430,7 +430,7 @@ ScreenManager.HideShield();
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/show-hide-shield.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/show-hide-shield.gif?raw=true" alt="Demo">
 </p>
 
 <h4>5.4. Close on tapping Shield </h4>
@@ -456,7 +456,7 @@ ScreenManager.Add<Screen1Controller>(screenName: "Screen1", useExistingScreen: t
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/use-existing-screen.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/use-existing-screen.gif?raw=true" alt="Demo">
 </p>
 
 
@@ -471,7 +471,7 @@ ScreenManager.Add<Screen1Controller>(screenName: "Screen1");
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/not-use-existing-screen.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/not-use-existing-screen.gif?raw=true" alt="Demo">
 </p>
 
 <h4>6.2. Destroy Top Screen</h4>
@@ -483,7 +483,7 @@ ScreenManager.Add<Screen2Controller>(screenName: "Screen2", destroyTopScreen: tr
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/destroy-top-screen.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/destroy-top-screen.gif?raw=true" alt="Demo">
 </p>
 
 By default, this parameter is false, temporary hide the top screen when add the Screen2, and show it again after closing the Screen2
@@ -493,7 +493,7 @@ ScreenManager.Add<Screen2Controller>(screenName: "Screen2");
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/not-destroy-top-screen.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/not-destroy-top-screen.gif?raw=true" alt="Demo">
 </p>
 
 <h3>7. Loading</h3>
@@ -526,7 +526,7 @@ ScreenManager.Set(sceneLoadingName: "SceneLoading");
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/scene-loading.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/scene-loading.gif?raw=true" alt="Demo">
 </p>
 
 <h4>7.2. Loading on Top</h4>
@@ -555,7 +555,7 @@ ScreenManager.Loading(false);
 ```
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/loading.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/loading.gif?raw=true" alt="Demo">
 </p>
 
 <h3>8. Tooltip</h3>
@@ -563,13 +563,13 @@ ScreenManager.Loading(false);
 Show a tooltip with automatic screen padding.
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/tooltip-demo.gif?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/tooltip-demo.gif?raw=true" alt="Demo">
 </p>
 
 From Menu, SS / Tooltip Generator, input Tooltip name, select Text type (Default or TextMeshPro), click Generate
 
 <p align="center">
-  <img width="500px" src="../../../learn/unity/ss/advance/tooltip-generator.png?raw=true" alt="Demo">
+  <img width="500px" src="./ReadmeFiles/advance/tooltip-generator.png?raw=true" alt="Demo">
 </p>
 
 Edit the Tooltip prefab as you want, drag it to Resources/Screens folder (or drag to Addressable Group in case of using Addressables). You can also edit the Tooltip showing animation

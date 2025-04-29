@@ -16,7 +16,7 @@ public class Screen2 : MonoBehaviour, IBtnBack
         });
     }
 
-    public void OnBtnBack()
+    public void OnBtnBackClicked()
     {
         ScreenManager.Close();
     }

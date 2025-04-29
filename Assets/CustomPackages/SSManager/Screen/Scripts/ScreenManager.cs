@@ -507,7 +507,7 @@ namespace SSManager.Manager
 
                         if (screen.TryGetComponent(out IBtnBack keyback))
                         {
-                            keyback.OnBtnBack();
+                            keyback.OnBtnBackClicked();
                         }
                         else
                         {
